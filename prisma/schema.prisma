@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MemberRole {
+  ADMIN
+  MEMBER
+}
+
+enum FamilyPlan {
+  FREE
+  BRONZE
+  SILVER
+  GOLD
+}
+
+model User {
+  id        String   @id @default(uuid())
+  active    Boolean  @default(true)
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  Memberships Member[]
+  Families    Family[]
+}
+
+model Member {
+  id        String     @id @default(uuid())
+  userId    String
+  familyId  String
+  createdAt DateTime   @default(now())
+  role      MemberRole @default(MEMBER)
+
+  User   User   @relation(fields: [userId], references: [id])
+  Family Family @relation(fields: [familyId], references: [id])
+
+  @@unique([userId, familyId])
+}
+
+model Family {
+  id        String   @id @default(uuid())
+  active    Boolean  @default(true)
+  name      String
+  createdAt DateTime @default(now())
+  ownerId   String
+
+  Owner   User     @relation(fields: [ownerId], references: [id])
+  Members Member[]
+}
