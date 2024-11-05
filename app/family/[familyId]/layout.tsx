@@ -18,11 +18,26 @@ export default async function FamilyPageLayout({
     where: {
       familyId,
       userId: session?.user.id,
+      Family: {
+        active: true,
+      },
     },
   });
   if (member) {
     return children;
   } else {
-    return <div>Not a member of this family</div>;
+    return (
+      <div>
+        <h1 className="text-2xl">ファミリーが見つかりませんでした</h1>
+        <p>
+          申し訳ありませんが、要求されたファミリーにはアクセスできません。以下の理由が考えられます:
+        </p>
+        <ul className="list-disc pl-8 my-2">
+          <li>ファミリーが存在しないまたは削除された</li>
+          <li>ファミリーのメンバーに追加されていない</li>
+          <li>ファミリーがアクティブになっている</li>
+        </ul>
+      </div>
+    );
   }
 }
