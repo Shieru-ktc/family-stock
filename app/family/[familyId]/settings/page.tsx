@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { Family } from "@prisma/client";
 
 export default async function FamilySettingsPage({
   params,
