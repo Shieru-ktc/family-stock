@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "node_modules/@prisma/client",
-    "server.mts"
+    "server.ts",
+    "socketServer.ts"
   ],
   "exclude": ["node_modules"],
   "ts-node": {

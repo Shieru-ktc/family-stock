@@ -5,10 +5,11 @@ import { io, Socket } from "socket.io-client";
 
 export default function HomePage() {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
+  const [messages, setMessages] = useState<string[]>([]);
 
   useEffect(() => {
     // サーバーに接続
-    const socket = io("ws://localhost:3000");
+    const socket = io("http://localhost:3000");
 
     // サーバーからのメッセージを受信
     socket.on("connect", () => {
@@ -17,6 +18,7 @@ export default function HomePage() {
 
     socket.on("message", (message) => {
       console.log("Received message:", message);
+      setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     setSocket(socket);
@@ -26,5 +28,14 @@ export default function HomePage() {
     };
   }, []);
 
-  return <div>Socket.io with Next.js</div>;
+  return (
+    <div>
+      Messages:
+      <ul>
+        {messages.map((message, index) => (
+          <li key={index}>{message}</li>
+        ))}
+      </ul>
+    </div>
+  );
 }
