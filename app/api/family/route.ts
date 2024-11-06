@@ -15,6 +15,5 @@ export async function GET() {
       },
     },
   });
-  console.log(families);
   return NextResponse.json(families);
 }

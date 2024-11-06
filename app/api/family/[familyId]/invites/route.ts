@@ -2,15 +2,36 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
+interface GetSuccess {
+  success: true;
+  invites: {
+    id: string;
+    familyId: string;
+    createdById: string;
+    expiresAt: Date;
+    createdAt: Date;
+  }[];
+}
+
+interface GetFailure {
+  success: false;
+  error: string;
+}
+
+export type GetResponse = GetSuccess | GetFailure;
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { familyId: string } }
-) {
+): Promise<NextResponse<GetResponse>> {
   const familyId = params.familyId;
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json({ error: "Not Authorized" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Not Authorized" },
+      { status: 401 }
+    );
   }
 
   console.log(familyId);
@@ -32,7 +53,10 @@ export async function GET(
   });
 
   if (!family) {
-    return NextResponse.json({ error: "Family not found" }, { status: 404 });
+    return NextResponse.json(
+      { success: false, error: "Family not found" },
+      { status: 404 }
+    );
   }
   console.log(family, session.user);
   if (
@@ -41,10 +65,13 @@ export async function GET(
       (m) => m.role === "ADMIN" && m.userId === session.user.id
     )
   ) {
-    return NextResponse.json({ error: "Not Authorized" }, { status: 403 });
+    return NextResponse.json(
+      { success: false, error: "No Permission" },
+      { status: 403 }
+    );
   }
 
-  return NextResponse.json({ invites: family.Invites });
+  return NextResponse.json({ success: true, invites: family.Invites });
 }
 
 export async function POST(

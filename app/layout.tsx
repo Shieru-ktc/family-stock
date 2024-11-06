@@ -5,6 +5,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/sidebar/AppSidebar";
 import NavBar from "@/components/navbar/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Providers from "./providers";
 
 const notoSansJP = localFont({
   src: "./fonts/NotoSansJP.ttf",
@@ -27,13 +29,15 @@ export default function RootLayout({
         className={`${notoSansJP.variable} antialiased transition-all duration-200`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SidebarProvider defaultOpen>
-            <AppSidebar />
-            <div className="w-full h-full min-h-screen flex flex-col space-y-4">
-              <NavBar />
-              <div className="px-6 py-2">{children}</div>
-            </div>
-          </SidebarProvider>
+          <Providers>
+            <SidebarProvider defaultOpen>
+              <AppSidebar />
+              <div className="w-full h-full min-h-screen flex flex-col space-y-4">
+                <NavBar />
+                <div className="px-6 py-2">{children}</div>
+              </div>
+            </SidebarProvider>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>
