@@ -12,7 +12,6 @@ import { TableCell } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Family } from "@prisma/client";
 import { PlusCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AddMember({ family }: { family: Family }) {
@@ -27,7 +26,7 @@ export default function AddMember({ family }: { family: Family }) {
     }).then((res) => {
       res.json().then((data) => {
         console.log(data);
-        setLink(new URL("/family/join/" + data.id, location.href).href);
+        setLink(new URL("/family/join/" + data.id, window.location.href).href);
       });
     });
   }
@@ -53,7 +52,9 @@ export default function AddMember({ family }: { family: Family }) {
               招待リンクを共有して、ファミリーに招待しましょう。
               <Input
                 type="text"
-                placeholder={new URL("/family/join/...", location.href).href}
+                placeholder={
+                  new URL("/family/join/...", window.location.href).href
+                }
                 readOnly
                 value={link}
               />
