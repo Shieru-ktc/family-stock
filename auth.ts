@@ -72,12 +72,19 @@ export const authConfig = {
     async session({ session, token }) {
       console.log("called session callback");
       session.user.role = token.role as string;
+      session.user.id = token.id as string;
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        console.log("called jwt callback");
+        if (!user.email) {
+          throw new Error("No email returned from provider");
+        }
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
         token.role = "aaa";
+        token.id = dbUser?.id;
       }
       return token;
     },

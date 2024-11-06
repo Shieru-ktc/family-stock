@@ -87,6 +87,9 @@ export default async function AppSidebar() {
           },
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
     families.forEach((family: Family) => {
       const existingItemIndex = sidebarItems.findIndex(

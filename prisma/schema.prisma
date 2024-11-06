@@ -26,8 +26,9 @@ model User {
   name      String
   createdAt DateTime @default(now())
 
-  Memberships Member[]
-  Families    Family[]
+  Memberships    Member[]
+  Families       Family[]
+  CreatedInvites Invite[]
 }
 
 model Member {
@@ -52,4 +53,17 @@ model Family {
 
   Owner   User     @relation(fields: [ownerId], references: [id])
   Members Member[]
+  Invites Invite[]
+}
+
+model Invite {
+  id          String   @id @default(uuid())
+  active      Boolean  @default(true)
+  familyId    String
+  createdById String
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  Family    Family @relation(fields: [familyId], references: [id])
+  CreatedBy User   @relation(fields: [createdById], references: [id])
 }

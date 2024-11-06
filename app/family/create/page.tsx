@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { prisma } from "@/lib/prisma";
 
 export default async function FamilyCreatePage() {
@@ -8,12 +9,12 @@ export default async function FamilyCreatePage() {
     <div>
       <h1 className="text-2xl">ファミリーを作成</h1>
       <p>ファミリーを作成すると、家族全員で在庫状況を管理できます。</p>
-      <Button
-        onClick={async () => {
+      <form
+        action={async (formData) => {
           "use server";
           const family = await prisma.family.create({
             data: {
-              name: "My Family",
+              name: formData.get("name")?.toString() || "My Family",
               Members: {
                 create: {
                   User: {
@@ -33,8 +34,12 @@ export default async function FamilyCreatePage() {
           console.log(family);
         }}
       >
-        ファミリーを作成する
-      </Button>
+        <label>
+          ファミリー名:
+          <Input type="text" name="name" />
+        </label>
+        <Button type="submit">作成する</Button>
+      </form>
     </div>
   );
 }
