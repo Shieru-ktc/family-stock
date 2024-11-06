@@ -62,7 +62,10 @@ export default async function FamilyMembersPage({
         <TableBody>
           {members.map((member) => (
             <TableRow key={member.id}>
-              <TableCell>{member.User.name}</TableCell>
+              <TableCell>
+                {member.User.name}{" "}
+                {member.userId === session?.user.id && "（あなた）"}
+              </TableCell>
               <TableCell>{member.createdAt.toLocaleString("ja-JP")}</TableCell>
               <TableCell>{getRoleLabel(member)}</TableCell>
               <MemberActionComponent family={family} member={member} />
