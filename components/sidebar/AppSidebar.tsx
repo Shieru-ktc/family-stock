@@ -82,7 +82,7 @@ export default async function AppSidebar() {
         Members: {
           some: {
             User: {
-              email: session?.user.email,
+              id: session.user.id,
             },
           },
         },
@@ -108,11 +108,6 @@ export default async function AppSidebar() {
             icon: "Cog",
             href: `/family/${family.id}/settings`,
           },
-          {
-            label: "家族のメンバー",
-            icon: "Users",
-            href: `/family/${family.id}/members`,
-          },
         ],
       });
     });
@@ -120,14 +115,9 @@ export default async function AppSidebar() {
     sidebarItems = LOGGED_OUT_SIDEBAR;
   }
 
-  console.log(sidebarItems);
   return (
     <Sidebar>
       <AppSidebarBody sidebarItems={sidebarItems} />
     </Sidebar>
   );
-}
-
-export async function getServerSideProps() {
-  console.log("getServerSideProps");
 }

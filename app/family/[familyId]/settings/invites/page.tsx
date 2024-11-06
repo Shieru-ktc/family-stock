@@ -9,8 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
-import AddMember from "../../members/AddMember";
-import MemberActionComponent from "../../members/MemberAction";
+import AddMember from "../members/AddMember";
+import InviteActionComponent from "./InviteActionComponent";
 
 export default async function InvitesPage({
   params,
@@ -26,6 +26,11 @@ export default async function InvitesPage({
       Invites: {
         include: {
           CreatedBy: true,
+          Family: {
+            include: {
+              Members: true,
+            },
+          },
         },
       },
     },
@@ -56,15 +61,10 @@ export default async function InvitesPage({
               <TableCell>{invite.id}</TableCell>
               <TableCell>{invite.createdAt.toLocaleString()}</TableCell>
               <TableCell>{invite.CreatedBy.name}</TableCell>
-              <TableCell></TableCell>
+              <InviteActionComponent invite={invite} />
             </TableRow>
           ))}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <AddMember family={family} />
-          </TableRow>
-        </TableFooter>
       </Table>
     </div>
   );
