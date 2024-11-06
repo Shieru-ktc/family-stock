@@ -104,6 +104,16 @@ export default async function AppSidebar() {
         label: family.name,
         items: [
           {
+            label: "在庫リスト",
+            icon: "Box",
+            href: `/family/${family.id}/stocks`,
+          },
+          {
+            label: "買い物",
+            icon: "ShoppingCart",
+            href: `/family/${family.id}/shopping`,
+          },
+          {
             label: "家族の設定",
             icon: "Cog",
             href: `/family/${family.id}/settings`,
