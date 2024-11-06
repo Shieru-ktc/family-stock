@@ -51,9 +51,12 @@ model Family {
   createdAt DateTime @default(now())
   ownerId   String
 
-  Owner   User     @relation(fields: [ownerId], references: [id])
-  Members Member[]
-  Invites Invite[]
+  Owner          User            @relation(fields: [ownerId], references: [id])
+  Members        Member[]
+  Invites        Invite[]
+  StockItems     StockItem[]
+  StockItemMetas StockItemMeta[]
+  StockItemTags  StockItemTag[]
 }
 
 model Invite {
@@ -66,4 +69,48 @@ model Invite {
 
   Family    Family @relation(fields: [familyId], references: [id])
   CreatedBy User   @relation(fields: [createdById], references: [id])
+}
+
+model StockItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  quantity  Int      @default(0)
+
+  familyId String
+  metaId   String @unique
+
+  Family Family        @relation(fields: [familyId], references: [id])
+  Meta   StockItemMeta @relation(fields: [metaId], references: [id])
+}
+
+model StockItemMeta {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  name        String
+  description String
+  unit        String
+  price       Float
+  step        Int
+  threshold   Int
+
+  familyId String
+
+  StockItem StockItem?
+  Family    Family     @relation(fields: [familyId], references: [id])
+
+  Tags StockItemTag[]
+}
+
+model StockItemTag {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  name        String
+  description String
+  color       String
+  familyId    String
+
+  Family         Family          @relation(fields: [familyId], references: [id])
+  StockItemMetas StockItemMeta[]
 }
