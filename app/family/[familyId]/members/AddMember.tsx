@@ -53,7 +53,9 @@ export default function AddMember({ family }: { family: Family }) {
               <Input
                 type="text"
                 placeholder={
-                  new URL("/family/join/...", window.location.href).href
+                  typeof window !== "undefined"
+                    ? new URL("/family/join/...", window.location.href).href
+                    : ""
                 }
                 readOnly
                 value={link}

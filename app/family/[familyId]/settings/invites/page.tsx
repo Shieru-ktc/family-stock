@@ -34,7 +34,7 @@ export default async function InvitesPage({
 
   return (
     <div>
-      <h1>発行された招待</h1>
+      <h1 className="text-2xl">発行された招待</h1>
       <p>
         以下は、このファミリーに対して発行された招待リンクです。作成から一週間が経過した招待は無効になります。
         <br />
