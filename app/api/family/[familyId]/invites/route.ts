@@ -1,16 +1,15 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Family, Invite, Member, User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 interface GetSuccess {
   success: true;
-  invites: {
-    id: string;
-    familyId: string;
-    createdById: string;
-    expiresAt: Date;
-    createdAt: Date;
-  }[];
+  family: Family & {
+    Invites: (Invite & {
+      CreatedBy: User;
+    })[];
+  };
 }
 
 interface GetFailure {
@@ -22,9 +21,9 @@ export type GetResponse = GetSuccess | GetFailure;
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { familyId: string } }
+  { params }: { params: Promise<{ familyId: string }> }
 ): Promise<NextResponse<GetResponse>> {
-  const familyId = params.familyId;
+  const { familyId } = await params;
   const session = await auth();
 
   if (!session) {
@@ -47,7 +46,17 @@ export async function GET(
       },
     },
     include: {
-      Invites: true,
+      Invites: {
+        include: {
+          CreatedBy: true,
+        },
+        where: {
+          active: true,
+          expiresAt: {
+            gte: new Date(),
+          },
+        },
+      },
       Members: true,
     },
   });
@@ -71,14 +80,14 @@ export async function GET(
     );
   }
 
-  return NextResponse.json({ success: true, invites: family.Invites });
+  return NextResponse.json({ success: true, family: family });
 }
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { familyId: string } }
+  { params }: { params: Promise<{ familyId: string }> }
 ) {
-  const familyId = params.familyId;
+  const { familyId } = await params;
   const session = await auth();
 
   if (!session) {
