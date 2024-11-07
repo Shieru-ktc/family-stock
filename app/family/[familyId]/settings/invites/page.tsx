@@ -11,16 +11,18 @@ import {
 } from "@/components/ui/table";
 import InviteActionComponent from "./InviteActionComponent";
 import { useQuery } from "@tanstack/react-query";
-import { Family, Invite, Member, User } from "@prisma/client";
+import { Family, Invite, User } from "@prisma/client";
 import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { GetResponse } from "@/app/api/family/[familyId]/invites/route";
 
 export default function InvitesPage({
   params,
 }: {
   params: Promise<{ familyId: string }>;
 }) {
-  const familyId = React.use(params).familyId;
-  const { data, isPending } = useQuery({
+  const { familyId } = React.use(params);
+  const { data, isPending } = useQuery<GetResponse>({
     queryKey: ["family", familyId, "invites"],
     queryFn: () =>
       fetch(`/api/family/${familyId}/invites`).then((res) => res.json()),
@@ -40,7 +42,9 @@ export default function InvitesPage({
       </p>
 
       {isPending ? (
-        <p>Loading ...</p>
+        <div className="my-2">
+          <Skeleton className="w-full h-16" />
+        </div>
       ) : data?.success ? (
         <Table>
           <TableCaption>有効な招待リンクの一覧</TableCaption>
@@ -53,27 +57,20 @@ export default function InvitesPage({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map(
-              (
-                invite: Invite & {
-                  CreatedBy: User;
-                  Family: Family & {
-                    Members: Member[];
-                  };
-                }
-              ) => (
-                <TableRow key={invite.id}>
-                  <TableCell>{invite.id}</TableCell>
-                  <TableCell>{invite.createdAt.toLocaleString()}</TableCell>
-                  <TableCell>{invite.CreatedBy.name}</TableCell>
-                  <InviteActionComponent invite={invite} />
-                </TableRow>
-              )
-            )}
+            {data.family.Invites.map((invite) => (
+              <TableRow key={invite.id}>
+                <TableCell>{invite.id}</TableCell>
+                <TableCell>{invite.createdAt.toLocaleString()}</TableCell>
+                <TableCell>{invite.CreatedBy.name}</TableCell>
+                <InviteActionComponent
+                  invite={{ ...invite, Family: data.family }}
+                />
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       ) : (
-        <p>{data.error}</p>
+        <p>{data?.error}</p>
       )}
     </div>
   );

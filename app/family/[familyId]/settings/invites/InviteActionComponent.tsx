@@ -15,12 +15,25 @@ import { Family, Invite, Member, User } from "@prisma/client";
 import { FormEvent, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { DeleteInvite } from "./actions";
+import { useMutation } from "@tanstack/react-query";
+import { getQueryClient } from "@/app/get-query-client";
+import { Loader2 } from "lucide-react";
 
 export default function InviteActionComponent({
   invite,
 }: {
-  invite: Invite & { CreatedBy: User; Family: Family & { Members: Member[] } };
+  invite: Invite & { CreatedBy: User; Family: Family };
 }) {
+  const useDeleteInvite = () =>
+    useMutation({
+      mutationFn: (invite: Invite) => {
+        return fetch(`/api/family/${invite.familyId}/invites/${invite.id}`, {
+          method: "DELETE",
+        });
+      },
+    });
+  const deleteInvite = useDeleteInvite();
+
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -32,11 +45,14 @@ export default function InviteActionComponent({
     setIsDeleteOpen(true);
   }
 
-  const onDelete = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log(invite);
-    await DeleteInvite({
-      ...invite,
+  const onDelete = () => {
+    deleteInvite.mutate(invite, {
+      onSuccess: () => {
+        setIsDeleteOpen(false);
+        getQueryClient().invalidateQueries({
+          queryKey: ["family", invite.familyId, "invites"],
+        });
+      },
     });
   };
 
@@ -92,12 +108,15 @@ export default function InviteActionComponent({
             <p>本当に削除してもよろしいですか？</p>
 
             <div className="flex space-x-4">
-              <form onSubmit={onDelete}>
-                <Button type="submit" variant="destructive">
-                  削除
-                </Button>
-              </form>
-
+              <Button
+                type="submit"
+                variant="destructive"
+                onClick={onDelete}
+                disabled={deleteInvite.isPending}
+              >
+                {deleteInvite.isPending && <Loader2 className="animate-spin" />}
+                削除
+              </Button>
               <Button onClick={() => setIsDeleteOpen(false)} variant="outline">
                 キャンセル
               </Button>

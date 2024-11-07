@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { TableCell } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Family } from "@prisma/client";
-import { PlusCircle } from "lucide-react";
+import { Plus, PlusCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function AddMember({ family }: { family: Family }) {
@@ -71,7 +71,7 @@ export default function AddMember({ family }: { family: Family }) {
         onClick={() => setIsOpen(true)}
       >
         <div className="flex items-center space-x-5">
-          <PlusCircle />
+          <Plus />
           メンバーを追加
         </div>
       </TableCell>

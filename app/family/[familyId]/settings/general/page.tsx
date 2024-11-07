@@ -5,7 +5,7 @@ export default async function FamilySettingsPage({
 }: {
   params: Promise<{ familyId: string }>;
 }) {
-  const familyId = (await params).familyId;
+  const { familyId } = await params;
   const family = await prisma.family.findFirstOrThrow({
     where: {
       id: familyId,

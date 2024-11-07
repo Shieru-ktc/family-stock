@@ -30,7 +30,7 @@ export default function FamilyJoinPage() {
 
   return (
     <div>
-      <h1>ファミリーに参加する</h1>
+      <h1 className="text-2xl">ファミリーに参加する</h1>
       <p>
         参加するには、ファミリーの管理者が提供する招待リンクか、招待コードが必要です。
       </p>

@@ -1,10 +1,6 @@
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarMenuItem } from "@/components/ui/sidebar";
 import { auth } from "@/auth";
-import { Cog, LogOut, User } from "lucide-react";
+import { Cog, Plus, User, UserPlus } from "lucide-react";
 import {
   SidebarContent,
   SidebarGroup,
@@ -15,6 +11,7 @@ import {
 } from "../ui/sidebar";
 import Link from "next/link";
 import FamilyItems from "./FamilyItems";
+import { SignInItem, SignOutItem } from "./SignButtons";
 
 export default async function AppSidebar() {
   const session = await auth();
@@ -42,15 +39,41 @@ export default async function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-
+              <SignOutItem />
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>ファミリー</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href={"/settings"}>
-                    <LogOut />
-                    ログアウト
+                  <Link href={"/family/create"}>
+                    <Plus />
+                    ファミリーを作成
+                  </Link>
+                </SidebarMenuButton>
+                <SidebarMenuButton asChild>
+                  <Link href={"/family/join"}>
+                    <UserPlus />
+                    ファミリーに参加
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </>
+    );
+  } else {
+    sidebar = (
+      <>
+        <SidebarGroup>
+          <SidebarGroupLabel>アカウント</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SignInItem />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -62,7 +85,7 @@ export default async function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         {sidebar}
-        <FamilyItems />
+        {session?.user && <FamilyItems />}
       </SidebarContent>
     </Sidebar>
   );

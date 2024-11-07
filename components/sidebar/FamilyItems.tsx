@@ -22,6 +22,8 @@ export default function FamilyItems() {
   const { data, isPending } = useQuery({
     queryKey: ["family"],
     queryFn: async () => fetch("/api/family").then((res) => res.json()),
+    refetchOnWindowFocus: true,
+    refetchInterval: 1000 * 10,
   });
 
   if (isPending) {
@@ -64,7 +66,7 @@ export default function FamilyItems() {
                       </Link>
                     </SidebarMenuButton>
                     <SidebarMenuButton asChild>
-                      <Link href={`/family/${family.id}/settings`}>
+                      <Link href={`/family/${family.id}/settings/general`}>
                         <Cog />
                         ファミリー設定
                       </Link>

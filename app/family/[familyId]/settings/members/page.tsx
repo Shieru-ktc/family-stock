@@ -48,7 +48,12 @@ export default async function FamilyMembersPage({
   }
   return (
     <div>
-      <p>Family ID: {familyId}</p>
+      <h1 className="text-2xl">ファミリー メンバー</h1>
+      <p>
+        以下は、このファミリーに所属するメンバーの一覧です。
+        <br />
+        管理者は、メンバーを招待したり、削除したりできます。
+      </p>
       <Table>
         <TableCaption>ファミリー メンバーの一覧</TableCaption>
         <TableHeader>
