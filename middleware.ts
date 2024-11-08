@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
   // トークンを取得
-  const token = await getToken({ req, secret: process.env.SECRET });
+  const token = await getToken({ req: req as any, secret: process.env.SECRET });
 
   // トークンがない場合はログインページにリダイレクト
   if (!token) {

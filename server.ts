@@ -1,22 +1,41 @@
-// server.mjs
 import { createServer } from "node:http";
 import next from "next";
-import { initializeSocket } from "./socketServer";
+import { Server } from "socket.io";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+import { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
+import { parse, URL } from "node:url";
+import { JWT } from "next-auth";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
-const app = next({ dev, hostname, port });
+// when using middleware `hostname` and `port` must be provided below
+const app = next({ dev, hostname, port, turbo: true });
 const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
 
-  // Socket.io の初期化
-  const io = initializeSocket(httpServer);
+  const io = new Server(httpServer);
 
-  io.on("connection", (socket) => {
-    socket.emit("message", "Connected to server!");
+  io.on("connection", async (socket) => {
+    const cookies = socket.handshake.headers.cookie;
+    const parsedCookies = cookies
+      ? new RequestCookies(new Headers({ cookie: cookies }))
+      : new RequestCookies(new Headers());
+    const token = await getToken({
+      req: { ...socket.request, cookies: parsedCookies } as any,
+      secret: process.env.JWT_SECRET,
+    });
+    console.log(token);
+    if (!token) {
+      console.log("Token not found");
+      socket.emit("message", "Token not found");
+      return socket.disconnect();
+    }
+    console.log("Socket connected");
+    io.emit("message", `User ${token.sub} connected`);
   });
 
   httpServer
@@ -27,5 +46,4 @@ app.prepare().then(() => {
     .listen(port, () => {
       console.log(`> Ready on http://${hostname}:${port}`);
     });
-  global.socket = io;
 });

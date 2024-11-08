@@ -27,7 +27,6 @@ export default function InvitesPage({
     queryFn: () =>
       fetch(`/api/family/${familyId}/invites`).then((res) => res.json()),
     select: (data) => {
-      console.log(data);
       return data;
     },
   });

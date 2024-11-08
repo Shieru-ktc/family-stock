@@ -39,7 +39,6 @@ export async function checkInvite(link: string): Promise<ValidateStatus> {
       CreatedBy: true,
     },
   });
-  console.log(invite);
 
   if (!invite) {
     return { success: false, message: "招待リンクが無効です。" };

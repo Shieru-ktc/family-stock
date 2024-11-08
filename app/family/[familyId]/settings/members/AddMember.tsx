@@ -20,12 +20,10 @@ export default function AddMember({ family }: { family: Family }) {
   const [link, setLink] = useState<string | undefined>("");
 
   function handleCreateInvite() {
-    console.log("Create invite");
     fetch(`/api/family/${family.id}/invites`, {
       method: "POST",
     }).then((res) => {
       res.json().then((data) => {
-        console.log(data);
         setLink(new URL("/family/join/" + data.id, window.location.href).href);
       });
     });

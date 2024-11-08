@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  console.log(global.socket);
+export async function GET(req: NextRequest) {
+  console.log(req.cookies);
   return new NextResponse("hello");
 }

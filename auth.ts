@@ -6,11 +6,16 @@ import {
 } from "next";
 import { getServerSession, NextAuthOptions } from "next-auth";
 import Discord from "next-auth/providers/discord";
-import { redirect } from "next/navigation";
 import { prisma } from "./lib/prisma";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 
-const { GITHUB_ID, GITHUB_SECRET, DISCORD_ID, DISCORD_SECRET, SECRET } =
-  process.env;
+const {
+  GITHUB_ID,
+  GITHUB_SECRET,
+  DISCORD_ID,
+  DISCORD_SECRET,
+  NEXTAUTH_SECRET,
+} = process.env;
 const providers = [];
 
 if (GITHUB_ID && GITHUB_SECRET) {
@@ -18,6 +23,7 @@ if (GITHUB_ID && GITHUB_SECRET) {
     Github({
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
     })
   );
 }
@@ -27,71 +33,37 @@ if (DISCORD_ID && DISCORD_SECRET) {
     Discord({
       clientId: DISCORD_ID,
       clientSecret: DISCORD_SECRET,
+      allowDangerousEmailAccountLinking: true,
     })
   );
 }
 
 export const authConfig = {
   providers,
-  secret: SECRET,
+  adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
+  secret: NEXTAUTH_SECRET,
   pages: {
     signIn: "/auth/signIn",
     error: "/auth/error",
   },
   callbacks: {
-    async signIn({ user }) {
-      if (!user.email || !user.name || !user.image) {
-        return redirect("/auth/signIn?error=unknown");
-      }
-      const existingUser = await prisma.user.findUnique({
-        where: { email: user.email },
-      });
-
-      if (!existingUser) {
-        await prisma.user.create({
-          data: {
-            email: user.email,
-            name: user.name,
-          },
-        });
-        console.log("New user created: ", user.email);
-      } else {
-        if (!existingUser.active) {
-          throw new Error("inactiveAccount");
-        }
-        await prisma.user.update({
-          where: { email: user.email },
-          data: {
-            name: user.name,
-          },
-        });
-        console.log("User updated: ", user.email);
-      }
-      return true;
-    },
     async session({ session, token }) {
-      console.log("called session callback");
-      session.user.role = token.role as string;
       session.user.id = token.id as string;
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        if (!user.email) {
-          throw new Error("No email returned from provider");
-        }
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email },
-        });
-        token.role = "aaa";
-        token.id = dbUser?.id;
+        console.log(user);
+        token.id = user.id;
       }
       return token;
     },
   },
 } satisfies NextAuthOptions;
 
-// Use it in server contexts
 export function auth(
   ...args:
     | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]

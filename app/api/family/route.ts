@@ -17,3 +17,27 @@ export async function GET() {
   });
   return NextResponse.json(families);
 }
+
+export async function POST() {
+  const session = await auth();
+  const family = await prisma.family.create({
+    data: {
+      name: "New Family",
+      Members: {
+        create: {
+          User: {
+            connect: {
+              id: session?.user.id,
+            },
+          },
+        },
+      },
+      Owner: {
+        connect: {
+          id: session?.user.id,
+        },
+      },
+    },
+  });
+  return NextResponse.json(family);
+}

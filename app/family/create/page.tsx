@@ -1,37 +1,32 @@
-import { auth } from "@/auth";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { prisma } from "@/lib/prisma";
+import { useMutation } from "@tanstack/react-query";
 
-export default async function FamilyCreatePage() {
-  const session = await auth();
+export default function FamilyCreatePage() {
+  const createFamily = useMutation({
+    mutationFn: (name: string) => {
+      return fetch(`/api/family/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+    },
+  });
+
   return (
     <div>
       <h1 className="text-2xl">ファミリーを作成</h1>
       <p>ファミリーを作成すると、家族全員で在庫状況を管理できます。</p>
       <form
-        action={async (formData) => {
-          "use server";
-          const family = await prisma.family.create({
-            data: {
-              name: formData.get("name")?.toString() || "My Family",
-              Members: {
-                create: {
-                  User: {
-                    connect: {
-                      email: session?.user.email,
-                    },
-                  },
-                },
-              },
-              Owner: {
-                connect: {
-                  email: session?.user.email,
-                },
-              },
-            },
-          });
-          console.log(family);
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target as HTMLFormElement);
+          const familyName = formData.get("name") as string;
+          createFamily.mutate(familyName);
         }}
       >
         <label>

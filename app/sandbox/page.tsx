@@ -3,28 +3,38 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
+const socket = io({ autoConnect: false });
+
 export default function HomePage() {
-  const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const [messages, setMessages] = useState<string[]>([]);
+
+  const socketInitializer = (socket: any) => {
+    // サーバーとの接続が確立したときの処理
+    socket.on("connect", () => {
+      console.log("Connected to the server");
+    });
+    // サーバーとの接続が切断されたときの処理
+    socket.on("disconnect", () => {
+      console.log("Disconnected from the server");
+    });
+    // サーバーからメッセージを受信したときの処理
+    socket.on("message", (message: any) => {
+      console.log(message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+  };
 
   useEffect(() => {
     // サーバーに接続
-    const socket = io("http://localhost:3000");
+    const socket = io();
+    socketInitializer(socket);
 
-    // サーバーからのメッセージを受信
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
-
-    socket.on("message", (message) => {
-      console.log("Received message:", message);
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-
-    setSocket(socket);
     // クリーンアップ
     return () => {
       socket.disconnect();
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("message");
     };
   }, []);
 
