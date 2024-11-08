@@ -5,5 +5,5 @@ import SocketManager from "./app/socketServer";
 export {};
 
 declare global {
-  var socket: SocketManager | undefined;
+  var io: Server;
 }

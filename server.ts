@@ -4,7 +4,6 @@ import { Server } from "socket.io";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 import { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
-import { parse, URL } from "node:url";
 import { JWT } from "next-auth";
 
 const dev = process.env.NODE_ENV !== "production";
@@ -29,14 +28,20 @@ app.prepare().then(() => {
       secret: process.env.JWT_SECRET,
     });
     console.log(token);
-    if (!token) {
+    if (!token || !token.sub) {
       console.log("Token not found");
       socket.emit("message", "Token not found");
       return socket.disconnect();
     }
     console.log("Socket connected");
+    socket.join(token.sub);
+    socket.on("disconnect", () => {
+      socket.leave(token.sub!);
+    });
     io.emit("message", `User ${token.sub} connected`);
   });
+
+  global.io = io;
 
   httpServer
     .once("error", (err) => {

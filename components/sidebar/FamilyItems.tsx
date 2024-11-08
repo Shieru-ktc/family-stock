@@ -19,14 +19,41 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 
 export default function FamilyItems() {
-  const { data, isPending } = useQuery({
-    queryKey: ["family"],
-    queryFn: async () => fetch("/api/family").then((res) => res.json()),
-    refetchOnWindowFocus: true,
-    refetchInterval: 1000 * 10,
+  const [socket] = useAtom(socketAtom);
+  const { data } = useQuery<Family[]>({
+    queryFn: async () => {
+      const response = await fetch("/api/family");
+      return response.json();
+    },
+    queryKey: ["families"],
   });
 
-  if (isPending) {
+  const [families, setFamilies] = useState<Family[] | undefined>(undefined);
+
+  useEffect(() => {
+    if (data) {
+      setFamilies(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    socket.on("newFamily", (family: Family) => {
+      console.log(family);
+      setFamilies((prevFamilies) => {
+        if (prevFamilies === undefined) {
+          return [family];
+        } else {
+          return [...prevFamilies, family];
+        }
+      });
+    });
+
+    return () => {
+      socket.off("newFamily");
+    };
+  }, [socket]);
+
+  if (families === undefined) {
     return (
       <div className="px-2">
         <Skeleton className="w-full h-4 my-2" />
@@ -41,7 +68,7 @@ export default function FamilyItems() {
   } else {
     return (
       <>
-        {data.map((family: Family) => (
+        {families.map((family: Family) => (
           <Collapsible className="group/collapsible" key={family.id}>
             <SidebarGroup>
               <SidebarGroupLabel asChild>

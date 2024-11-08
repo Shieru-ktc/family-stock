@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Member } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -87,7 +88,7 @@ export async function DELETE(
   if (
     invite.Family.ownerId !== session.user.id &&
     !invite.Family.Members.some(
-      (m) => m.role === "ADMIN" && m.userId === session.user.id
+      (m: Member) => m.role === "ADMIN" && m.userId === session.user.id
     )
   ) {
     return NextResponse.json(

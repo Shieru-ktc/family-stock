@@ -20,6 +20,9 @@ export async function GET() {
 
 export async function POST() {
   const session = await auth();
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const family = await prisma.family.create({
     data: {
       name: "New Family",
@@ -39,5 +42,6 @@ export async function POST() {
       },
     },
   });
+  global.io.in(session?.user.id).emit("newFamily", family);
   return NextResponse.json(family);
 }
