@@ -7,4 +7,5 @@ export async function DELETE(
 ): Promise<NextResponse> {
   const { familyId } = await params;
   const session = await auth();
+  return NextResponse.json({ success: true });
 }

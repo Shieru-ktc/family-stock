@@ -17,6 +17,9 @@ import { Family } from "@prisma/client";
 import { Box, ChevronDown, Cog, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
+import { socketAtom } from "@/atoms/socketAtom";
+import { useAtom } from "jotai";
+import { useState, useEffect } from "react";
 
 export default function FamilyItems() {
   const [socket] = useAtom(socketAtom);
