@@ -56,7 +56,6 @@ export const authConfig = {
     },
     async jwt({ token, user }) {
       if (user) {
-        console.log(user);
         token.id = user.id;
       }
       return token;

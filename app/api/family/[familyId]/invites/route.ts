@@ -33,7 +33,6 @@ export async function GET(
     );
   }
 
-  console.log(familyId);
   const family = await prisma.family.findFirst({
     where: {
       id: familyId,
@@ -67,7 +66,6 @@ export async function GET(
       { status: 404 }
     );
   }
-  console.log(family, session.user);
   if (
     family.ownerId !== session.user.id &&
     !family.Members.some(
@@ -94,7 +92,6 @@ export async function POST(
     return NextResponse.json({ error: "Not Authorized" }, { status: 401 });
   }
 
-  console.log(familyId);
   const family = await prisma.family.findFirst({
     where: {
       id: familyId,
@@ -115,7 +112,6 @@ export async function POST(
   if (!family) {
     return NextResponse.json({ error: "Family not found" }, { status: 404 });
   }
-  console.log(family, session.user);
   if (
     family.ownerId !== session.user.id &&
     !family.Members.some(

@@ -9,7 +9,7 @@ export default function AuthButtons({ session }: { session: Session | null }) {
     return (
       <>
         <div className="text-2xl">ようこそ、{session.user?.name}さん！</div>
-        <div>ここはあなたのトップページです。 です。</div>
+        <div>ここはあなたのトップページです。</div>
         <br />
         <Button onClick={() => signOut()}>サインアウト</Button>
       </>
