@@ -100,8 +100,8 @@ model Member {
   createdAt DateTime   @default(now())
   role      MemberRole @default(MEMBER)
 
-  User   User   @relation(fields: [userId], references: [id])
-  Family Family @relation(fields: [familyId], references: [id])
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   @@unique([userId, familyId])
 }
@@ -113,7 +113,7 @@ model Family {
   createdAt DateTime @default(now())
   ownerId   String
 
-  Owner          User            @relation(fields: [ownerId], references: [id])
+  Owner          User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   Members        Member[]
   Invites        Invite[]
   StockItems     StockItem[]
@@ -125,12 +125,12 @@ model Invite {
   id          String   @id @default(cuid())
   active      Boolean  @default(true)
   familyId    String
-  createdById String
+  createdById String?
   createdAt   DateTime @default(now())
   expiresAt   DateTime
 
-  Family    Family @relation(fields: [familyId], references: [id])
-  CreatedBy User   @relation(fields: [createdById], references: [id])
+  Family    Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  CreatedBy User?  @relation(fields: [createdById], references: [id], onDelete: SetNull)
 }
 
 model StockItem {
@@ -141,8 +141,8 @@ model StockItem {
   familyId String
   metaId   String @unique
 
-  Family Family        @relation(fields: [familyId], references: [id])
-  Meta   StockItemMeta @relation(fields: [metaId], references: [id])
+  Family Family        @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  Meta   StockItemMeta @relation(fields: [metaId], references: [id], onDelete: Cascade)
 }
 
 model StockItemMeta {
@@ -159,7 +159,7 @@ model StockItemMeta {
   familyId String
 
   StockItem StockItem?
-  Family    Family     @relation(fields: [familyId], references: [id])
+  Family    Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   Tags StockItemTag[]
 }
@@ -173,6 +173,6 @@ model StockItemTag {
   color       String
   familyId    String
 
-  Family         Family          @relation(fields: [familyId], references: [id])
+  Family         Family          @relation(fields: [familyId], references: [id], onDelete: Cascade)
   StockItemMetas StockItemMeta[]
 }
