@@ -1,17 +1,18 @@
 "use client";
 
 import { socketAtom } from "@/atoms/socketAtom";
+import { SocketEvents } from "@/socket/events";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
 
 export default function HomePage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [socket] = useAtom(socketAtom);
 
   useEffect(() => {
-    socket.on("message", (message: string) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    return SocketEvents.testEvent.listen(socket, (data) => {
+      console.log(data);
+      setMessages((prev) => [...prev, data.message]);
     });
   }, [socket]);
 

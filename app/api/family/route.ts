@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { SocketEvents } from "@/socket/events";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -42,6 +43,6 @@ export async function POST() {
       },
     },
   });
-  global.io.in(session?.user.id).emit("newFamily", family);
+  SocketEvents.familyCreated.dispatch({ family }, global.io);
   return NextResponse.json(family);
 }
