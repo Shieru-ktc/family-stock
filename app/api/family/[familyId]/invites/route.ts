@@ -1,4 +1,6 @@
 import { auth } from "@/auth";
+import { CustomResponse } from "@/errors";
+import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
 import { Family, Invite, Member, User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,11 +29,10 @@ export async function GET(
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json(
-      { success: false, error: "Not Authorized" },
-      { status: 401 }
-    );
+    return CustomResponse.unauthorized();
   }
+
+  const member = await getMember(session.user.id, familyId);
 
   const family = await prisma.family.findFirst({
     where: {
@@ -56,7 +57,6 @@ export async function GET(
           },
         },
       },
-      Members: true,
     },
   });
 
@@ -66,16 +66,8 @@ export async function GET(
       { status: 404 }
     );
   }
-  if (
-    family.ownerId !== session.user.id &&
-    !family.Members.some(
-      (m) => m.role === "ADMIN" && m.userId === session.user.id
-    )
-  ) {
-    return NextResponse.json(
-      { success: false, error: "No Permission" },
-      { status: 403 }
-    );
+  if (!member || !member.isAdmin) {
+    return CustomResponse.noPermission();
   }
 
   return NextResponse.json({ success: true, family: family });
@@ -89,9 +81,10 @@ export async function POST(
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json({ error: "Not Authorized" }, { status: 401 });
+    return CustomResponse.unauthorized();
   }
 
+  const member = await getMember(session.user.id, familyId);
   const family = await prisma.family.findFirst({
     where: {
       id: familyId,
@@ -105,20 +98,14 @@ export async function POST(
     },
     include: {
       Invites: true,
-      Members: true,
     },
   });
 
   if (!family) {
     return NextResponse.json({ error: "Family not found" }, { status: 404 });
   }
-  if (
-    family.ownerId !== session.user.id &&
-    !family.Members.some(
-      (m) => m.role === "ADMIN" && m.userId === session.user.id
-    )
-  ) {
-    return NextResponse.json({ error: "Not Authorized" }, { status: 403 });
+  if (!member || !member.isAdmin) {
+    return CustomResponse.noPermission();
   }
 
   const invite = await prisma.invite.create({

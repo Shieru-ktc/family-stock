@@ -1,4 +1,6 @@
 import { auth } from "@/auth";
+import { CustomResponse } from "@/errors";
+import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
 import { Member } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,10 +13,7 @@ export async function GET(
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json(
-      { success: false, error: "Not Authorized" },
-      { status: 401 }
-    );
+    return CustomResponse.unauthorized();
   }
 
   console.log(familyId);
@@ -54,10 +53,12 @@ export async function DELETE(
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json(
-      { success: false, error: "Not Authorized" },
-      { status: 401 }
-    );
+    return CustomResponse.unauthorized();
+  }
+
+  const member = await getMember(session.user.id, familyId);
+  if (!member || !member.isAdmin) {
+    return CustomResponse.noPermission();
   }
 
   const invite = await prisma.invite.findFirst({
@@ -70,11 +71,7 @@ export async function DELETE(
       },
     },
     include: {
-      Family: {
-        include: {
-          Members: true,
-        },
-      },
+      Family: true,
       CreatedBy: true,
     },
   });
@@ -82,18 +79,6 @@ export async function DELETE(
     return NextResponse.json(
       { success: false, error: "Invite not found" },
       { status: 404 }
-    );
-  }
-
-  if (
-    invite.Family.ownerId !== session.user.id &&
-    !invite.Family.Members.some(
-      (m: Member) => m.role === "ADMIN" && m.userId === session.user.id
-    )
-  ) {
-    return NextResponse.json(
-      { success: false, error: "No Permission" },
-      { status: 403 }
     );
   }
 
