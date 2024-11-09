@@ -2,10 +2,9 @@ import { createServer } from "node:http";
 import next from "next";
 import { Server } from "socket.io";
 import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
 import { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
-import { JWT } from "next-auth";
-import { SocketEvents } from "./socket/events";
+import { prisma } from "./lib/prisma";
+import ClientEventHandler from "./socket/client-events";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -32,9 +31,29 @@ app.prepare().then(() => {
       socket.emit("message", "Token not found");
       return socket.disconnect();
     }
+    const families = await prisma.family.findMany({
+      where: {
+        Members: {
+          some: {
+            User: {
+              id: token.sub,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
     socket.join(token.sub);
+    ClientEventHandler(socket, token.sub);
+    families.forEach((family) => {
+      socket.join(family.id);
+    });
     io.emit("message", `User ${token.sub} connected`);
   });
+
+  
 
   global.io = io;
 

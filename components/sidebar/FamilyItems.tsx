@@ -20,6 +20,7 @@ import { Skeleton } from "../ui/skeleton";
 import { socketAtom } from "@/atoms/socketAtom";
 import { useAtom } from "jotai";
 import { useState, useEffect } from "react";
+import { SocketEvents } from "@/socket/events";
 
 export default function FamilyItems() {
   const [socket] = useAtom(socketAtom);
@@ -40,19 +41,34 @@ export default function FamilyItems() {
   }, [data]);
 
   useEffect(() => {
-    socket.on("newFamily", (family: Family) => {
-      console.log(family);
-      setFamilies((prevFamilies) => {
-        if (prevFamilies === undefined) {
-          return [family];
-        } else {
-          return [...prevFamilies, family];
-        }
-      });
-    });
+    const unsubscribeCreated = SocketEvents.familyCreated.listen(
+      socket,
+      ({ family }) => {
+        setFamilies((prevFamilies) => {
+          if (prevFamilies === undefined) {
+            return [family];
+          } else {
+            return [...prevFamilies, family];
+          }
+        });
+      }
+    );
+    const unsubscribeDeleted = SocketEvents.familyDeleted.listen(
+      socket,
+      ({ family }) => {
+        setFamilies((prevFamilies) => {
+          if (prevFamilies === undefined) {
+            return undefined;
+          } else {
+            return prevFamilies.filter((f) => f.id !== family.id);
+          }
+        });
+      }
+    );
 
     return () => {
-      socket.off("newFamily");
+      unsubscribeCreated();
+      unsubscribeDeleted();
     };
   }, [socket]);
 

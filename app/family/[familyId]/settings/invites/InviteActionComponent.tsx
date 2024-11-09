@@ -59,7 +59,7 @@ export default function InviteActionComponent({
   return (
     <>
       <Dialog open={isEditOpen} onOpenChange={(open) => setIsEditOpen(open)}>
-        <DialogContent className="w-full">
+        <DialogContent className="w-full" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>招待リンクの詳細</DialogTitle>
           </DialogHeader>
@@ -96,7 +96,7 @@ export default function InviteActionComponent({
         open={isDeleteOpen}
         onOpenChange={(open) => setIsDeleteOpen(open)}
       >
-        <DialogContent className="w-full">
+        <DialogContent className="w-full" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>招待リンクの削除</DialogTitle>
           </DialogHeader>
@@ -105,7 +105,11 @@ export default function InviteActionComponent({
             に作成されたリンク
           </DialogDescription>
           <div className="flex flex-col space-y-4">
-            <p>本当に削除してもよろしいですか？</p>
+            <p>
+              削除された招待リンクは使用できなくなります。
+              <br />
+              本当に削除してもよろしいですか？
+            </p>
 
             <div className="flex space-x-4">
               <Button
@@ -117,7 +121,11 @@ export default function InviteActionComponent({
                 {deleteInvite.isPending && <Loader2 className="animate-spin" />}
                 削除
               </Button>
-              <Button onClick={() => setIsDeleteOpen(false)} variant="outline">
+              <Button
+                onClick={() => setIsDeleteOpen(false)}
+                variant="outline"
+                disabled={deleteInvite.isPending}
+              >
                 キャンセル
               </Button>
             </div>

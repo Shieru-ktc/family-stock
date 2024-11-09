@@ -5,7 +5,7 @@ export type StockItemWithMeta = StockItemWithPartialMeta & {
   Meta: { Family: Family };
 };
 export type StockItemWithFullMeta = StockItemWithMeta & {
-  Tags: StockItemTag[];
+  Meta: { Tags: StockItemTag[] };
 };
 export interface FailureResponse {
   success: false;

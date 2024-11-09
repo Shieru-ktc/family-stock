@@ -9,7 +9,7 @@ interface GetSuccess {
   success: true;
   family: Family & {
     Invites: (Invite & {
-      CreatedBy: User;
+      CreatedBy: User | null;
     })[];
   };
 }

@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { SocketEvents } from "@/socket/events";
 import {
   FailureResponse,
   StockItemWithPartialMeta,
@@ -136,6 +137,9 @@ export async function POST(
       },
     },
   });
+  SocketEvents.stockCreated(familyId).dispatch({
+    stock: {...createdItem, Meta: {Family: family, ...createdItem.Meta}},
+  }, global.io.in(familyId));
   return NextResponse.json({
     success: true,
     item: createdItem,
