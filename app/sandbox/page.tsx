@@ -1,6 +1,7 @@
 "use client";
 
 import { socketAtom } from "@/atoms/socketAtom";
+import StockItemModal from "@/components/StockItemModal";
 import { SocketEvents } from "@/socket/events";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -18,12 +19,7 @@ export default function HomePage() {
 
   return (
     <div>
-      Messages:
-      <ul>
-        {messages.map((message, index) => (
-          <li key={index}>{message}</li>
-        ))}
-      </ul>
+      <StockItemModal />
     </div>
   );
 }

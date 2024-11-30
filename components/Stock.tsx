@@ -2,9 +2,22 @@
 
 import { StockItemWithPartialMeta } from "@/types";
 import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCopy,
+  CopyPlus,
+  Edit2,
+  Menu,
+  Trash,
+} from "lucide-react";
 import { Socket } from "socket.io-client";
-import { SocketEvents } from "@/socket/events";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Stock({
   stock,
@@ -24,19 +37,48 @@ export default function Stock({
       <div className="p-2 flex-grow"></div>
 
       <div className="flex items-center">
-        <Button
-          variant="ghost"
-          onClick={() => onQuantityChange(stock.quantity - 1)}
-        >
-          <ChevronLeft />
-        </Button>
-        <span className="text-3xl">{stock.quantity}</span>
-        <Button
-          variant="ghost"
-          onClick={() => onQuantityChange(stock.quantity + 1)}
-        >
-          <ChevronRight />
-        </Button>
+        <div>
+          <Button
+            variant="ghost"
+            onClick={() => onQuantityChange(stock.quantity - 1)}
+          >
+            <ChevronLeft />
+          </Button>
+          <span className="text-3xl">{stock.quantity}</span>
+          <Button
+            variant="ghost"
+            onClick={() => onQuantityChange(stock.quantity + 1)}
+          >
+            <ChevronRight />
+          </Button>
+        </div>
+        <div>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side={"left"} sideOffset={5}>
+              <DropdownMenuItem>
+                <Edit2 />
+                編集
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <CopyPlus />
+                複製
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Trash />
+                削除
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <ClipboardCopy />
+                コピー
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </div>
   );

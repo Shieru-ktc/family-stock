@@ -2,6 +2,7 @@
 
 import { socketAtom } from "@/atoms/socketAtom";
 import Stock from "@/components/Stock";
+import StockItemModal from "@/components/StockItemModal";
 import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
@@ -106,6 +107,7 @@ export default function StocksPage({
       >
         <PackagePlus /> 新しいアイテムを追加
       </Button>
+      <StockItemModal />
       {isPending && <p>読み込み中...</p>}
       {stocks &&
         stocks.map((stock: StockItemWithPartialMeta) => (
