@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
-import { Member } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(

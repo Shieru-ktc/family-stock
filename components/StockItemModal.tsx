@@ -1,42 +1,33 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
+import { z } from "zod";
+import StockItemBaseForm from "./stock-item-form/StockItemBaseForm";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 
-export default function StockItemModal() {
+export default function StockItemModal({
+  open,
+  onOpenChange,
+  handleSubmit,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  handleSubmit: (data: z.infer<typeof StockItemFormSchema>) => void;
+}) {
   return (
-    <Dialog>
-      <DialogTrigger>Open</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>在庫アイテム</DialogTitle>
-
-          <div className="flex">
-            <Label className="w-[90%]">
-              アイテム名 <Input />
-            </Label>
-
-            <Label>
-              個数
-              <Input type="number" />
-            </Label>
-          </div>
-
-          <Label className="">
-            詳細説明
-            <Textarea rows={5} className="resize-none" />
-          </Label>
-          <Label>
-            価格
-            <Input inputMode="numeric" />
-          </Label>
-        </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex flex-col h-[80vh] min-w-[80vw]">
+        <DialogTitle>商品を追加</DialogTitle>
+        <StockItemBaseForm
+          handleSubmit={handleSubmit}
+          defaultValues={{
+            name: "",
+            description: "",
+            unit: "個",
+            price: 0,
+            quantity: 0,
+            step: 1,
+            threshold: 0,
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -6,10 +6,12 @@ import StockItemModal from "@/components/StockItemModal";
 import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
+import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { PackagePlus } from "lucide-react";
 import { use, useEffect, useState } from "react";
+import { z } from "zod";
 
 export default function StocksPage({
   params,
@@ -34,6 +36,7 @@ export default function StocksPage({
   const [stocks, setStocks] = useState<StockItemWithFullMeta[] | undefined>(
     undefined
   );
+  const [open, setOpen] = useState(false);
 
   const { data, isPending } = useQuery({
     queryKey: ["family", familyId, "stocks"],
@@ -99,15 +102,22 @@ export default function StocksPage({
       setStocks(data.items);
     }
   }, [data]);
+
+  function handleCreateNewStockItem(item: z.infer<typeof StockItemFormSchema>) {
+    createNewStockItem.mutate({ item: item });
+    setOpen(false);
+  }
   return (
     <div>
       <h1 className="text-2xl">在庫リスト</h1>
-      <Button
-        onClick={() => createNewStockItem.mutate({ item: { name: "test" } })}
-      >
+      <Button onClick={() => setOpen(true)}>
         <PackagePlus /> 新しいアイテムを追加
       </Button>
-      <StockItemModal />
+      <StockItemModal
+        open={open}
+        onOpenChange={(open) => setOpen(open)}
+        handleSubmit={handleCreateNewStockItem}
+      />
       {isPending && <p>読み込み中...</p>}
       {stocks &&
         stocks.map((stock: StockItemWithPartialMeta) => (
