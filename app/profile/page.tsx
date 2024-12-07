@@ -5,7 +5,6 @@ export default async function ProfilePage() {
   return (
     <div>
       <h1>{session?.user.name}'s Profile</h1>
-      <p>Current role: {session?.user.role}</p>
     </div>
   );
 }

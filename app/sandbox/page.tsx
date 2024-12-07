@@ -4,7 +4,6 @@ import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 
 import { socketAtom } from "@/atoms/socketAtom";
-import StockItemModal from "@/components/StockItemModal";
 import { SocketEvents } from "@/socket/events";
 
 export default function HomePage() {
@@ -18,9 +17,5 @@ export default function HomePage() {
     });
   }, [socket]);
 
-  return (
-    <div>
-      <StockItemModal />
-    </div>
-  );
+  return <div></div>;
 }

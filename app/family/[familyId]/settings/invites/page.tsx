@@ -6,15 +6,16 @@ import React from "react";
 import { GetResponse } from "@/app/api/family/[familyId]/invites/route";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 
+import { dummyUser } from "@/lib/dummy";
 import InviteActionComponent from "./InviteActionComponent";
 
 export default function InvitesPage({
@@ -61,9 +62,13 @@ export default function InvitesPage({
               <TableRow key={invite.id}>
                 <TableCell>{invite.id}</TableCell>
                 <TableCell>{invite.createdAt.toLocaleString()}</TableCell>
-                <TableCell>{invite.CreatedBy.name}</TableCell>
+                <TableCell>{(invite.CreatedBy ?? dummyUser()).name}</TableCell>
                 <InviteActionComponent
-                  invite={{ ...invite, Family: data.family }}
+                  invite={{
+                    ...invite,
+                    Family: data.family,
+                    CreatedBy: invite.CreatedBy ?? dummyUser(),
+                  }}
                 />
               </TableRow>
             ))}
