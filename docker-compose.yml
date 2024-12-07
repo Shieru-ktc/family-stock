@@ -10,6 +10,8 @@ services:
     environment:
       DATABASE_URL: postgres://family-stock:password@db:5432/family-stock
       NEXTAUTH_URL: https://stocks.shieru-lab.com
+      HOST: "0.0.0.0"
+      PORT: 3000
 
   db:
     image: postgres:13
