@@ -1,7 +1,7 @@
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { CircleX, TriangleAlert } from "lucide-react";
+import { CircleX } from "lucide-react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 
 export default async function ErrorPage({
   searchParams,

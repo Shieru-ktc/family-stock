@@ -1,26 +1,28 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-} from "../ui/sidebar";
 import { Family } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import { Box, ChevronDown, Cog, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { Skeleton } from "../ui/skeleton";
+import { useEffect, useState } from "react";
+
 import { socketAtom } from "@/atoms/socketAtom";
-import { useAtom } from "jotai";
-import { useState, useEffect } from "react";
 import { SocketEvents } from "@/socket/events";
+
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger
+} from "../ui/collapsible";
+import {
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton
+} from "../ui/sidebar";
+import { Skeleton } from "../ui/skeleton";
 
 export default function FamilyItems() {
   const [socket] = useAtom(socketAtom);

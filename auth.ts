@@ -1,4 +1,4 @@
-import Github from "next-auth/providers/github";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   GetServerSidePropsContext,
   NextApiRequest,
@@ -6,8 +6,8 @@ import {
 } from "next";
 import { getServerSession, NextAuthOptions } from "next-auth";
 import Discord from "next-auth/providers/discord";
+import Github from "next-auth/providers/github";
 import { prisma } from "./lib/prisma";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 
 const {
   GITHUB_ID,

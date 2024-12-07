@@ -1,10 +1,11 @@
+import { Member } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
 import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
-import { Member } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
@@ -23,7 +24,7 @@ export async function GET(
       Members: {
         some: {
           User: {
-            id: session?.user.id,
+            id: session.user.id,
           },
         },
       },

@@ -1,7 +1,9 @@
 import { z } from "zod";
-import StockItemBaseForm from "./stock-item-form/StockItemBaseForm";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
+
+import StockItemBaseForm from "./stock-item-form/StockItemBaseForm";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
 export default function StockItemModal({
   open,

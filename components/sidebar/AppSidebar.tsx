@@ -1,15 +1,17 @@
-import { Sidebar, SidebarMenuItem } from "@/components/ui/sidebar";
-import { auth } from "@/auth";
 import { Cog, Plus, User, UserPlus } from "lucide-react";
-import {
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarGroupLabel,
-} from "../ui/sidebar";
 import Link from "next/link";
+
+import { auth } from "@/auth";
+import { Sidebar, SidebarMenuItem } from "@/components/ui/sidebar";
+
+import {
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton
+} from "../ui/sidebar";
 import FamilyItems from "./FamilyItems";
 import { SignInItem, SignOutItem } from "./SignButtons";
 

@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req: req as any, secret: process.env.SECRET });

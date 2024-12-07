@@ -1,8 +1,9 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   const session = await auth();
@@ -33,14 +34,14 @@ export async function POST(req: NextRequest) {
         create: {
           User: {
             connect: {
-              id: session?.user.id,
+              id: session.user.id,
             },
           },
         },
       },
       Owner: {
         connect: {
-          id: session?.user.id,
+          id: session.user.id,
         },
       },
     },

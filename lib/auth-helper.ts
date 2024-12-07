@@ -1,7 +1,8 @@
 "use server";
 
-import { prisma } from "./prisma";
 import { Family, Member } from "@prisma/client";
+
+import { prisma } from "./prisma";
 
 export default async function getMember(
   userId: string,

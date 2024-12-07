@@ -1,8 +1,9 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,

@@ -1,8 +1,9 @@
 "use server";
 
+import { Family, Invite, Member } from "@prisma/client";
+
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { Family, Invite, Member } from "@prisma/client";
 
 export async function DeleteInvite(
   invite: Invite & { Family: Family & { Members: Member[] } }

@@ -1,18 +1,18 @@
+import { Member, MemberRole } from "@prisma/client";
+
 import { auth } from "@/auth";
-import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
-import { Member, MemberRole } from "@prisma/client";
-import { DeleteIcon, Edit2, PlusCircle, Trash2 } from "lucide-react";
+
 import AddMember from "./AddMember";
 import MemberActionComponent from "./MemberAction";
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/prisma";
 import { Member, User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
+
+import { Button } from "@/components/ui/button";
 
 export default function FamilySettingsPage({
   params,

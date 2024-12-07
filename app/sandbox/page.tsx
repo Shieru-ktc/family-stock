@@ -1,10 +1,11 @@
 "use client";
 
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
+
 import { socketAtom } from "@/atoms/socketAtom";
 import StockItemModal from "@/components/StockItemModal";
 import { SocketEvents } from "@/socket/events";
-import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [messages, setMessages] = useState<string[]>([]);

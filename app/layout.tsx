@@ -1,10 +1,13 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/sidebar/AppSidebar";
+
 import NavBar from "@/components/navbar/Navbar";
+import AppSidebar from "@/components/sidebar/AppSidebar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
 import Providers from "./providers";
 
 const notoSansJP = localFont({

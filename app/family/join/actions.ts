@@ -1,8 +1,9 @@
 "use server";
 
+import { Family, Invite, Member } from "@prisma/client";
+
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { Family, Invite, Member } from "@prisma/client";
 
 interface StatusSuccess {
   success: true;
@@ -63,7 +64,7 @@ export async function joinInvite(link: string): Promise<ValidateStatus> {
   }
   const checkResult = await checkInvite(link);
 
-  if (checkResult.success === false) {
+  if (!checkResult.success) {
     return checkResult;
   }
 

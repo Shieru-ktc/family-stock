@@ -1,8 +1,9 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-import { SessionProvider } from "@/components/SessionProvider";
 import { FaDiscord, FaGithub } from "react-icons/fa";
+
+import { SessionProvider } from "@/components/SessionProvider";
+import { Button } from "@/components/ui/button";
 
 function AuthButtons() {
   const { data: session, status } = useSession();
@@ -11,7 +12,7 @@ function AuthButtons() {
     <>
       {status === "authenticated" ? (
         <div>
-          <p>ログイン中: {session.user?.name}</p>
+          <p>ログイン中: {session.user.name}</p>
         </div>
       ) : (
         <>

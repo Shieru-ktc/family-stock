@@ -1,7 +1,7 @@
+import { ReactNode } from "react";
+
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import React from "react";
-import { ReactNode } from "react";
 
 export default async function FamilyPageLayout({
   children,

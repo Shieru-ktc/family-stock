@@ -1,20 +1,21 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import InviteActionComponent from "./InviteActionComponent";
 import { useQuery } from "@tanstack/react-query";
-import { Family, Invite, User } from "@prisma/client";
 import React from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { GetResponse } from "@/app/api/family/[familyId]/invites/route";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table";
+
+import InviteActionComponent from "./InviteActionComponent";
 
 export default function InvitesPage({
   params,

@@ -1,8 +1,9 @@
 "use client";
 
-import { LogOut, LogIn } from "lucide-react";
+import { LogIn, LogOut } from "lucide-react";
 import { signIn, signOut } from "next-auth/react";
-import { SidebarMenuItem, SidebarMenuButton } from "../ui/sidebar";
+
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 export function SignInItem() {
   return (

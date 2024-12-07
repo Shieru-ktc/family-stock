@@ -1,18 +1,19 @@
 "use client";
 
+import { Family } from "@prisma/client";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { TableCell } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Family } from "@prisma/client";
-import { Plus, PlusCircle } from "lucide-react";
-import { useState } from "react";
 
 export default function AddMember({ family }: { family: Family }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function AddMember({ family }: { family: Family }) {
   }
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
+      <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>メンバーを追加する</DialogTitle>
@@ -66,7 +67,7 @@ export default function AddMember({ family }: { family: Family }) {
       <TableCell
         colSpan={4}
         className="items-center space-x-5 cursor-pointer"
-        onClick={() => setIsOpen(true)}
+        onClick={() => { setIsOpen(true); }}
       >
         <div className="flex items-center space-x-5">
           <Plus />

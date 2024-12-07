@@ -1,23 +1,24 @@
 "use client";
 
+import { Family, Invite, User } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+
+import { getQueryClient } from "@/app/get-query-client";
 import ActionButtons from "@/components/ActionButtons";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { TableCell } from "@/components/ui/table";
-import { Family, Invite, Member, User } from "@prisma/client";
-import { FormEvent, useState } from "react";
 import { Label } from "@/components/ui/label";
-import { DeleteInvite } from "./actions";
-import { useMutation } from "@tanstack/react-query";
-import { getQueryClient } from "@/app/get-query-client";
-import { Loader2 } from "lucide-react";
+import { TableCell } from "@/components/ui/table";
+
 
 export default function InviteActionComponent({
   invite,
@@ -58,7 +59,7 @@ export default function InviteActionComponent({
 
   return (
     <>
-      <Dialog open={isEditOpen} onOpenChange={(open) => setIsEditOpen(open)}>
+      <Dialog open={isEditOpen} onOpenChange={(open) => { setIsEditOpen(open); }}>
         <DialogContent className="w-full" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>招待リンクの詳細</DialogTitle>
@@ -94,7 +95,7 @@ export default function InviteActionComponent({
       </Dialog>
       <Dialog
         open={isDeleteOpen}
-        onOpenChange={(open) => setIsDeleteOpen(open)}
+        onOpenChange={(open) => { setIsDeleteOpen(open); }}
       >
         <DialogContent className="w-full" showCloseButton={false}>
           <DialogHeader>
@@ -122,7 +123,7 @@ export default function InviteActionComponent({
                 削除
               </Button>
               <Button
-                onClick={() => setIsDeleteOpen(false)}
+                onClick={() => { setIsDeleteOpen(false); }}
                 variant="outline"
                 disabled={deleteInvite.isPending}
               >

@@ -1,8 +1,7 @@
 import { Server } from "socket.io";
-import SocketManager from "./app/socketServer";
 
 // global.d.ts
-export {};
+export { };
 
 declare global {
   var io: Server;

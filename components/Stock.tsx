@@ -1,22 +1,24 @@
 "use client";
 
-import { StockItemWithPartialMeta } from "@/types";
-import { Button } from "./ui/button";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ClipboardCopy,
-  CopyPlus,
-  Edit2,
-  Menu,
-  Trash,
+    ChevronLeft,
+    ChevronRight,
+    ClipboardCopy,
+    CopyPlus,
+    Edit2,
+    Menu,
+    Trash
 } from "lucide-react";
 import { Socket } from "socket.io-client";
+
+import { StockItemWithPartialMeta } from "@/types";
+
+import { Button } from "./ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
 } from "./ui/dropdown-menu";
 
 export default function Stock({
@@ -40,14 +42,14 @@ export default function Stock({
         <div>
           <Button
             variant="ghost"
-            onClick={() => onQuantityChange(stock.quantity - 1)}
+            onClick={() => { onQuantityChange(stock.quantity - 1); }}
           >
             <ChevronLeft />
           </Button>
           <span className="text-3xl">{stock.quantity}</span>
           <Button
             variant="ghost"
-            onClick={() => onQuantityChange(stock.quantity + 1)}
+            onClick={() => { onQuantityChange(stock.quantity + 1); }}
           >
             <ChevronRight />
           </Button>

@@ -1,5 +1,11 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { PackagePlus } from "lucide-react";
+import { use, useEffect, useState } from "react";
+import { z } from "zod";
+
 import { socketAtom } from "@/atoms/socketAtom";
 import Stock from "@/components/Stock";
 import StockItemModal from "@/components/StockItemModal";
@@ -7,11 +13,6 @@ import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAtom } from "jotai";
-import { PackagePlus } from "lucide-react";
-import { use, useEffect, useState } from "react";
-import { z } from "zod";
 
 export default function StocksPage({
   params,
@@ -110,12 +111,12 @@ export default function StocksPage({
   return (
     <div>
       <h1 className="text-2xl">在庫リスト</h1>
-      <Button onClick={() => setOpen(true)}>
+      <Button onClick={() => { setOpen(true); }}>
         <PackagePlus /> 新しいアイテムを追加
       </Button>
       <StockItemModal
         open={open}
-        onOpenChange={(open) => setOpen(open)}
+        onOpenChange={(open) => { setOpen(open); }}
         handleSubmit={handleCreateNewStockItem}
       />
       {isPending && <p>読み込み中...</p>}

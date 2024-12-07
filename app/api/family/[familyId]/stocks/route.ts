@@ -1,14 +1,14 @@
+import { Family } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
 import {
-  FailureResponse,
-  StockItemWithPartialMeta,
-  SuccessResponse,
+    FailureResponse,
+    StockItemWithPartialMeta,
+    SuccessResponse
 } from "@/types";
-import { Family, StockItem } from "@prisma/client";
-import { connect } from "http2";
-import { NextRequest, NextResponse } from "next/server";
 
 export type StocksGetResponse =
   | ({
@@ -57,7 +57,7 @@ export async function GET(
   }
   const items = await prisma.stockItem.findMany({
     where: {
-      familyId: family?.id ?? "",
+      familyId: family.id ?? "",
     },
     include: {
       Meta: {
@@ -93,7 +93,7 @@ export async function POST(
       Members: {
         some: {
           User: {
-            id: session?.user.id,
+            id: session.user.id,
           },
         },
       },

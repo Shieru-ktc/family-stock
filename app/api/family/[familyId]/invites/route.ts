@@ -1,9 +1,10 @@
+import { Family, Invite, User } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
 import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
-import { Family, Invite, Member, User } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
 
 interface GetSuccess {
   success: true;
@@ -40,7 +41,7 @@ export async function GET(
       Members: {
         some: {
           User: {
-            id: session?.user.id,
+            id: session.user.id,
           },
         },
       },
@@ -91,7 +92,7 @@ export async function POST(
       Members: {
         some: {
           User: {
-            id: session?.user.id,
+            id: session.user.id,
           },
         },
       },

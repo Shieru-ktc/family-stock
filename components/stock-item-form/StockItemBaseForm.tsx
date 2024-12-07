@@ -1,22 +1,24 @@
 "use client";
 
-import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
+
+import RenderFormItem from "../RenderFormItem";
+import { Button } from "../ui/button";
 import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import RenderFormItem from "../RenderFormItem";
 
 export default function StockItemBaseForm({
   handleSubmit,

@@ -1,19 +1,16 @@
 "use client";
 
-import ActionButtons from "@/components/ActionButtons";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { TableCell } from "@/components/ui/table";
 import { Family, Member } from "@prisma/client";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { link } from "fs";
 import { useState } from "react";
+
+import ActionButtons from "@/components/ActionButtons";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
+import { TableCell } from "@/components/ui/table";
 
 export default function MemberActionComponent({
   family,
@@ -34,7 +31,7 @@ export default function MemberActionComponent({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
+      <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>メンバーの編集</DialogTitle>

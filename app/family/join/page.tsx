@@ -1,9 +1,11 @@
 "use client";
 
+import { FormEvent, useState } from "react";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, FormEvent } from "react";
+
 import { checkInvite, joinInvite, ValidateStatus } from "./actions";
 
 export default function FamilyJoinPage() {
@@ -42,7 +44,7 @@ export default function FamilyJoinPage() {
         <Button type="submit">招待リンクを確認</Button>
       </form>
       {fetchStatus &&
-        (fetchStatus?.success ? (
+        (fetchStatus.success ? (
           <Alert>
             <AlertTitle>
               ファミリー {fetchStatus.invite.Family.name} に招待されています。
@@ -57,7 +59,7 @@ export default function FamilyJoinPage() {
             </AlertDescription>
           </Alert>
         ) : (
-          <Alert variant="destructive">{fetchStatus?.message}</Alert>
+          <Alert variant="destructive">{fetchStatus.message}</Alert>
         ))}
     </div>
   );
