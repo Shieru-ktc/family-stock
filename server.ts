@@ -7,8 +7,8 @@ import { prisma } from "./lib/prisma";
 import ClientEventHandler from "./socket/client-events";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 3000;
+const hostname = process.env.HOSTNAME || "localhost";
+const port = parseInt(process.env.PORT || "3000", 10);
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port, turbo: true });
 const handler = app.getRequestHandler();
