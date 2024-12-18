@@ -1,19 +1,33 @@
 import { StockItemWithFullMeta } from "@/types";
 import { Family, StockItem } from "@prisma/client";
 
+/**
+ * Socketによって管理されるイベントを表すクラス。これにより、リスナーが受け取るデータの型を定義し、保証することができます。
+ * 型定義による恩恵を受けるためのユーティリティーです。
+ * @template T イベントが発火する際に渡されるデータの型
+ */
 export class SocketEvent<T> {
   name: string;
-  params: any[];
 
-  constructor(name: string, ...params: any[]) {
+  constructor(name: string) {
     this.name = name;
-    this.params = params;
   }
 
-  dispatch(data: T, emit: { emit: (event: string, data: T) => void }) {
+  /**
+   * イベントを発火し、listenしている関数にデータを渡します。
+   * @param data 渡すデータの型。
+   * @param emit イベントを発火するために使用するemit-ableなオブジェクト。
+   */
+  dispatch(data: T, emit: { emit: (event: string, data: any) => void }) {
     emit.emit(this.name, data);
   }
 
+  /**
+   * dispatchされたイベントをlistenします。
+   * @param socket on及びoffメソッドを持つsocketオブジェクト。
+   * @param callback イベントが発火した際に呼び出されるコールバック関数。dispatchによって渡されたデータが引数として渡されます。
+   * @returns イベントリスナーを解除するための関数。useEffectのクリーンアップ関数として使用することを想定しています。
+   */
   listen(
     socket: {
       on: (ev: string, listener: (data: any) => void) => void;
@@ -29,24 +43,38 @@ export class SocketEvent<T> {
 }
 
 export const SocketEvents = {
+  // Server-side events
+  // サーバーが発火し、クライアントがリッスンするイベント
+
+  /** ユーザーがファミリーを作成または参加したことによって、利用可能なファミリーが追加されたときに発火されるイベント */
   familyCreated: new SocketEvent<{ family: Family }>("family-created"),
+  /** ユーザーがファミリーを削除した、またはキックされたことによって、ファミリーが利用できなくなったときに発火されるイベント */
   familyDeleted: new SocketEvent<{ family: Family }>("family-deleted"),
+
+  /** 新しい在庫アイテムが作成された際に発火されるイベント。 */
   stockCreated: (familyId: string) =>
     new SocketEvent<{ stock: StockItemWithFullMeta }>(
       `stock-created-${familyId}`
     ),
+  /** 在庫アイテムが更新された際に発火されるイベント。 */
   stockUpdated: (familyId: string) =>
     new SocketEvent<{ stock: StockItemWithFullMeta }>(
       `stock-updated-${familyId}`
     ),
+  /** 在庫アイテムが削除された際に発火されるイベント。 */
   stockDeleted: (familyId: string) =>
     new SocketEvent<{ stockId: string }>(`stock-deleted-${familyId}`),
+  /** 在庫の数量が変更された際に発火されるイベント。 */
   stockQuantityChanged: new SocketEvent<{ stock: StockItem }>(
     "stock-quantity-changed"
   ),
+  /** テスト用のイベント */
   testEvent: new SocketEvent<{ message: string }>("test-event"),
 
   // Client-side
+  // クライアントが発火し、サーバーがリッスンするイベント
+
+  /** クライアントが在庫の数量を変更した際に発火されるイベント。 */
   clientStockQuantityChanged: new SocketEvent<{
     stockId: string;
     quantity: number;

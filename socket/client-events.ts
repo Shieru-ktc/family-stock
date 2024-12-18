@@ -1,8 +1,12 @@
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { prisma } from "../lib/prisma";
 import { SocketEvents } from "./events";
 
-export default function ClientEventHandler(socket: Socket, userId: string) {
+export default function ClientEventHandler(
+  io: Server,
+  socket: Socket,
+  userId: string
+) {
   SocketEvents.clientStockQuantityChanged.listen(socket, (data) => {
     console.log(data);
     prisma.stockItem
@@ -28,7 +32,7 @@ export default function ClientEventHandler(socket: Socket, userId: string) {
           {
             stock,
           },
-          global.io.in(stock.familyId)
+          io.in(stock.familyId)
         );
       });
   });

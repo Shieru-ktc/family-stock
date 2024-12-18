@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export default function SettingsNavLink() {
-  const pathname = usePathname().split("/").pop() ?? "";
+  const pathname = usePathname()?.split("/").pop() ?? "";
 
   function LinkTab({ href, children }: { href: string; children: ReactNode }) {
     return (
