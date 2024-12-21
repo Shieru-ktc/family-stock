@@ -1,4 +1,4 @@
-import { FormItem, FormLabel, FormMessage } from "./ui/form";
+import { FormControl, FormItem, FormLabel, FormMessage } from "./ui/form";
 
 interface FormComponentProps {
   label: string;
@@ -9,7 +9,7 @@ export default function FormComponent({ label, children }: FormComponentProps) {
   return (
     <FormItem>
       <FormLabel>{label}</FormLabel>
-      {children}
+      <FormControl>{children}</FormControl>
       <FormMessage />
     </FormItem>
   );

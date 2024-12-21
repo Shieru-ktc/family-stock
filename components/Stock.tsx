@@ -25,15 +25,17 @@ export default function Stock({
   stock,
   socket,
   onQuantityChange,
+  onEdit,
   onDelete,
 }: {
   stock: StockItemWithPartialMeta;
   socket: Socket;
   onQuantityChange: (quantity: number) => void;
+  onEdit: () => void;
   onDelete: () => void;
 }) {
   return (
-    <div className="flex p-4 shadow-xl rounded-md border-slate-200 border m-2 items-center">
+    <div className="flex p-4 shadow-xl rounded-md border-slate-200 dark:border-slate-800 border m-2 items-center">
       <div className="p-2">
         <h2 className="text-xl font-bold">{stock.Meta.name}</h2>
         <div>{stock.id}</div>
@@ -68,7 +70,7 @@ export default function Stock({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side={"left"} sideOffset={5}>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onEdit}>
                 <Edit2 />
                 編集
               </DropdownMenuItem>

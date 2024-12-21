@@ -27,7 +27,10 @@ function BasicOptions({
         />
       </FormComponent>
       <FormComponent label="個数">
-        <Input {...form.register("quantity")} type="number" />
+        <Input
+          {...form.register("quantity", { valueAsNumber: true })}
+          inputMode="numeric"
+        />
       </FormComponent>
     </>
   );
@@ -79,13 +82,22 @@ export default function StockItemBaseForm({
               />
             </FormComponent>
             <FormComponent label="価格">
-              <Input {...form.register("price")} type="number" />
+              <Input
+                {...form.register("price", { valueAsNumber: true })}
+                type="number"
+              />
             </FormComponent>
             <FormComponent label="ステップ">
-              <Input {...form.register("step")} type="number" />
+              <Input
+                {...form.register("step", { valueAsNumber: true })}
+                type="number"
+              />
             </FormComponent>
             <FormComponent label="閾値">
-              <Input {...form.register("threshold")} type="number" />
+              <Input
+                {...form.register("threshold", { valueAsNumber: true })}
+                type="number"
+              />
             </FormComponent>
           </TabsContent>
         </Tabs>

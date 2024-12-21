@@ -6,12 +6,14 @@ import { PackagePlus } from "lucide-react";
 import { use, useEffect, useState } from "react";
 import { z } from "zod";
 
+import { StocksPostRequest } from "@/app/api/family/[familyId]/stocks/route";
 import { socketAtom } from "@/atoms/socketAtom";
 import Stock from "@/components/Stock";
-import StockItemModal from "@/components/StockItemModal";
+import StockItemCreateModal from "@/components/StockItemCreateModal";
+import StockItemEditModal from "@/components/StockItemEditModal";
 import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
-import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
+import { StockItemWithFullMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 
 export default function StocksPage({
@@ -22,7 +24,7 @@ export default function StocksPage({
   const { familyId } = use(params);
   const useCreateNewStockItem = () =>
     useMutation({
-      mutationFn: (stock: { item: { name: string } }) => {
+      mutationFn: (stock: StocksPostRequest) => {
         return fetch(`/api/family/${familyId}/stocks`, {
           method: "POST",
           body: JSON.stringify(stock),
@@ -32,12 +34,29 @@ export default function StocksPage({
         });
       },
     });
+  const useEditStockItem = () =>
+    useMutation({
+      mutationFn: (stock: { item: { id: string } } & StocksPostRequest) => {
+        return fetch(`/api/family/${familyId}/stocks`, {
+          method: "PATCH",
+          body: JSON.stringify(stock),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      },
+    });
   const createNewStockItem = useCreateNewStockItem();
+  const editItem = useEditStockItem();
   const [socket] = useAtom(socketAtom);
   const [stocks, setStocks] = useState<StockItemWithFullMeta[] | undefined>(
     undefined
   );
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editStock, setEditStock] = useState<StockItemWithFullMeta | undefined>(
+    undefined
+  );
 
   const { data, isPending } = useQuery({
     queryKey: ["family", familyId, "stocks"],
@@ -79,6 +98,24 @@ export default function StocksPage({
         });
       }
     );
+    const unsubscribeEdited = SocketEvents.stockUpdated(familyId).listen(
+      socket,
+      (data) => {
+        setStocks((prevStocks) => {
+          if (prevStocks === undefined) {
+            return [];
+          } else {
+            return prevStocks.map((stock) => {
+              if (stock.id === data.stock.id) {
+                return data.stock;
+              } else {
+                return stock;
+              }
+            });
+          }
+        });
+      }
+    );
     const unsubscribeDeleted = SocketEvents.stockDeleted(familyId).listen(
       socket,
       (data) => {
@@ -93,6 +130,7 @@ export default function StocksPage({
     );
     return () => {
       unsubscribeCreated();
+      unsubscribeEdited();
       unsubscribeDeleted();
       unsubscribeQuantityChanged();
     };
@@ -108,6 +146,18 @@ export default function StocksPage({
     createNewStockItem.mutate({ item: item });
     setOpen(false);
   }
+
+  function handleEditStockItem(item: z.infer<typeof StockItemFormSchema>) {
+    editItem.mutate({
+      item: {
+        ...item,
+        id: editStock?.id!,
+      },
+    });
+    setEditOpen(false);
+    setEditStock(undefined);
+  }
+
   return (
     <div>
       <h1 className="text-2xl">在庫リスト</h1>
@@ -118,16 +168,27 @@ export default function StocksPage({
       >
         <PackagePlus /> 新しいアイテムを追加
       </Button>
-      <StockItemModal
+      <StockItemCreateModal
         open={open}
         onOpenChange={(open) => {
           setOpen(open);
         }}
         handleSubmit={handleCreateNewStockItem}
       />
+      {editStock && (
+        <StockItemEditModal
+          open={editOpen}
+          onOpenChange={(open) => {
+            setEditOpen(open);
+          }}
+          stock={editStock!}
+          handleSubmit={handleEditStockItem}
+        />
+      )}
+
       {isPending && <p>読み込み中...</p>}
       {stocks &&
-        stocks.map((stock: StockItemWithPartialMeta) => (
+        stocks.map((stock: StockItemWithFullMeta) => (
           <Stock
             key={stock.id}
             stock={stock}
@@ -140,6 +201,10 @@ export default function StocksPage({
                 },
                 socket
               );
+            }}
+            onEdit={() => {
+              setEditStock(stock);
+              setEditOpen(true);
             }}
             onDelete={() => {
               SocketEvents.clientStockDeleted.dispatch(

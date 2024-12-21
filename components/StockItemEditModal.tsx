@@ -2,32 +2,36 @@ import { z } from "zod";
 
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 
+import { StockItemWithFullMeta } from "@/types";
 import StockItemBaseForm from "./stock-item-form/StockItemBaseForm";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
-export default function StockItemModal({
+export default function StockItemEditModal({
   open,
+  stock,
   onOpenChange,
   handleSubmit,
 }: {
   open?: boolean;
+  stock: StockItemWithFullMeta;
   onOpenChange?: (open: boolean) => void;
   handleSubmit: (data: z.infer<typeof StockItemFormSchema>) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex flex-col h-[80vh] min-w-[80vw]">
-        <DialogTitle>商品を追加</DialogTitle>
+        <DialogTitle>商品を編集</DialogTitle>
+        <p>{stock.id}</p>
         <StockItemBaseForm
           handleSubmit={handleSubmit}
           defaultValues={{
-            name: "",
-            description: "",
-            unit: "個",
-            price: 0,
-            quantity: 0,
-            step: 1,
-            threshold: 0,
+            name: stock.Meta.name,
+            description: stock.Meta.description,
+            unit: stock.Meta.unit,
+            price: stock.Meta.price,
+            quantity: stock.quantity,
+            step: stock.Meta.step,
+            threshold: stock.Meta.threshold,
           }}
         />
       </DialogContent>

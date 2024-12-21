@@ -4,7 +4,9 @@ export const StockItemFormSchema = z.object({
   name: z.string({
     required_error: "商品名を入力してください",
   }),
-  description: z.string().optional(),
+  description: z.string({
+    required_error: "商品の説明を入力してください",
+  }),
   unit: z.string({
     required_error: "単位を入力してください",
   }),

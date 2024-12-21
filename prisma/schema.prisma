@@ -150,7 +150,7 @@ model StockItemMeta {
   createdAt DateTime @default(now())
 
   name        String
-  description String
+  description String @default("")
   unit        String
   price       Float
   step        Int
@@ -169,7 +169,7 @@ model StockItemTag {
   createdAt DateTime @default(now())
 
   name        String
-  description String
+  description String @default("")
   color       String
   familyId    String
 
