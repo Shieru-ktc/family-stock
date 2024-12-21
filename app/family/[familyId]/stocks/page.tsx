@@ -111,12 +111,18 @@ export default function StocksPage({
   return (
     <div>
       <h1 className="text-2xl">在庫リスト</h1>
-      <Button onClick={() => { setOpen(true); }}>
+      <Button
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
         <PackagePlus /> 新しいアイテムを追加
       </Button>
       <StockItemModal
         open={open}
-        onOpenChange={(open) => { setOpen(open); }}
+        onOpenChange={(open) => {
+          setOpen(open);
+        }}
         handleSubmit={handleCreateNewStockItem}
       />
       {isPending && <p>読み込み中...</p>}
@@ -131,6 +137,14 @@ export default function StocksPage({
                 {
                   stockId: stock.id,
                   quantity: quantity,
+                },
+                socket
+              );
+            }}
+            onDelete={() => {
+              SocketEvents.clientStockDeleted.dispatch(
+                {
+                  stockId: stock.id,
                 },
                 socket
               );

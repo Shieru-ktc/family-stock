@@ -1,13 +1,13 @@
 "use client";
 
 import {
-    ChevronLeft,
-    ChevronRight,
-    ClipboardCopy,
-    CopyPlus,
-    Edit2,
-    Menu,
-    Trash
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCopy,
+  CopyPlus,
+  Edit2,
+  Menu,
+  Trash,
 } from "lucide-react";
 import { Socket } from "socket.io-client";
 
@@ -15,20 +15,22 @@ import { StockItemWithPartialMeta } from "@/types";
 
 import { Button } from "./ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
 export default function Stock({
   stock,
   socket,
   onQuantityChange,
+  onDelete,
 }: {
   stock: StockItemWithPartialMeta;
   socket: Socket;
   onQuantityChange: (quantity: number) => void;
+  onDelete: () => void;
 }) {
   return (
     <div className="flex p-4 shadow-xl rounded-md border-slate-200 border m-2 items-center">
@@ -42,14 +44,18 @@ export default function Stock({
         <div>
           <Button
             variant="ghost"
-            onClick={() => { onQuantityChange(stock.quantity - 1); }}
+            onClick={() => {
+              onQuantityChange(stock.quantity - 1);
+            }}
           >
             <ChevronLeft />
           </Button>
           <span className="text-3xl">{stock.quantity}</span>
           <Button
             variant="ghost"
-            onClick={() => { onQuantityChange(stock.quantity + 1); }}
+            onClick={() => {
+              onQuantityChange(stock.quantity + 1);
+            }}
           >
             <ChevronRight />
           </Button>
@@ -70,7 +76,7 @@ export default function Stock({
                 <CopyPlus />
                 複製
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onDelete}>
                 <Trash />
                 削除
               </DropdownMenuItem>

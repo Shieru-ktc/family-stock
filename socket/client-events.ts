@@ -36,4 +36,30 @@ export default function ClientEventHandler(
         );
       });
   });
+
+  SocketEvents.clientStockDeleted.listen(socket, (data) => {
+    prisma.stockItem
+      .delete({
+        where: {
+          id: data.stockId,
+          Family: {
+            Members: {
+              some: {
+                User: {
+                  id: userId,
+                },
+              },
+            },
+          },
+        },
+      })
+      .then((stock) => {
+        SocketEvents.stockDeleted(stock.familyId).dispatch(
+          {
+            stockId: stock.id,
+          },
+          io.in(stock.familyId)
+        );
+      });
+  });
 }

@@ -5,6 +5,8 @@ import { getToken } from "next-auth/jwt";
 import { RequestCookies } from "next/dist/server/web/spec-extension/cookies";
 import { Server } from "socket.io";
 
+// カスタムサーバーをApp Routerで使うのは厳しいのでPages Routerを使う
+// （handler関数がないので）
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (res.socket?.server.io) {
     console.log("Socket.io server already running");
@@ -21,6 +23,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     },
   });
 
+  global.io = io;
   res.socket!.server.io = io;
 
   io.on("connection", async (socket) => {

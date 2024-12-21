@@ -79,4 +79,7 @@ export const SocketEvents = {
     stockId: string;
     quantity: number;
   }>("stock-quantity-changed"),
+
+  /** クライアントが在庫を削除した際に発火されるイベント */
+  clientStockDeleted: new SocketEvent<{ stockId: string }>("stock-deleted"),
 };

@@ -1,24 +1,37 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 
-import RenderFormItem from "../RenderFormItem";
+import FormComponent from "../FomComponents";
 import { Button } from "../ui/button";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from "../ui/form";
+import { Form } from "../ui/form";
 import { Input } from "../ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Textarea } from "../ui/textarea";
+
+function BasicOptions({
+  form,
+}: {
+  form: UseFormReturn<z.infer<typeof StockItemFormSchema>>;
+}) {
+  return (
+    <>
+      <FormComponent label="アイテム名">
+        <Input
+          {...form.register("name")}
+          placeholder="例: インスタントヌードル"
+        />
+      </FormComponent>
+      <FormComponent label="個数">
+        <Input {...form.register("quantity")} type="number" />
+      </FormComponent>
+    </>
+  );
+}
 
 export default function StockItemBaseForm({
   handleSubmit,
@@ -29,41 +42,12 @@ export default function StockItemBaseForm({
 }) {
   const form = useForm<z.infer<typeof StockItemFormSchema>>({
     resolver: zodResolver(StockItemFormSchema),
-    defaultValues: defaultValues,
+    defaultValues: defaultValues ?? {
+      name: "",
+      quantity: 1,
+    },
   });
 
-  function BasicOptions() {
-    return (
-      <>
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>在庫名</FormLabel>
-              <FormControl>
-                <Input placeholder="インスタントラーメン" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="quantity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>個数</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </>
-    );
-  }
   return (
     <Form {...form}>
       <form
@@ -76,37 +60,33 @@ export default function StockItemBaseForm({
             <TabsTrigger value="advanced">詳細設定</TabsTrigger>
           </TabsList>
           <TabsContent value="basic">
-            <BasicOptions />
+            <BasicOptions form={form} />
           </TabsContent>
           <TabsContent value="advanced">
-            <BasicOptions />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <RenderFormItem label={"説明・備考欄"}>
-                  <Textarea
-                    placeholder="詳細説明や、使う目的など..."
-                    rows={5}
-                    className="resize-none"
-                    {...field}
-                  />
-                </RenderFormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>価格</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <BasicOptions form={form} />
+            <FormComponent label="説明">
+              <Textarea
+                placeholder="詳細説明や、使う目的など..."
+                rows={5}
+                className="resize-none"
+                {...form.register("description")}
+              />
+            </FormComponent>
+            <FormComponent label="単位">
+              <Input
+                {...form.register("unit")}
+                placeholder="例: 個, mL, mol..."
+              />
+            </FormComponent>
+            <FormComponent label="価格">
+              <Input {...form.register("price")} type="number" />
+            </FormComponent>
+            <FormComponent label="ステップ">
+              <Input {...form.register("step")} type="number" />
+            </FormComponent>
+            <FormComponent label="閾値">
+              <Input {...form.register("threshold")} type="number" />
+            </FormComponent>
           </TabsContent>
         </Tabs>
         <Button type="submit">追加</Button>
