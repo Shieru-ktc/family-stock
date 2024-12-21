@@ -12,6 +12,8 @@ services:
       NEXTAUTH_URL: https://stocks.shieru-lab.com
       HOST: "0.0.0.0"
       PORT: 3000
+    networks:
+      - app-network
 
   db:
     image: postgres:13
@@ -19,3 +21,10 @@ services:
       POSTGRES_USER: family-stock
       POSTGRES_PASSWORD: password
       POSTGRES_DB: family-stock
+      POSTGRES_PORT: 5432
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
