@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 
 import { GetResponse } from "@/app/api/family/[familyId]/invites/route";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import HttpError from "@/components/HttpError";
 import { dummyUser } from "@/lib/dummy";
 import InviteActionComponent from "./InviteActionComponent";
 
@@ -24,10 +25,14 @@ export default function InvitesPage({
   params: Promise<{ familyId: string }>;
 }) {
   const { familyId } = React.use(params);
+  const [statusCode, setStatusCode] = useState(200);
   const { data, isPending } = useQuery<GetResponse>({
     queryKey: ["family", familyId, "invites"],
     queryFn: () =>
-      fetch(`/api/family/${familyId}/invites`).then((res) => res.json()),
+      fetch(`/api/family/${familyId}/invites`).then((res) => {
+        setStatusCode(res.status);
+        return res.json();
+      }),
     select: (data) => {
       return data;
     },
@@ -75,7 +80,7 @@ export default function InvitesPage({
           </TableBody>
         </Table>
       ) : (
-        <p>{data?.error}</p>
+        <HttpError code={statusCode} />
       )}
     </div>
   );

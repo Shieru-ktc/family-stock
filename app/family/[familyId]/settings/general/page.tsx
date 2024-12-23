@@ -1,21 +1,18 @@
 "use client";
 
 import { Member, User } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
-import { use } from "react";
 
+import { familyAtom } from "@/atoms/familyAtom";
 import { Button } from "@/components/ui/button";
+import { useAtom } from "jotai";
 
 export default function FamilySettingsPage({
   params,
 }: {
   params: Promise<{ familyId: string }>;
 }) {
-  const { familyId } = use(params);
-  const { data: family } = useQuery({
-    queryKey: ["family", familyId],
-    queryFn: () => fetch(`/api/family/${familyId}`).then((res) => res.json()),
-  });
+  const [family] = useAtom(familyAtom);
+
   return family ? (
     <div>
       <h1>Family Settings</h1>
@@ -32,7 +29,7 @@ export default function FamilySettingsPage({
       <Button
         variant="destructive"
         onClick={() => {
-          fetch(`/api/family/${familyId}`, {
+          fetch(`/api/family/${family.id}`, {
             method: "DELETE",
           });
         }}
@@ -41,6 +38,6 @@ export default function FamilySettingsPage({
       </Button>
     </div>
   ) : (
-    <p>Family not found</p>
+    <p>Family not found.</p>
   );
 }

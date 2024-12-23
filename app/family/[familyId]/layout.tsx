@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import FamilyPageAtomSetter from "./atomSetter";
 
 export default async function FamilyPageLayout({
   children,
@@ -24,7 +25,13 @@ export default async function FamilyPageLayout({
     },
   });
   if (member) {
-    return children;
+    return (
+      <>
+        <FamilyPageAtomSetter familyId={familyId}>
+          {children}
+        </FamilyPageAtomSetter>
+      </>
+    );
   } else {
     return (
       <div>
@@ -35,7 +42,6 @@ export default async function FamilyPageLayout({
         <ul className="list-disc pl-8 my-2">
           <li>ファミリーが存在しないまたは削除された</li>
           <li>ファミリーのメンバーに追加されていない</li>
-          <li>ファミリーがアクティブになっている</li>
         </ul>
       </div>
     );
