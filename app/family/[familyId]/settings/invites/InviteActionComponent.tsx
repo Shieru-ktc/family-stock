@@ -9,16 +9,15 @@ import { getQueryClient } from "@/app/get-query-client";
 import ActionButtons from "@/components/ActionButtons";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TableCell } from "@/components/ui/table";
-
 
 export default function InviteActionComponent({
   invite,
@@ -59,8 +58,13 @@ export default function InviteActionComponent({
 
   return (
     <>
-      <Dialog open={isEditOpen} onOpenChange={(open) => { setIsEditOpen(open); }}>
-        <DialogContent className="w-full" showCloseButton={false}>
+      <Dialog
+        open={isEditOpen}
+        onOpenChange={(open) => {
+          setIsEditOpen(open);
+        }}
+      >
+        <DialogContent className="w-full" showCloseButton={true}>
           <DialogHeader>
             <DialogTitle>招待リンクの詳細</DialogTitle>
           </DialogHeader>
@@ -95,7 +99,9 @@ export default function InviteActionComponent({
       </Dialog>
       <Dialog
         open={isDeleteOpen}
-        onOpenChange={(open) => { setIsDeleteOpen(open); }}
+        onOpenChange={(open) => {
+          setIsDeleteOpen(open);
+        }}
       >
         <DialogContent className="w-full" showCloseButton={false}>
           <DialogHeader>
@@ -123,7 +129,9 @@ export default function InviteActionComponent({
                 削除
               </Button>
               <Button
-                onClick={() => { setIsDeleteOpen(false); }}
+                onClick={() => {
+                  setIsDeleteOpen(false);
+                }}
                 variant="outline"
                 disabled={deleteInvite.isPending}
               >

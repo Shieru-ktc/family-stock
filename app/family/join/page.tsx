@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import Link from "next/link";
 import { checkInvite, joinInvite, ValidateStatus } from "./actions";
 
 export default function FamilyJoinPage() {
@@ -52,6 +53,18 @@ export default function FamilyJoinPage() {
             <AlertDescription className="my-4">
               <p>
                 ファミリーに参加するには、以下のボタンをクリックしてください。
+              </p>
+              <p className="p-3 my-2 bg-yellow-100 dark:bg-yellow-900 rounded">
+                ファミリーに参加すると、あなたのアカウント名とメールアドレスがメンバーに共有されます。
+                <br />
+                不正行為については
+                <Link
+                  href="/contact"
+                  className="text-blue-800 dark:text-blue-200 underline"
+                >
+                  お問い合わせ
+                </Link>
+                ください。
               </p>
               <form onSubmit={handleJoin}>
                 <Button>参加する</Button>
