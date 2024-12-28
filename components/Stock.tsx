@@ -9,7 +9,6 @@ import {
   Menu,
   Trash,
 } from "lucide-react";
-import { Socket } from "socket.io-client";
 
 import { StockItemWithPartialMeta } from "@/types";
 
@@ -23,13 +22,11 @@ import {
 
 export default function Stock({
   stock,
-  socket,
   onQuantityChange,
   onEdit,
   onDelete,
 }: {
   stock: StockItemWithPartialMeta;
-  socket: Socket;
   onQuantityChange: (quantity: number) => void;
   onEdit: () => void;
   onDelete: () => void;

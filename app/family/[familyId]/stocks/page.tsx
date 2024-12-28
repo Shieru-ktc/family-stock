@@ -8,10 +8,13 @@ import { z } from "zod";
 
 import { StocksPostRequest } from "@/app/api/family/[familyId]/stocks/route";
 import { socketAtom } from "@/atoms/socketAtom";
-import Stock from "@/components/Stock";
+import SortedStocks from "@/components/SortedStocks";
 import StockItemCreateModal from "@/components/StockItemCreateModal";
 import StockItemEditModal from "@/components/StockItemEditModal";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
@@ -57,6 +60,8 @@ export default function StocksPage({
   const [editStock, setEditStock] = useState<StockItemWithFullMeta | undefined>(
     undefined
   );
+  const [sortCondition, setSortCondition] = useState("id");
+  const [sortReverse, setSortReverse] = useState(false);
 
   const { data, isPending } = useQuery({
     queryKey: ["family", familyId, "stocks"],
@@ -64,6 +69,9 @@ export default function StocksPage({
       const response = await fetch(`/api/family/${familyId}/stocks`);
       return response.json();
     },
+    refetchOnMount: "always",
+    refetchOnReconnect: "always",
+    refetchOnWindowFocus: "always",
   });
 
   useEffect(() => {
@@ -168,6 +176,7 @@ export default function StocksPage({
       >
         <PackagePlus /> 新しいアイテムを追加
       </Button>
+
       <StockItemCreateModal
         open={open}
         onOpenChange={(open) => {
@@ -185,37 +194,44 @@ export default function StocksPage({
           handleSubmit={handleEditStockItem}
         />
       )}
+      <div>
+        <Label htmlFor="orderByTrigger">以下で並び替え:</Label>
+        <Select value={sortCondition} onValueChange={(value) => setSortCondition(value)}>
+          <SelectTrigger className="w-[180px]" id="orderByTrigger">
+            <SelectValue placeholder="並び替え条件を選択..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="id">ID</SelectItem>
+            <SelectItem value="name">名前</SelectItem>
+          </SelectContent>
+        </Select>
+
+
+        <div className="items-top flex space-x-2 my-2">
+          <Checkbox id="reverseOrder" checked={sortReverse} onCheckedChange={checked => setSortReverse(checked === true)} />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="reverseOrder"
+              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              降順で並び替え
+            </label>
+          </div>
+        </div>
+      </div>
 
       {isPending && <p>読み込み中...</p>}
-      {stocks &&
-        stocks.map((stock: StockItemWithFullMeta) => (
-          <Stock
-            key={stock.id}
-            stock={stock}
-            socket={socket}
-            onQuantityChange={(quantity) => {
-              SocketEvents.clientStockQuantityChanged.dispatch(
-                {
-                  stockId: stock.id,
-                  quantity: quantity,
-                },
-                socket
-              );
-            }}
-            onEdit={() => {
-              setEditStock(stock);
-              setEditOpen(true);
-            }}
-            onDelete={() => {
-              SocketEvents.clientStockDeleted.dispatch(
-                {
-                  stockId: stock.id,
-                },
-                socket
-              );
-            }}
-          />
-        ))}
+      {stocks && <SortedStocks stocks={stocks} sortCondition={sortCondition} reverse={sortReverse}
+        onEdit={(stock) => {
+          setEditStock(stock);
+          setEditOpen(true);
+        }}
+        onDelete={(stock) => {
+          SocketEvents.clientStockDeleted.dispatch(
+            { stockId: stock.id },
+            socket
+          );
+        }} />}
     </div>
   );
 }
