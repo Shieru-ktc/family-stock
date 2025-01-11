@@ -101,17 +101,18 @@ model Member {
   role      MemberRole @default(MEMBER)
 
   User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  Family Family @relation(fields: [familyId], references: [id])
 
   @@unique([userId, familyId])
 }
 
 model Family {
-  id        String   @id @default(cuid())
-  active    Boolean  @default(true)
-  name      String
-  createdAt DateTime @default(now())
-  ownerId   String
+  id         String   @id @default(cuid())
+  active     Boolean  @default(true)
+  name       String
+  createdAt  DateTime @default(now())
+  ownerId    String
+  shoppingId String?  @unique
 
   Owner          User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   Members        Member[]
@@ -119,6 +120,7 @@ model Family {
   StockItems     StockItem[]
   StockItemMetas StockItemMeta[]
   StockItemTags  StockItemTag[]
+  Shopping       Shopping?
 }
 
 model Invite {
@@ -141,8 +143,9 @@ model StockItem {
   familyId String
   metaId   String @unique
 
-  Family Family        @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  Meta   StockItemMeta @relation(fields: [metaId], references: [id], onDelete: Cascade)
+  Family       Family        @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  Meta         StockItemMeta @relation(fields: [metaId], references: [id], onDelete: Cascade)
+  ShoppingItem ShoppingItem?
 }
 
 model StockItemMeta {
@@ -175,4 +178,27 @@ model StockItemTag {
 
   Family         Family          @relation(fields: [familyId], references: [id], onDelete: Cascade)
   StockItemMetas StockItemMeta[]
+}
+
+model Shopping {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId   String
+  familyId String @unique
+
+  Family Family @relation(fields: [familyId], references: [id])
+
+  Items ShoppingItem[]
+}
+
+model ShoppingItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  shoppingId  String
+  stockItemId String @unique
+
+  Shopping  Shopping  @relation(fields: [shoppingId], references: [familyId], onDelete: Cascade)
+  StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
 }

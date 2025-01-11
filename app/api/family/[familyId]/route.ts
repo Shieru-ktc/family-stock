@@ -60,7 +60,6 @@ export async function DELETE(
     include: {
       Members: true,
     },
-    
   });
   family.Members.forEach(async (member: Member) => {
     SocketEvents.familyDeleted.dispatch(
