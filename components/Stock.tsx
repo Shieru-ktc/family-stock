@@ -12,6 +12,7 @@ import {
 
 import { StockItemWithPartialMeta } from "@/types";
 
+import { MouseEvent } from "react";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -25,11 +26,15 @@ export default function Stock({
   onQuantityChange,
   onEdit,
   onDelete,
+  onDuplicate,
+  onCopy,
 }: {
   stock: StockItemWithPartialMeta;
   onQuantityChange: (quantity: number) => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit: (event: MouseEvent) => void;
+  onDelete: (event: MouseEvent) => void;
+  onDuplicate: (event: MouseEvent) => void;
+  onCopy: (event: MouseEvent) => void;
 }) {
   return (
     <div className="flex p-4 shadow-xl rounded-md border-slate-200 dark:border-slate-800 border m-2 items-center">
@@ -71,7 +76,7 @@ export default function Stock({
                 <Edit2 />
                 編集
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onDuplicate}>
                 <CopyPlus />
                 複製
               </DropdownMenuItem>
@@ -79,7 +84,7 @@ export default function Stock({
                 <Trash />
                 削除
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onCopy}>
                 <ClipboardCopy />
                 コピー
               </DropdownMenuItem>

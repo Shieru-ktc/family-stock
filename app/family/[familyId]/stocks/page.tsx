@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
@@ -62,6 +63,8 @@ export default function StocksPage({
   );
   const [sortCondition, setSortCondition] = useState("id");
   const [sortReverse, setSortReverse] = useState(false);
+  const [createFormDefaultValues, setCreateFormDefaultValues] = useState<z.infer<typeof StockItemFormSchema> | undefined>(undefined);
+  const { toast } = useToast();
 
   const { data, isPending } = useQuery({
     queryKey: ["family", familyId, "stocks"],
@@ -181,8 +184,10 @@ export default function StocksPage({
         open={open}
         onOpenChange={(open) => {
           setOpen(open);
+          setCreateFormDefaultValues(undefined);
         }}
         handleSubmit={handleCreateNewStockItem}
+        defaultValues={createFormDefaultValues}
       />
       {editStock && (
         <StockItemEditModal
@@ -231,7 +236,61 @@ export default function StocksPage({
             { stockId: stock.id },
             socket
           );
-        }} />}
+        }}
+        onDuplicate={(stock, event) => {
+          if (event.shiftKey) {
+            handleCreateNewStockItem({
+              name: stock.Meta.name,
+              description: stock.Meta.description,
+              unit: stock.Meta.unit,
+              price: stock.Meta.price,
+              quantity: stock.quantity,
+              step: stock.Meta.step,
+              threshold: stock.Meta.threshold,
+            });
+          } else {
+            setCreateFormDefaultValues({
+              name: stock.Meta.name,
+              description: stock.Meta.description,
+              unit: stock.Meta.unit,
+              price: stock.Meta.price,
+              quantity: stock.quantity,
+              step: stock.Meta.step,
+              threshold: stock.Meta.threshold,
+            });
+            setOpen(true);
+          }
+        }}
+        onCopy={(stock, event) => {
+          const isShiftPressed = event.shiftKey;
+          const isCtrlPressed = event.ctrlKey;
+          const isShiftCtrl = isShiftPressed && isCtrlPressed;
+
+          const copy = async () => {
+            if (isShiftCtrl) {
+              await navigator.clipboard.writeText(`${stock.familyId} stock-${stock.id} meta-${stock.metaId}`)
+              return "詳細ID"
+            } else if (isShiftPressed) {
+              await navigator.clipboard.writeText(`${stock.Meta.name}: ${stock.quantity}${stock.Meta.unit}`)
+              return "詳細情報"
+            } else if (isCtrlPressed) {
+              await navigator.clipboard.writeText(stock.id)
+              return "在庫ID"
+            } else {
+              await navigator.clipboard.writeText(stock.Meta.name)
+              return "在庫名"
+            }
+          }
+
+          copy().then((message) => {
+            toast({
+              title: `クリップボードにコピー`,
+              description: `${message}をクリップボードにコピーしました`,
+            });
+          })
+
+        }}
+      />}
     </div>
   );
 }

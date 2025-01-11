@@ -9,10 +9,12 @@ export default function StockItemCreateModal({
   open,
   onOpenChange,
   handleSubmit,
+  defaultValues,
 }: {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   handleSubmit: (data: z.infer<typeof StockItemFormSchema>) => void;
+  defaultValues?: z.infer<typeof StockItemFormSchema>;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -21,7 +23,7 @@ export default function StockItemCreateModal({
         <DialogTitle>商品を追加</DialogTitle>
         <StockItemBaseForm
           handleSubmit={handleSubmit}
-          defaultValues={{
+          defaultValues={defaultValues ?? {
             name: "",
             description: "",
             unit: "個",

@@ -8,6 +8,7 @@ import AppSidebar from "@/components/sidebar/AppSidebar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+import { Toaster } from "@/components/ui/toaster";
 import Providers from "./providers";
 
 const notoSansJP = localFont({
@@ -38,6 +39,7 @@ export default async function RootLayout({
                 <NavBar />
                 <div className="px-6 py-2">{children}</div>
               </div>
+              <Toaster />
             </SidebarProvider>
           </Providers>
         </ThemeProvider>
