@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, use, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 
 import { familyAtom } from "@/atoms/familyAtom";
 import { useAtom } from "jotai";
@@ -10,12 +10,9 @@ import SettingsNavLink from "./settings-navlink";
 
 export default function SettingsLayout({
   children,
-  params,
 }: {
   children: ReactNode;
-  params: Promise<{ familyId: string }>;
 }) {
-  const { familyId } = use(params);
   const { data: session } = useSession();
   const [family] = useAtom(familyAtom);
 
