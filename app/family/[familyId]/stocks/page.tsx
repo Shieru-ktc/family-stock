@@ -7,6 +7,7 @@ import { use, useEffect, useState } from "react";
 import { z } from "zod";
 
 import { StocksPostRequest } from "@/app/api/family/[familyId]/stocks/route";
+import { familyAtom } from "@/atoms/familyAtom";
 import { socketAtom } from "@/atoms/socketAtom";
 import SortedStocks from "@/components/SortedStocks";
 import StockItemCreateModal from "@/components/StockItemCreateModal";
@@ -25,7 +26,11 @@ export default function StocksPage({
 }: {
   params: Promise<{ familyId: string }>;
 }) {
-  const { familyId } = use(params);
+  const familyId = use(params).familyId;
+  const [socket] = useAtom(socketAtom);
+  const [family] = useAtom(familyAtom);
+  const { toast } = useToast();
+
   const useCreateNewStockItem = () =>
     useMutation({
       mutationFn: (stock: StocksPostRequest) => {
@@ -52,7 +57,7 @@ export default function StocksPage({
     });
   const createNewStockItem = useCreateNewStockItem();
   const editItem = useEditStockItem();
-  const [socket] = useAtom(socketAtom);
+
   const [stocks, setStocks] = useState<StockItemWithFullMeta[] | undefined>(
     undefined
   );
@@ -64,7 +69,6 @@ export default function StocksPage({
   const [sortCondition, setSortCondition] = useState("id");
   const [sortReverse, setSortReverse] = useState(false);
   const [createFormDefaultValues, setCreateFormDefaultValues] = useState<z.infer<typeof StockItemFormSchema> | undefined>(undefined);
-  const { toast } = useToast();
 
   const { data, isPending } = useQuery({
     queryKey: ["family", familyId, "stocks"],
