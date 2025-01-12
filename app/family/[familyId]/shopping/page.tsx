@@ -3,6 +3,7 @@
 import { StocksGetResponse } from "@/app/api/family/[familyId]/stocks/route";
 import { socketAtom } from "@/atoms/socketAtom";
 import StockItemSelector from "@/components/StockItemSelector";
+import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithPartialMeta } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -68,8 +69,13 @@ export default function ShoppingPage({ params }: { params: Promise<{ familyId: s
   }, [data])
 
   return <>
-    <h1 className="text-2xl">買い物を開始する</h1>
-    <p>家族全員がアクセスできる買い物リストを作成します。</p>
+    <div className="lg:flex flex-row items-end justify-between mr-2">
+      <div>
+        <h1 className="text-2xl">買い物を開始する</h1>
+        <p>家族全員がアクセスできる買い物リストを作成します。</p>
+      </div>
+      <Button>買い物リストを作成する</Button>
+    </div>
 
     <hr className="my-2" />
     {(stocks && data?.success) && <StockItemSelector stocks={stocks} onCheckedChange={(stock, checked) => {

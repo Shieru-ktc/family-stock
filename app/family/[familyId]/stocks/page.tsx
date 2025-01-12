@@ -7,7 +7,6 @@ import { use, useEffect, useState } from "react";
 import { z } from "zod";
 
 import { StocksPostRequest } from "@/app/api/family/[familyId]/stocks/route";
-import { familyAtom } from "@/atoms/familyAtom";
 import { socketAtom } from "@/atoms/socketAtom";
 import SortedStocks from "@/components/SortedStocks";
 import StockItemCreateModal from "@/components/StockItemCreateModal";
@@ -28,7 +27,6 @@ export default function StocksPage({
 }) {
   const familyId = use(params).familyId;
   const [socket] = useAtom(socketAtom);
-  const [family] = useAtom(familyAtom);
   const { toast } = useToast();
 
   const useCreateNewStockItem = () =>
