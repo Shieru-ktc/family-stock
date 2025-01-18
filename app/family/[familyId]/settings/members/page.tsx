@@ -2,14 +2,14 @@ import { Member, MemberRole } from "@prisma/client";
 
 import { auth } from "@/auth";
 import {
-    Table,
-    TableBody,
-    TableCaption,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 

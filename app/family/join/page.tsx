@@ -54,13 +54,13 @@ export default function FamilyJoinPage() {
               <p>
                 ファミリーに参加するには、以下のボタンをクリックしてください。
               </p>
-              <p className="p-3 my-2 bg-yellow-100 dark:bg-yellow-900 rounded">
+              <p className="my-2 rounded bg-yellow-100 p-3 dark:bg-yellow-900">
                 ファミリーに参加すると、あなたのアカウント名とメールアドレスがメンバーに共有されます。
                 <br />
                 不正行為については
                 <Link
                   href="/contact"
-                  className="text-blue-800 dark:text-blue-200 underline"
+                  className="text-blue-800 underline dark:text-blue-200"
                 >
                   お問い合わせ
                 </Link>

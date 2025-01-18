@@ -5,10 +5,10 @@ import { useState } from "react";
 
 import ActionButtons from "@/components/ActionButtons";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { TableCell } from "@/components/ui/table";
 
@@ -31,7 +31,12 @@ export default function MemberActionComponent({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); }}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>メンバーの編集</DialogTitle>

@@ -7,13 +7,13 @@ export class CustomResponse extends NextResponse {
   }
 
   static unauthorized(
-    message: string = "Unauthorized"
+    message: string = "Unauthorized",
   ): NextResponse<FailureResponse> {
     return this.json({ error: message, success: false }, { status: 401 });
   }
 
   static noPermission(
-    message: string = "No Permission"
+    message: string = "No Permission",
   ): NextResponse<FailureResponse> {
     return this.json({ error: message, success: false }, { status: 403 });
   }

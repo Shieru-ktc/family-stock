@@ -7,7 +7,7 @@ export default function HttpError({ code }: { code: number }) {
 
 export function ForbiddenError() {
   return (
-    <div className="p-5 text-center bg-red-200 dark:bg-rose-950">
+    <div className="bg-red-200 p-5 text-center dark:bg-rose-950">
       <p className="text-2xl text-red-500">権限が必要です</p>
       <p>申し訳ありませんが、これを表示する権限がありません。</p>
       <p>

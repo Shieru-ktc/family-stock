@@ -55,7 +55,7 @@ export default function StockItemBaseForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="h-full flex flex-col space-y-5"
+        className="flex h-full flex-col space-y-5"
       >
         <Tabs defaultValue="basic" className="flex-grow">
           <TabsList className="grid w-full grid-cols-2">

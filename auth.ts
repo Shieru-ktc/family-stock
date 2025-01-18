@@ -24,7 +24,7 @@ if (GITHUB_ID && GITHUB_SECRET) {
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET,
       allowDangerousEmailAccountLinking: true,
-    })
+    }),
   );
 }
 
@@ -34,7 +34,7 @@ if (DISCORD_ID && DISCORD_SECRET) {
       clientId: DISCORD_ID,
       clientSecret: DISCORD_SECRET,
       allowDangerousEmailAccountLinking: true,
-    })
+    }),
   );
 }
 

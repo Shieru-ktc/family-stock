@@ -7,18 +7,23 @@ import { useAtom } from "jotai";
 import { MouseEvent } from "react";
 import Stock from "./Stock";
 
-export default function SortedStocks(
-  { stocks, sortCondition, reverse, onEdit, onDelete, onDuplicate, onCopy }:
-    {
-      stocks: StockItemWithFullMeta[],
-      sortCondition: string,
-      reverse: boolean,
-      onEdit: (stock: StockItemWithFullMeta, event: MouseEvent) => void,
-      onDelete: (stock: StockItemWithFullMeta, event: MouseEvent) => void,
-      onDuplicate: (stock: StockItemWithFullMeta, event: MouseEvent) => void,
-      onCopy: (stock: StockItemWithFullMeta, event: MouseEvent) => void,
-    }
-) {
+export default function SortedStocks({
+  stocks,
+  sortCondition,
+  reverse,
+  onEdit,
+  onDelete,
+  onDuplicate,
+  onCopy,
+}: {
+  stocks: StockItemWithFullMeta[];
+  sortCondition: string;
+  reverse: boolean;
+  onEdit: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
+  onDelete: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
+  onDuplicate: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
+  onCopy: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
+}) {
   const [socket] = useAtom(socketAtom);
 
   const sortedStocks = stocks.toSorted((a, b) => {
@@ -32,7 +37,7 @@ export default function SortedStocks(
       }
     }
     return reverse ? -sort() : sort();
-  })
+  });
 
   return sortedStocks.map((stock: StockItemWithFullMeta) => (
     <Stock
@@ -44,7 +49,7 @@ export default function SortedStocks(
             stockId: stock.id,
             quantity: quantity,
           },
-          socket
+          socket,
         );
       }}
       onEdit={(event) => onEdit(stock, event)}
@@ -52,6 +57,5 @@ export default function SortedStocks(
       onDuplicate={(event) => onDuplicate(stock, event)}
       onCopy={(event) => onCopy(stock, event)}
     />
-  ))
-
+  ));
 }

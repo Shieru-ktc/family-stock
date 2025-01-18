@@ -8,11 +8,7 @@ import { AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import SettingsNavLink from "./settings-navlink";
 
-export default function SettingsLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function SettingsLayout({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
   const [family] = useAtom(familyAtom);
 
@@ -22,7 +18,7 @@ export default function SettingsLayout({
         family.ownerId === session?.user?.id ||
         family.Members.some(
           (member) =>
-            member.userId === session?.user?.id && member.role === "ADMIN"
+            member.userId === session?.user?.id && member.role === "ADMIN",
         )
       );
     }
@@ -31,7 +27,7 @@ export default function SettingsLayout({
   return (
     <>
       {hasAdminPermission === false && (
-        <p className="p-3 rounded border-yellow-200 dark:border-yellow-800 bg-yellow-100 dark:bg-yellow-900 my-3 inline-flex gap-2">
+        <p className="my-3 inline-flex gap-2 rounded border-yellow-200 bg-yellow-100 p-3 dark:border-yellow-800 dark:bg-yellow-900">
           <span>
             <AlertCircle />
           </span>

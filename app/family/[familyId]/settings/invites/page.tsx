@@ -49,7 +49,7 @@ export default function InvitesPage({
 
       {isPending ? (
         <div className="my-2">
-          <Skeleton className="w-full h-16" />
+          <Skeleton className="h-16 w-full" />
         </div>
       ) : data?.success ? (
         <Table>

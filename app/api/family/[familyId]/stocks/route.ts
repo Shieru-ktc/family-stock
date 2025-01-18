@@ -39,7 +39,7 @@ export async function GET(
     params,
   }: {
     params: Promise<{ familyId: string }>;
-  }
+  },
 ): Promise<NextResponse<StocksGetResponse>> {
   const session = await auth();
   const { familyId } = await params;
@@ -58,7 +58,7 @@ export async function GET(
   if (!family) {
     return NextResponse.json(
       { success: false, error: "Family not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
   const items = await prisma.stockItem.findMany({
@@ -89,7 +89,7 @@ export async function POST(
     params,
   }: {
     params: Promise<{ familyId: string }>;
-  }
+  },
 ): Promise<NextResponse<StocksPostResponse>> {
   const session = await auth();
   const { familyId } = await params;
@@ -111,7 +111,7 @@ export async function POST(
   if (!family) {
     return NextResponse.json(
       { success: false, error: "Family not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
   const { item } = (await req.json()) as StocksPostRequest;
@@ -151,7 +151,7 @@ export async function POST(
     {
       stock: { ...createdItem, Meta: { Family: family, ...createdItem.Meta } },
     },
-    global.io.in(familyId)
+    global.io.in(familyId),
   );
   return NextResponse.json({
     success: true,
@@ -165,7 +165,7 @@ export async function PATCH(
     params,
   }: {
     params: Promise<{ familyId: string }>;
-  }
+  },
 ): Promise<NextResponse<StocksPostResponse>> {
   const session = await auth();
   const { familyId } = await params;
@@ -187,7 +187,7 @@ export async function PATCH(
   if (!family) {
     return NextResponse.json(
       { success: false, error: "Family not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
   const { item } = (await req.json()) as {
@@ -232,7 +232,7 @@ export async function PATCH(
     {
       stock: { ...updatedItem, Meta: { Family: family, ...updatedItem.Meta } },
     },
-    global.io.in(familyId)
+    global.io.in(familyId),
   );
   return NextResponse.json({
     success: true,

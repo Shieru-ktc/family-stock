@@ -33,7 +33,7 @@ export class SocketEvent<T> {
       on: (ev: string, listener: (data: any) => void) => void;
       off: (ev: string, listener: (data: any) => void) => void;
     },
-    callback: (data: T) => void
+    callback: (data: T) => void,
   ) {
     socket.on(this.name, callback);
     return () => {
@@ -54,19 +54,19 @@ export const SocketEvents = {
   /** 新しい在庫アイテムが作成された際に発火されるイベント。 */
   stockCreated: (familyId: string) =>
     new SocketEvent<{ stock: StockItemWithFullMeta }>(
-      `stock-created-${familyId}`
+      `stock-created-${familyId}`,
     ),
   /** 在庫アイテムが更新された際に発火されるイベント。 */
   stockUpdated: (familyId: string) =>
     new SocketEvent<{ stock: StockItemWithFullMeta }>(
-      `stock-updated-${familyId}`
+      `stock-updated-${familyId}`,
     ),
   /** 在庫アイテムが削除された際に発火されるイベント。 */
   stockDeleted: (familyId: string) =>
     new SocketEvent<{ stockId: string }>(`stock-deleted-${familyId}`),
   /** 在庫の数量が変更された際に発火されるイベント。 */
   stockQuantityChanged: new SocketEvent<{ stock: StockItem }>(
-    "stock-quantity-changed"
+    "stock-quantity-changed",
   ),
   /** テスト用のイベント */
   testEvent: new SocketEvent<{ message: string }>("test-event"),

@@ -14,7 +14,13 @@ import StockItemEditModal from "@/components/StockItemEditModal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta } from "@/types";
@@ -57,16 +63,18 @@ export default function StocksPage({
   const editItem = useEditStockItem();
 
   const [stocks, setStocks] = useState<StockItemWithFullMeta[] | undefined>(
-    undefined
+    undefined,
   );
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editStock, setEditStock] = useState<StockItemWithFullMeta | undefined>(
-    undefined
+    undefined,
   );
   const [sortCondition, setSortCondition] = useState("id");
   const [sortReverse, setSortReverse] = useState(false);
-  const [createFormDefaultValues, setCreateFormDefaultValues] = useState<z.infer<typeof StockItemFormSchema> | undefined>(undefined);
+  const [createFormDefaultValues, setCreateFormDefaultValues] = useState<
+    z.infer<typeof StockItemFormSchema> | undefined
+  >(undefined);
 
   const { data, isPending } = useQuery({
     queryKey: ["family", familyId, "stocks"],
@@ -91,7 +99,7 @@ export default function StocksPage({
             return [...prevStocks, data.stock];
           }
         });
-      }
+      },
     );
     const unsubscribeQuantityChanged = SocketEvents.stockQuantityChanged.listen(
       socket,
@@ -109,7 +117,7 @@ export default function StocksPage({
             });
           }
         });
-      }
+      },
     );
     const unsubscribeEdited = SocketEvents.stockUpdated(familyId).listen(
       socket,
@@ -127,7 +135,7 @@ export default function StocksPage({
             });
           }
         });
-      }
+      },
     );
     const unsubscribeDeleted = SocketEvents.stockDeleted(familyId).listen(
       socket,
@@ -139,7 +147,7 @@ export default function StocksPage({
             return prevStocks.filter((stock) => stock.id !== data.stockId);
           }
         });
-      }
+      },
     );
     return () => {
       unsubscribeCreated();
@@ -203,7 +211,10 @@ export default function StocksPage({
       )}
       <div>
         <Label htmlFor="orderByTrigger">以下で並び替え:</Label>
-        <Select value={sortCondition} onValueChange={(value) => setSortCondition(value)}>
+        <Select
+          value={sortCondition}
+          onValueChange={(value) => setSortCondition(value)}
+        >
           <SelectTrigger className="w-[180px]" id="orderByTrigger">
             <SelectValue placeholder="並び替え条件を選択..." />
           </SelectTrigger>
@@ -213,9 +224,12 @@ export default function StocksPage({
           </SelectContent>
         </Select>
 
-
-        <div className="items-top flex space-x-2 my-2">
-          <Checkbox id="reverseOrder" checked={sortReverse} onCheckedChange={checked => setSortReverse(checked === true)} />
+        <div className="items-top my-2 flex space-x-2">
+          <Checkbox
+            id="reverseOrder"
+            checked={sortReverse}
+            onCheckedChange={(checked) => setSortReverse(checked === true)}
+          />
           <div className="grid gap-1.5 leading-none">
             <label
               htmlFor="reverseOrder"
@@ -228,71 +242,79 @@ export default function StocksPage({
       </div>
 
       {isPending && <p>読み込み中...</p>}
-      {stocks && <SortedStocks stocks={stocks} sortCondition={sortCondition} reverse={sortReverse}
-        onEdit={(stock) => {
-          setEditStock(stock);
-          setEditOpen(true);
-        }}
-        onDelete={(stock) => {
-          SocketEvents.clientStockDeleted.dispatch(
-            { stockId: stock.id },
-            socket
-          );
-        }}
-        onDuplicate={(stock, event) => {
-          if (event.shiftKey) {
-            handleCreateNewStockItem({
-              name: stock.Meta.name,
-              description: stock.Meta.description,
-              unit: stock.Meta.unit,
-              price: stock.Meta.price,
-              quantity: stock.quantity,
-              step: stock.Meta.step,
-              threshold: stock.Meta.threshold,
-            });
-          } else {
-            setCreateFormDefaultValues({
-              name: stock.Meta.name,
-              description: stock.Meta.description,
-              unit: stock.Meta.unit,
-              price: stock.Meta.price,
-              quantity: stock.quantity,
-              step: stock.Meta.step,
-              threshold: stock.Meta.threshold,
-            });
-            setOpen(true);
-          }
-        }}
-        onCopy={(stock, event) => {
-          const isShiftPressed = event.shiftKey;
-          const isCtrlPressed = event.ctrlKey;
-          const isShiftCtrl = isShiftPressed && isCtrlPressed;
-
-          const copy = async () => {
-            if (isShiftCtrl) {
-              await navigator.clipboard.writeText(`${stock.familyId} stock-${stock.id} meta-${stock.metaId}`)
-              return "詳細ID"
-            } else if (isShiftPressed) {
-              await navigator.clipboard.writeText(`${stock.Meta.name}: ${stock.quantity}${stock.Meta.unit}`)
-              return "詳細情報"
-            } else if (isCtrlPressed) {
-              await navigator.clipboard.writeText(stock.id)
-              return "在庫ID"
+      {stocks && (
+        <SortedStocks
+          stocks={stocks}
+          sortCondition={sortCondition}
+          reverse={sortReverse}
+          onEdit={(stock) => {
+            setEditStock(stock);
+            setEditOpen(true);
+          }}
+          onDelete={(stock) => {
+            SocketEvents.clientStockDeleted.dispatch(
+              { stockId: stock.id },
+              socket,
+            );
+          }}
+          onDuplicate={(stock, event) => {
+            if (event.shiftKey) {
+              handleCreateNewStockItem({
+                name: stock.Meta.name,
+                description: stock.Meta.description,
+                unit: stock.Meta.unit,
+                price: stock.Meta.price,
+                quantity: stock.quantity,
+                step: stock.Meta.step,
+                threshold: stock.Meta.threshold,
+              });
             } else {
-              await navigator.clipboard.writeText(stock.Meta.name)
-              return "在庫名"
+              setCreateFormDefaultValues({
+                name: stock.Meta.name,
+                description: stock.Meta.description,
+                unit: stock.Meta.unit,
+                price: stock.Meta.price,
+                quantity: stock.quantity,
+                step: stock.Meta.step,
+                threshold: stock.Meta.threshold,
+              });
+              setOpen(true);
             }
-          }
+          }}
+          onCopy={(stock, event) => {
+            const isShiftPressed = event.shiftKey;
+            const isCtrlPressed = event.ctrlKey;
+            const isShiftCtrl = isShiftPressed && isCtrlPressed;
 
-          copy().then((message) => {
-            toast({
-              title: `クリップボードにコピー`,
-              description: `${message}をクリップボードにコピーしました`,
+            const copy = async () => {
+              if (isShiftCtrl) {
+                await navigator.clipboard.writeText(
+                  `${stock.familyId} stock-${stock.id} meta-${stock.metaId}`,
+                );
+                return "詳細ID";
+              } else if (isShiftPressed) {
+                await navigator.clipboard.writeText(
+                  `${stock.Meta.name}: ${stock.quantity}${stock.Meta.unit}`,
+                );
+                return "詳細情報";
+              } else if (isCtrlPressed) {
+                await navigator.clipboard.writeText(stock.id);
+                return "在庫ID";
+              } else {
+                await navigator.clipboard.writeText(stock.Meta.name);
+                return "在庫名";
+              }
+            };
+
+            copy().then((message) => {
+              toast({
+                title: `クリップボードにコピー`,
+                description: `${message}をクリップボードにコピーしました`,
+              });
             });
-          })
-
-        }}
-      />}
+          }}
+        />
+      )}
     </div>
   );
 }

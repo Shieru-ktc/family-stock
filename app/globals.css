@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --font-noto-sans-jp: 'Noto Sans JP', sans-serif;
+  --font-noto-sans-jp: "Noto Sans JP", sans-serif;
 }
 
 body {

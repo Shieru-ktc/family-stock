@@ -35,7 +35,7 @@ export default async function RootLayout({
           <Providers>
             <SidebarProvider defaultOpen>
               <AppSidebar />
-              <div className="w-full h-full min-h-screen flex flex-col space-y-4">
+              <div className="flex h-full min-h-screen w-full flex-col space-y-4">
                 <NavBar />
                 <div className="px-6 py-2">{children}</div>
               </div>

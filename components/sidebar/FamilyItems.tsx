@@ -11,16 +11,16 @@ import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
 
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "../ui/collapsible";
 import {
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
 } from "../ui/sidebar";
 import { Skeleton } from "../ui/skeleton";
 
@@ -53,7 +53,7 @@ export default function FamilyItems() {
             return [...prevFamilies, family];
           }
         });
-      }
+      },
     );
     const unsubscribeDeleted = SocketEvents.familyDeleted.listen(
       socket,
@@ -65,7 +65,7 @@ export default function FamilyItems() {
             return prevFamilies.filter((f) => f.id !== family.id);
           }
         });
-      }
+      },
     );
 
     return () => {
@@ -77,12 +77,12 @@ export default function FamilyItems() {
   if (families === undefined) {
     return (
       <div className="px-2">
-        <Skeleton className="w-full h-4 my-2" />
+        <Skeleton className="my-2 h-4 w-full" />
         <div className="py-1">
-          <Skeleton className="w-full h-7 my-3" />
-          <Skeleton className="w-full h-7 my-3" />
-          <Skeleton className="w-full h-7 my-3" />
-          <Skeleton className="w-full h-7 my-3" />
+          <Skeleton className="my-3 h-7 w-full" />
+          <Skeleton className="my-3 h-7 w-full" />
+          <Skeleton className="my-3 h-7 w-full" />
+          <Skeleton className="my-3 h-7 w-full" />
         </div>
       </div>
     );

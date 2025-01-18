@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ familyId: string; inviteId: string }> }
+  { params }: { params: Promise<{ familyId: string; inviteId: string }> },
 ) {
   const { familyId, inviteId } = await params;
   const session = await auth();
@@ -38,7 +38,7 @@ export async function GET(
   if (!invite) {
     return NextResponse.json(
       { success: false, error: "Invite not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -47,7 +47,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ familyId: string; inviteId: string }> }
+  { params }: { params: Promise<{ familyId: string; inviteId: string }> },
 ) {
   const { familyId, inviteId } = await params;
   const session = await auth();
@@ -78,7 +78,7 @@ export async function DELETE(
   if (!invite) {
     return NextResponse.json(
       { success: false, error: "Invite not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

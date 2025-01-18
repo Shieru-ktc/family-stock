@@ -5,7 +5,7 @@ import { SocketEvents } from "./events";
 export default function ClientEventHandler(
   io: Server,
   socket: Socket,
-  userId: string
+  userId: string,
 ) {
   SocketEvents.clientStockQuantityChanged.listen(socket, (data) => {
     console.log(data);
@@ -32,7 +32,7 @@ export default function ClientEventHandler(
           {
             stock,
           },
-          io.in(stock.familyId)
+          io.in(stock.familyId),
         );
       });
   });
@@ -58,7 +58,7 @@ export default function ClientEventHandler(
           {
             stockId: stock.id,
           },
-          io.in(stock.familyId)
+          io.in(stock.familyId),
         );
       });
   });

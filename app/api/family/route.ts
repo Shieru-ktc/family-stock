@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   });
   SocketEvents.familyCreated.dispatch(
     { family },
-    global.io.to(session.user.id)
+    global.io.to(session.user.id),
   );
   return NextResponse.json(family);
 }

@@ -9,7 +9,7 @@ import { SocketEvents } from "@/socket/events";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ familyId: string }> }
+  { params }: { params: Promise<{ familyId: string }> },
 ): Promise<NextResponse> {
   const session = await auth();
   const familyId = (await params).familyId;
@@ -42,7 +42,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ familyId: string }> }
+  { params }: { params: Promise<{ familyId: string }> },
 ): Promise<NextResponse> {
   const { familyId } = await params;
   const session = await auth();
@@ -64,7 +64,7 @@ export async function DELETE(
   family.Members.forEach(async (member: Member) => {
     SocketEvents.familyDeleted.dispatch(
       { family },
-      global.io.to(member.userId)
+      global.io.to(member.userId),
     );
   });
 

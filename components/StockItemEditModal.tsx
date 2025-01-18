@@ -19,7 +19,7 @@ export default function StockItemEditModal({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex flex-col h-[80vh] min-w-[80vw]">
+      <DialogContent className="flex h-[80vh] min-w-[80vw] flex-col">
         <DialogTitle>商品を編集</DialogTitle>
         <p>{stock.id}</p>
         <StockItemBaseForm

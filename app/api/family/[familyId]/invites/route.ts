@@ -24,7 +24,7 @@ export type GetResponse = GetSuccess | GetFailure;
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ familyId: string }> }
+  { params }: { params: Promise<{ familyId: string }> },
 ): Promise<NextResponse<GetResponse>> {
   const { familyId } = await params;
   const session = await auth();
@@ -64,7 +64,7 @@ export async function GET(
   if (!family) {
     return NextResponse.json(
       { success: false, error: "Family not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
   if (!member || !member.isAdmin) {
@@ -76,7 +76,7 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ familyId: string }> }
+  { params }: { params: Promise<{ familyId: string }> },
 ) {
   const { familyId } = await params;
   const session = await auth();

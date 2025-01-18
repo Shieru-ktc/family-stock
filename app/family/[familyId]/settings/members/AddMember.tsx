@@ -6,10 +6,10 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { TableCell } from "@/components/ui/table";
@@ -31,7 +31,12 @@ export default function AddMember({ family }: { family: Family }) {
   }
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); }}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>メンバーを追加する</DialogTitle>
@@ -66,8 +71,10 @@ export default function AddMember({ family }: { family: Family }) {
       </Dialog>
       <TableCell
         colSpan={4}
-        className="items-center space-x-5 cursor-pointer"
-        onClick={() => { setIsOpen(true); }}
+        className="cursor-pointer items-center space-x-5"
+        onClick={() => {
+          setIsOpen(true);
+        }}
       >
         <div className="flex items-center space-x-5">
           <Plus />

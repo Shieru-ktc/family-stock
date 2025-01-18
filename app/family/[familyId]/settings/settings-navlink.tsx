@@ -14,8 +14,8 @@ export default function SettingsNavLink() {
       <Link
         href={href}
         className={cn(
-          "bg-slate-300 p-2 px-4 rounded hover:bg-slate-100 dark:hover:bg-slate-900 dark:bg-slate-700",
-          pathname === href ? "bg-slate-100 dark:bg-slate-900" : ""
+          "rounded bg-slate-300 p-2 px-4 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-900",
+          pathname === href ? "bg-slate-100 dark:bg-slate-900" : "",
         )}
       >
         {children}
@@ -23,7 +23,7 @@ export default function SettingsNavLink() {
     );
   }
   return (
-    <div className="py-2 m-1 p-3 flex space-x-8 bg-slate-200 dark:bg-slate-800 rounded-sm">
+    <div className="m-1 flex space-x-8 rounded-sm bg-slate-200 p-3 py-2 dark:bg-slate-800">
       <LinkTab href="general">一般</LinkTab>
       <LinkTab href="invites">招待リンク</LinkTab>
       <LinkTab href="members">メンバー</LinkTab>
