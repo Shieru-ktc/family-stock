@@ -1,6 +1,8 @@
 import {
   Family,
   Member,
+  Shopping,
+  ShoppingItem,
   StockItem,
   StockItemMeta,
   StockItemTag,
@@ -27,3 +29,19 @@ export type MemberWithUser = { User: User } & Member;
 export type FamilyWithUserMember = {
   Members: MemberWithUser[];
 } & FamilyWithMember;
+
+export type PartialShopping = Shopping;
+export type PartialShoppingWithFamily = PartialShopping & {
+  Family: Family;
+};
+export type PartialShoppingItem = ShoppingItem;
+export type PartialShoppingItemWithStockItem = PartialShoppingItem & {
+  StockItem: StockItem;
+};
+export type PartialShoppingItemWithStockItemMeta =
+  PartialShoppingItemWithStockItem & {
+    StockItem: StockItemWithPartialMeta;
+  };
+export type FullShopping = PartialShoppingWithFamily & {
+  Items: PartialShoppingItemWithStockItemMeta[];
+};

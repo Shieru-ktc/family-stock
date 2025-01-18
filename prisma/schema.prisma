@@ -36,6 +36,7 @@ model User {
   Memberships    Member[]
   Families       Family[]
   CreatedInvites Invite[]
+  Shopping       Shopping[]
 }
 
 model Account {
@@ -187,6 +188,7 @@ model Shopping {
   userId   String
   familyId String @unique
 
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   Family Family @relation(fields: [familyId], references: [id])
 
   Items ShoppingItem[]

@@ -68,6 +68,16 @@ export const SocketEvents = {
   stockQuantityChanged: new SocketEvent<{ stock: StockItem }>(
     "stock-quantity-changed",
   ),
+
+  shoppingCreated: (familyId: string) =>
+    new SocketEvent<{ shoppingId: string }>(`shopping-created-${familyId}`),
+  shoppingUpdated: (familyId: string) =>
+    new SocketEvent<{ shoppingId: string }>(`shopping-updated-${familyId}`),
+  shoppingCancelled: (familyId: string) =>
+    new SocketEvent<{ shoppingId: string }>(`shopping-cancelled-${familyId}`),
+  shoppingCompleted: (familyId: string) =>
+    new SocketEvent<{ shoppingId: string }>(`shopping-completed-${familyId}`),
+
   /** テスト用のイベント */
   testEvent: new SocketEvent<{ message: string }>("test-event"),
 
