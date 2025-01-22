@@ -12,7 +12,7 @@ export function StockItemSelectCard({
   onCheckedChange?: (checked: CheckedState) => void;
 }) {
   return (
-    <div className="flex flex-row items-center space-x-4 rounded-lg border border-gray-200 px-2 py-4 shadow-xl dark:border-none dark:shadow-sm dark:shadow-white">
+    <div className="flex flex-row items-center space-x-4 rounded-lg border border-gray-200 px-2 py-4 shadow-xl dark:border-gray-800">
       <Checkbox
         className="ml-4 h-6 w-6"
         checked={checked}

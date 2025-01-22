@@ -102,7 +102,7 @@ model Member {
   role      MemberRole @default(MEMBER)
 
   User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Family Family @relation(fields: [familyId], references: [id])
+  Family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   @@unique([userId, familyId])
 }
@@ -189,7 +189,7 @@ model Shopping {
   familyId String @unique
 
   User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Family Family @relation(fields: [familyId], references: [id])
+  Family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   Items ShoppingItem[]
 }

@@ -116,6 +116,7 @@ export async function POST(
       { status: 404 },
     );
   }
+  console.log(family);
   if (family.shoppingId) {
     return NextResponse.json(
       { success: false, error: "Shopping already exists" },
