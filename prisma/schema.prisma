@@ -122,6 +122,45 @@ model Family {
   StockItemMetas StockItemMeta[]
   StockItemTags  StockItemTag[]
   Shopping       Shopping?
+  Categories     Category[]
+  CategoryGenre  CategoryGenre[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  name            String
+  description     String @default("")
+  color           String
+  familyId        String
+  categoryGenreId String
+
+  Family         Family                @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  CategoryGenres CategoryGenre         @relation(fields: [categoryGenreId], references: [id], onDelete: Cascade)
+  StockItems     CategoryOnStockItem[]
+}
+
+model CategoryGenre {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  name        String
+  description String @default("")
+  familyId    String
+
+  Family   Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  Category Category[]
+}
+
+model CategoryOnStockItem {
+  stockItemMetaId String
+  categoryId      String
+
+  StockItemMeta StockItemMeta @relation(fields: [stockItemMetaId], references: [id], onDelete: Cascade)
+  Category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([stockItemMetaId, categoryId])
 }
 
 model Invite {
@@ -165,7 +204,8 @@ model StockItemMeta {
   StockItem StockItem?
   Family    Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
-  Tags StockItemTag[]
+  Tags       StockItemTag[]
+  Categories CategoryOnStockItem[]
 }
 
 model StockItemTag {
