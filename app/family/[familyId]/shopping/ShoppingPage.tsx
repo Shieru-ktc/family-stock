@@ -2,6 +2,7 @@
 
 import { socketAtom } from "@/atoms/socketAtom";
 import Counter from "@/components/Counter";
+import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
 import { FullShopping } from "@/types";
 import { useAtom } from "jotai";
@@ -39,7 +40,17 @@ export default function OnGoingShoppingPage({
 
   return (
     <>
-      <h1>Shopping</h1>
+      <div className="mr-2 flex-row items-end justify-between lg:flex">
+        <div>
+          <h1 className="text-2xl">買い物リスト</h1>
+          <p>購入したアイテムは在庫リストに加算されます。</p>
+        </div>
+        <div className="flex space-x-4">
+          <Button>買い物をキャンセル</Button>
+          <Button>新しいアイテムを追加</Button>
+          <Button>買い物を完了</Button>
+        </div>
+      </div>
       <div>
         {sortedItems.map((item) => (
           <div key={item.id}>
