@@ -241,6 +241,8 @@ model ShoppingItem {
   shoppingId  String
   stockItemId String @unique
 
+  quantity Int @default(0)
+
   Shopping  Shopping  @relation(fields: [shoppingId], references: [familyId], onDelete: Cascade)
   StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
 }

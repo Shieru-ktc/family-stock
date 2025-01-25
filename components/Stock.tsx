@@ -39,12 +39,14 @@ export default function Stock({
   return (
     <div className="m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800">
       <div className="p-2">
-        <h2 className="text-xl font-bold">{stock.Meta.name}</h2>
+        <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
+          {stock.Meta.name}
+        </h2>
         <div>{stock.id}</div>
       </div>
-      <div className="flex-grow p-2"></div>
+      <div className="flex-grow p-2" />
 
-      <div className="flex items-center">
+      <div className="flex flex-shrink-0 items-center">
         <div>
           <Button
             variant="ghost"

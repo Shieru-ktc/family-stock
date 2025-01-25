@@ -109,6 +109,9 @@ export async function POST(
         },
       },
     },
+    include: {
+      Shopping: true,
+    },
   });
   if (!family) {
     return NextResponse.json(
@@ -117,7 +120,7 @@ export async function POST(
     );
   }
   console.log(family);
-  if (family.shoppingId) {
+  if (family.Shopping) {
     return NextResponse.json(
       { success: false, error: "Shopping already exists" },
       { status: 400 },
@@ -126,16 +129,8 @@ export async function POST(
   const { items } = (await req.json()) as ShoppingPostRequest;
   const createdShopping = await prisma.shopping.create({
     data: {
-      Family: {
-        connect: {
-          id: family.id,
-        },
-      },
-      User: {
-        connect: {
-          id: session.user.id,
-        },
-      },
+      familyId: family.id,
+      userId: session.user.id,
       Items: {
         create: items.map((item) => ({
           StockItem: {
