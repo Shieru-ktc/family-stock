@@ -1,18 +1,11 @@
 "use client";
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  ClipboardCopy,
-  CopyPlus,
-  Edit2,
-  Menu,
-  Trash,
-} from "lucide-react";
+import { ClipboardCopy, CopyPlus, Edit2, Menu, Trash } from "lucide-react";
 
 import { StockItemWithPartialMeta } from "@/types";
 
 import { MouseEvent } from "react";
+import Counter from "./Counter";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -48,23 +41,7 @@ export default function Stock({
 
       <div className="flex flex-shrink-0 items-center">
         <div>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              onQuantityChange(stock.quantity - 1);
-            }}
-          >
-            <ChevronLeft />
-          </Button>
-          <span className="text-3xl">{stock.quantity}</span>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              onQuantityChange(stock.quantity + 1);
-            }}
-          >
-            <ChevronRight />
-          </Button>
+          <Counter count={stock.quantity} setCount={onQuantityChange} />
         </div>
         <div>
           <DropdownMenu modal={false}>
