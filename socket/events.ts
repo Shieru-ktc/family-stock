@@ -1,5 +1,5 @@
 import { StockItemWithFullMeta } from "@/types";
-import { Family, StockItem } from "@prisma/client";
+import { Family, ShoppingItem, StockItem } from "@prisma/client";
 
 /**
  * Socketによって管理されるイベントを表すクラス。これにより、リスナーが受け取るデータの型を定義し、保証することができます。
@@ -78,6 +78,10 @@ export const SocketEvents = {
   shoppingCompleted: (familyId: string) =>
     new SocketEvent<{ shoppingId: string }>(`shopping-completed-${familyId}`),
 
+  shoppingQuantityChanged: new SocketEvent<{
+    item: ShoppingItem;
+  }>("shopping-quantity-changed"),
+
   /** テスト用のイベント */
   testEvent: new SocketEvent<{ message: string }>("test-event"),
 
@@ -89,6 +93,11 @@ export const SocketEvents = {
     stockId: string;
     quantity: number;
   }>("stock-quantity-changed"),
+
+  clientShoppingQuantityChanged: new SocketEvent<{
+    itemId: string;
+    quantity: number;
+  }>("shopping-quantity-changed"),
 
   /** クライアントが在庫を削除した際に発火されるイベント */
   clientStockDeleted: new SocketEvent<{ stockId: string }>("stock-deleted"),

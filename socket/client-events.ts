@@ -37,6 +37,41 @@ export default function ClientEventHandler(
       });
   });
 
+  SocketEvents.clientShoppingQuantityChanged.listen(socket, (data) => {
+    console.log(data);
+    prisma.shoppingItem
+      .update({
+        where: {
+          id: data.itemId,
+          Shopping: {
+            Family: {
+              Members: {
+                some: {
+                  User: {
+                    id: userId,
+                  },
+                },
+              },
+            },
+          },
+        },
+        include: {
+          Shopping: true,
+        },
+        data: {
+          quantity: data.quantity,
+        },
+      })
+      .then((shopping) => {
+        SocketEvents.shoppingQuantityChanged.dispatch(
+          {
+            item: shopping,
+          },
+          io.in(shopping.Shopping.familyId),
+        );
+      });
+  });
+
   SocketEvents.clientStockDeleted.listen(socket, (data) => {
     prisma.stockItem
       .delete({
