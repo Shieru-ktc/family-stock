@@ -22,21 +22,6 @@ export default async function AppSidebar() {
     sidebar = (
       <>
         <SidebarGroup>
-          <SidebarGroupLabel>UI/UX</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href={"/uiux"}>
-                    <User />
-                    UI/UX分析
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
           <SidebarGroupLabel>アカウント</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -101,6 +86,21 @@ export default async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>UI/UX</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={"/uiux"}>
+                    <User />
+                    UI/UX分析
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         {sidebar}
         {session?.user && <FamilyItems />}
       </SidebarContent>
