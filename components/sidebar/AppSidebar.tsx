@@ -22,6 +22,21 @@ export default async function AppSidebar() {
     sidebar = (
       <>
         <SidebarGroup>
+          <SidebarGroupLabel>UI/UX</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={"/uiux"}>
+                    <User />
+                    UI/UX分析
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
           <SidebarGroupLabel>アカウント</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
