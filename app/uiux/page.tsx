@@ -10,6 +10,14 @@ export default async function UIUXPage() {
   return (
     <>
       <h1 className="text-3xl">UI/UXデザインについての考察</h1>
+      <h2 className="text-xl">メンバー</h2>
+      <ul className="mb-2 list-inside list-disc pl-2">
+        <li>青山 陽希</li>
+        <li>達野 耀太</li>
+        <li>上野 透夜</li>
+      </ul>
+      <hr />
+      <h2 className="mt-2 text-xl">分析</h2>
       <p>この授業課題について、UI/UXの観点から分析しました。</p>
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
