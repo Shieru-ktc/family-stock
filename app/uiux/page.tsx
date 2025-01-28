@@ -23,7 +23,7 @@ export default async function UIUXPage() {
         <AccordionItem value="item-2">
           <AccordionTrigger>デザインでのこだわり</AccordionTrigger>
           <AccordionContent>
-            shadcn/uiのコンポーネントライブラリを使用し、現代のディファクトスタンダードに沿ったデザインになっています。
+            shadcn/uiを使って、現代のWebサイトに近いデザインにできるよう心がけました。
             <br />
             スマートフォンやタブレットで使うことも想定し、レスポンシブに対応しました。
           </AccordionContent>
@@ -44,6 +44,8 @@ export default async function UIUXPage() {
             全体的な構成が（それなりに）分かりづらい上に、それらについての説明が不足している状況です。
             <br />
             また、現在はDiscord/GitHubでのログインに限定しているため、Googleアカウントなど他のサービスでのログインができない点も改善の余地があります。
+            <br />
+            各要素がまだ未実装の部分が多く、ログインページなどもあまりこだわれていないので、これらを改善していきたいです。
           </AccordionContent>
         </AccordionItem>
       </Accordion>
