@@ -17,8 +17,6 @@ export default async function UIUXPage() {
         <li>上野 透夜</li>
       </ul>
       <hr />
-      <h2 className="mt-2 text-xl">分析</h2>
-      <p>この授業課題について、UI/UXの観点から分析しました。</p>
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
           <AccordionTrigger>Webサイトの概要</AccordionTrigger>
