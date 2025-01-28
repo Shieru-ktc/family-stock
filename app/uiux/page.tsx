@@ -12,8 +12,8 @@ export default async function UIUXPage() {
       <h1 className="text-3xl">UI/UXデザインについての考察</h1>
       <h2 className="text-xl">メンバー</h2>
       <ul className="mb-2 list-inside list-disc pl-2">
-        <li>青山 陽希</li>
         <li>達野 耀太</li>
+        <li>青山 陽希</li>
         <li>上野 透夜</li>
       </ul>
       <hr />
