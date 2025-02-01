@@ -15,7 +15,7 @@ function AuthButtons() {
           <p>ログイン中: {session.user.name}</p>
         </div>
       ) : (
-        <>
+        <div className="space-x-4 flex gap-2">
           <Button
             onClick={async () => {
               await signIn("github");
@@ -32,7 +32,7 @@ function AuthButtons() {
             <FaDiscord />
             Discordでログイン
           </Button>
-        </>
+        </div>
       )}
     </>
   );
