@@ -306,6 +306,10 @@ export async function DELETE(
       );
       if (stockItem) {
         stockItem.quantity += item.quantity;
+        global.io.in(familyId).emit("stockItemQuantityChanged", {
+          stockItemId: stockItem.id,
+          quantity: stockItem.quantity,
+        });
       }
     });
     await prisma.family.update({
