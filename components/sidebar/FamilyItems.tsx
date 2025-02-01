@@ -3,18 +3,13 @@
 import { Family } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
-import { Box, ChevronDown, Cog, ShoppingCart } from "lucide-react";
+import { Box, Cog, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -90,40 +85,33 @@ export default function FamilyItems() {
     return (
       <>
         {families.map((family: Family) => (
-          <Collapsible className="group/collapsible" key={family.id}>
-            <SidebarGroup>
-              <SidebarGroupLabel asChild>
-                <CollapsibleTrigger>
-                  {family.name}
-                  <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                </CollapsibleTrigger>
-              </SidebarGroupLabel>
-              <CollapsibleContent>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <SidebarMenuButton asChild>
-                      <Link href={`/family/${family.id}/stocks`}>
-                        <Box />
-                        在庫リスト
-                      </Link>
-                    </SidebarMenuButton>
-                    <SidebarMenuButton asChild>
-                      <Link href={`/family/${family.id}/shopping`}>
-                        <ShoppingCart />
-                        買い物
-                      </Link>
-                    </SidebarMenuButton>
-                    <SidebarMenuButton asChild>
-                      <Link href={`/family/${family.id}/settings/general`}>
-                        <Cog />
-                        ファミリー設定
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </CollapsibleContent>
-            </SidebarGroup>
-          </Collapsible>
+          <SidebarGroup key={family.id}>
+            <SidebarGroupLabel>
+              {family.name}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuButton asChild>
+                  <Link href={`/family/${family.id}/stocks`}>
+                    <Box />
+                    在庫リスト
+                  </Link>
+                </SidebarMenuButton>
+                <SidebarMenuButton asChild>
+                  <Link href={`/family/${family.id}/shopping`}>
+                    <ShoppingCart />
+                    買い物
+                  </Link>
+                </SidebarMenuButton>
+                <SidebarMenuButton asChild>
+                  <Link href={`/family/${family.id}/settings/general`}>
+                    <Cog />
+                    ファミリー設定
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         ))}
       </>
     );
