@@ -23,7 +23,7 @@ export default function SettingsNavLink() {
     );
   }
   return (
-    <div className="m-1 flex space-x-8 rounded-sm bg-slate-200 p-3 py-2 dark:bg-slate-800">
+    <div className="m-1 flex space-x-8 rounded-sm bg-slate-200 p-3 py-2 dark:bg-slate-800 overflow-x-auto whitespace-nowrap min-w-full">
       <LinkTab href="general">一般</LinkTab>
       <LinkTab href="invites">招待リンク</LinkTab>
       <LinkTab href="members">メンバー</LinkTab>

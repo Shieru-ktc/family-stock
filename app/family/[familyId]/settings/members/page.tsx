@@ -59,7 +59,6 @@ export default async function FamilyMembersPage({
         <TableHeader>
           <TableRow>
             <TableHead>ユーザー名</TableHead>
-            <TableHead>参加日時</TableHead>
             <TableHead>ロール</TableHead>
             <TableHead>アクション</TableHead>
           </TableRow>
@@ -71,7 +70,6 @@ export default async function FamilyMembersPage({
                 {member.User.name}{" "}
                 {member.userId === session?.user.id && "（あなた）"}
               </TableCell>
-              <TableCell>{member.createdAt.toLocaleString("ja-JP")}</TableCell>
               <TableCell>{getRoleLabel(member)}</TableCell>
               <MemberActionComponent family={family} member={member} />
             </TableRow>
