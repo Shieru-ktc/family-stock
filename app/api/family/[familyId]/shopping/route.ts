@@ -25,6 +25,14 @@ export type ShoppingPostResponse =
 export type ShoppingPostRequest = {
   items: StockItem[];
 };
+export type ShoppingDeleteRequest = {
+  completed: boolean;
+};
+export type ShoppingDeleteResponse =
+  | ({
+      completed: boolean;
+    } & SuccessResponse)
+  | FailureResponse;
 
 export async function GET(
   req: NextRequest,
@@ -241,5 +249,90 @@ export async function PATCH(
   return NextResponse.json({
     success: true,
     shopping: updatedShopping,
+  });
+}
+
+export async function DELETE(
+  req: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ familyId: string }>;
+  },
+): Promise<NextResponse<ShoppingDeleteResponse>> {
+  const session = await auth();
+  const { familyId } = await params;
+  if (!session || !session.user) {
+    return NextResponse.json({ success: false, error: "" }, { status: 401 });
+  }
+  const family = await prisma.family.findFirst({
+    where: {
+      id: familyId,
+      Members: {
+        some: {
+          User: {
+            id: session.user.id,
+          },
+        },
+      },
+    },
+    include: {
+      Shopping: {
+        include: {
+          Items: true,
+        },
+      },
+      StockItems: true,
+    },
+  });
+  if (!family) {
+    return NextResponse.json(
+      { success: false, error: "Family not found" },
+      { status: 404 },
+    );
+  }
+  if (!family.Shopping) {
+    return NextResponse.json(
+      { success: false, error: "Shopping not found" },
+      { status: 404 },
+    );
+  }
+  const shopping = family.Shopping;
+  const { completed } = (await req.json()) as ShoppingDeleteRequest;
+  if (completed) {
+    shopping.Items.forEach((item) => {
+      const stockItem = family.StockItems.find(
+        (stockItem) => stockItem.id === item.stockItemId,
+      );
+      if (stockItem) {
+        stockItem.quantity += item.quantity;
+      }
+    });
+    await prisma.family.update({
+      where: {
+        id: family.id,
+      },
+      data: {
+        StockItems: {
+          updateMany: family.StockItems.map((stockItem) => ({
+            where: {
+              id: stockItem.id,
+            },
+            data: {
+              quantity: stockItem.quantity,
+            },
+          })),
+        },
+      },
+    });
+  }
+  await prisma.shopping.delete({
+    where: {
+      id: shopping.id,
+    },
+  });
+  return NextResponse.json({
+    success: true,
+    completed,
   });
 }
