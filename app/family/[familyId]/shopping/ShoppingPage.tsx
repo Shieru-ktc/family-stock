@@ -63,7 +63,7 @@ export default function OnGoingShoppingPage({
           <h1 className="text-2xl">買い物リスト</h1>
           <p>購入したアイテムは在庫リストに加算されます。</p>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex sm:space-x-4 flex-col sm:flex-row gap-2">
           <Button onClick={handleCancel}>買い物をキャンセル</Button>
           <Button onClick={handleAddItem}>新しいアイテムを追加</Button>
           <Button onClick={handleComplete}>買い物を完了</Button>
