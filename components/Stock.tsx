@@ -35,7 +35,6 @@ export default function Stock({
         <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
           {stock.Meta.name}
         </h2>
-        <div>{stock.id}</div>
       </div>
       <div className="flex-grow p-2" />
 
