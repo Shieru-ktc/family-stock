@@ -48,3 +48,16 @@ pnpm run dev
 pnpm run build
 pnpm start
 ```
+
+その際、`.env`をホスト先に合わせて設定してください。例えば:
+
+```ini
+DATABASE_URL="postgresql://family-stock:password@postgres.example.com:5432/family-stock"
+
+NEXTAUTH_URL=https://family-stock.example.com
+
+# (Truncated)
+
+HOSTNAME="family-stock.example.com"
+PORT="443"
+```
