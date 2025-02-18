@@ -4,5 +4,5 @@ import { Server } from "socket.io";
 export {};
 
 declare global {
-  var io: Server;
+    var io: Server;
 }
