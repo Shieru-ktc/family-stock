@@ -1,20 +1,27 @@
 import { randomUUIDv7 } from "bun";
 import { WSContext } from "hono/ws";
 
-interface Emittable {
+export interface Emittable {
     emit: (event: string, data: any) => void;
 }
 
-abstract class Channelable {
+export abstract class Channelable implements Emittable {
     abstract in(roomName: string): Channelable;
     on(roomName: string) {
         return this.in(roomName);
     }
+    abstract emit(event: string, data: any): void;
 }
 
-class WebSocketClient implements Emittable {
+export interface Listener {
+    on: (ev: string, listener: (data: any) => void) => void;
+    off: (ev: string, listener: (data: any) => void) => void;
+}
+
+class WebSocketClient implements Emittable, Listener {
     context: WSContext;
     joinedRooms: string[] = [];
+    listeners: { [key: string]: ((data: any) => void)[] } = {};
     id: string;
 
     constructor(context: WSContext) {
@@ -33,6 +40,22 @@ class WebSocketClient implements Emittable {
     emit(event: string, data: any) {
         this.context.send(event, data);
     }
+
+    on(event: string, callback: (data: any) => void) {
+        if (!this.listeners[event]) {
+            this.listeners[event] = [];
+        }
+        this.listeners[event].push(callback);
+    }
+
+    off(event: string, callback: (data: any) => void) {
+        if (!this.listeners[event]) {
+            return;
+        }
+        this.listeners[event] = this.listeners[event].filter(
+            (listener) => listener !== callback,
+        );
+    }
 }
 
 export class WebSocketManager extends Channelable implements Emittable {
@@ -43,7 +66,9 @@ export class WebSocketManager extends Channelable implements Emittable {
     }
 
     addClient(client: WSContext) {
-        this.clients.push(new WebSocketClient(client));
+        const wsClient = new WebSocketClient(client);
+        this.clients.push(wsClient);
+        return wsClient;
     }
 
     removeClient(client: WebSocketClient | WSContext | string) {

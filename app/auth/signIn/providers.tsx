@@ -1,10 +1,14 @@
 "use client";
-import { signIn, useSession } from "next-auth/react";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 
-import { SessionProvider } from "@/components/SessionProvider";
 import { Button } from "@/components/ui/button";
+import { authConfigManager, SessionProvider, signIn, useSession } from '@hono/auth-js/react';
 
+authConfigManager.setConfig({
+  baseUrl: "http://localhost:3030",
+  basePath: "/api/auth",
+  credentials: "include"
+})
 function AuthButtons() {
   const { data: session, status } = useSession();
 
@@ -12,21 +16,21 @@ function AuthButtons() {
     <>
       {status === "authenticated" ? (
         <div>
-          <p>ログイン中: {session.user.name}</p>
+          <p>ログイン中: {session.user?.name}</p>
         </div>
       ) : (
         <div className="space-x-4 flex gap-2">
           <Button
-            onClick={async () => {
-              await signIn("github");
+            onClick={() => {
+              signIn("github");
             }}
           >
             <FaGithub />
             GitHubでログイン
           </Button>
           <Button
-            onClick={async () => {
-              await signIn("discord");
+            onClick={() => {
+              signIn("discord");
             }}
           >
             <FaDiscord />

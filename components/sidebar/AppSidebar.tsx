@@ -1,9 +1,11 @@
+"use client";
+
 import { Cog, Plus, User, UserPlus } from "lucide-react";
 import Link from "next/link";
 
-import { auth } from "@/auth";
 import { Sidebar, SidebarMenuItem } from "@/components/ui/sidebar";
 
+import { useSession } from "next-auth/react";
 import {
   SidebarContent,
   SidebarGroup,
@@ -15,8 +17,8 @@ import {
 import FamilyItems from "./FamilyItems";
 import { SignInItem, SignOutItem } from "./SignButtons";
 
-export default async function AppSidebar() {
-  const session = await auth();
+export default function AppSidebar() {
+  const { data: session } = useSession();
   let sidebar;
   if (session?.user) {
     sidebar = (

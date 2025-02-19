@@ -1,10 +1,11 @@
 import { Server, Socket } from "socket.io";
 import { prisma } from "../lib/prisma";
 import { SocketEvents } from "./events";
+import { Channelable, Emittable, Listener } from "./manager";
 
 export default function ClientEventHandler(
-    io: Server,
-    socket: Socket,
+    io: Channelable & Emittable,
+    socket: Listener,
     userId: string,
 ) {
     SocketEvents.clientStockQuantityChanged.listen(socket, (data) => {

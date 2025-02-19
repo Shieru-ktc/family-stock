@@ -1,5 +1,6 @@
 import { StockItemWithFullMeta } from "@/types";
 import { Family, ShoppingItem, StockItem } from "@prisma/client";
+import { Emittable } from "./manager";
 
 /**
  * Socketによって管理されるイベントを表すクラス。これにより、リスナーが受け取るデータの型を定義し、保証することができます。
@@ -18,7 +19,7 @@ export class SocketEvent<T> {
      * @param data 渡すデータの型。
      * @param emit イベントを発火するために使用するemit-ableなオブジェクト。
      */
-    dispatch(data: T, emit: { emit: (event: string, data: any) => void }) {
+    dispatch(data: T, emit: Emittable) {
         emit.emit(this.name, data);
     }
 
