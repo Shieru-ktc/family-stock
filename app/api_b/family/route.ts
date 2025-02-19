@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
@@ -34,21 +33,21 @@ export async function POST(req: NextRequest) {
                 create: {
                     User: {
                         connect: {
-                            id: session.user.id,
+                            id: session?.user?.id,
                         },
                     },
                 },
             },
             Owner: {
                 connect: {
-                    id: session.user.id,
+                    id: session?.user?.id,
                 },
             },
         },
     });
     SocketEvents.familyCreated.dispatch(
         { family },
-        global.io.to(session.user.id),
+        global.io.to(session?.user?.id),
     );
     return NextResponse.json(family);
 }

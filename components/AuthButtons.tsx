@@ -1,28 +1,29 @@
 "use client";
 
-import { Session } from "next-auth";
-import { signIn, signOut } from "next-auth/react";
-
+import { signIn, signOut } from "@hono/auth-js/react";
 import { Button } from "./ui/button";
+import { Session } from "@auth/core/types";
 
 export default function AuthButtons({ session }: { session: Session | null }) {
-  if (session) {
+    if (session) {
+        return (
+            <>
+                <div className="text-2xl">
+                    ようこそ、{session?.user?.name}さん！
+                </div>
+                <div>ここはあなたのトップページです。</div>
+                <br />
+                <Button onClick={() => signOut()}>サインアウト</Button>
+            </>
+        );
+    }
     return (
-      <>
-        <div className="text-2xl">ようこそ、{session.user.name}さん！</div>
-        <div>ここはあなたのトップページです。</div>
-        <br />
-        <Button onClick={() => signOut()}>サインアウト</Button>
-      </>
+        <>
+            サインインしていません
+            <br />
+            <Button onClick={() => signIn(undefined, { callbackUrl: "/" })}>
+                Sign in
+            </Button>
+        </>
     );
-  }
-  return (
-    <>
-      サインインしていません
-      <br />
-      <Button onClick={() => signIn(undefined, { callbackUrl: "/" })}>
-        Sign in
-      </Button>
-    </>
-  );
 }

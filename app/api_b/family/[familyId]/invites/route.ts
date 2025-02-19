@@ -1,7 +1,6 @@
 import { Family, Invite, User } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
@@ -33,7 +32,7 @@ export async function GET(
         return CustomResponse.unauthorized();
     }
 
-    const member = await getMember(session.user.id, familyId);
+    const member = await getMember(session?.user?.id, familyId);
 
     const family = await prisma.family.findFirst({
         where: {
@@ -41,7 +40,7 @@ export async function GET(
             Members: {
                 some: {
                     User: {
-                        id: session.user.id,
+                        id: session?.user?.id,
                     },
                 },
             },
@@ -85,14 +84,14 @@ export async function POST(
         return CustomResponse.unauthorized();
     }
 
-    const member = await getMember(session.user.id, familyId);
+    const member = await getMember(session?.user?.id, familyId);
     const family = await prisma.family.findFirst({
         where: {
             id: familyId,
             Members: {
                 some: {
                     User: {
-                        id: session.user.id,
+                        id: session?.user?.id,
                     },
                 },
             },
@@ -115,7 +114,7 @@ export async function POST(
     const invite = await prisma.invite.create({
         data: {
             familyId: familyId,
-            createdById: session.user.id,
+            createdById: session?.user?.id,
             expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
         },
     });

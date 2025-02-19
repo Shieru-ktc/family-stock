@@ -7,15 +7,21 @@ import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
 
 export default function HomePage() {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [socket] = useAtom(socketAtom);
+    const [messages, setMessages] = useState<string[]>([]);
+    const [socket] = useAtom(socketAtom);
 
-  useEffect(() => {
-    return SocketEvents.testEvent.listen(socket, (data) => {
-      console.log(data);
-      setMessages((prev) => [...prev, data.message]);
-    });
-  }, [socket]);
+    useEffect(() => {
+        return SocketEvents.testEvent.listen(socket, (data) => {
+            console.log(data);
+            setMessages((prev) => [...prev, data.message]);
+        });
+    }, [socket]);
 
-  return <div></div>;
+    return (
+        <div>
+            {messages.map((message, i) => (
+                <p key={i}>{message}</p>
+            ))}
+        </div>
+    );
 }

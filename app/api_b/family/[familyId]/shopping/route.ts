@@ -1,7 +1,6 @@
 import { Family, StockItem } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
 import {
@@ -115,7 +114,7 @@ export async function POST(
             Members: {
                 some: {
                     User: {
-                        id: session.user.id,
+                        id: session?.user?.id,
                     },
                 },
             },
@@ -141,7 +140,7 @@ export async function POST(
     const createdShopping = await prisma.shopping.create({
         data: {
             familyId: family.id,
-            userId: session.user.id,
+            userId: session?.user?.id,
             Items: {
                 create: items.map((item) => ({
                     StockItem: {
@@ -202,7 +201,7 @@ export async function PATCH(
             Members: {
                 some: {
                     User: {
-                        id: session.user.id,
+                        id: session?.user?.id,
                     },
                 },
             },
@@ -280,7 +279,7 @@ export async function DELETE(
             Members: {
                 some: {
                     User: {
-                        id: session.user.id,
+                        id: session?.user?.id,
                     },
                 },
             },

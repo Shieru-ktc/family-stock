@@ -1,7 +1,6 @@
 import { Member } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
@@ -24,7 +23,7 @@ export async function GET(
             Members: {
                 some: {
                     User: {
-                        id: session.user.id,
+                        id: session?.user?.id,
                     },
                 },
             },
@@ -49,7 +48,7 @@ export async function DELETE(
     if (!session) {
         return CustomResponse.unauthorized();
     }
-    const member = await getMember(session.user.id, familyId);
+    const member = await getMember(session?.user?.id, familyId);
     if (!member || !member.isAdmin) {
         return CustomResponse.noPermission();
     }

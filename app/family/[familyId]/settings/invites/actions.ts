@@ -2,7 +2,6 @@
 
 import { Family, Invite, Member } from "@prisma/client";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function DeleteInvite(
@@ -15,7 +14,7 @@ export async function DeleteInvite(
     if (
         invite.Family.Members.some(
             (member) =>
-                invite.Family.ownerId !== session.user.id &&
+                invite.Family.ownerId !== session?.user?.id &&
                 member.role !== "ADMIN",
         )
     ) {

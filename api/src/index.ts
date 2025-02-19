@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ClientEventHandler from "@/socket/client-events";
+import { SocketEvents } from "@/socket/events";
 import { WebSocketManager } from "@/socket/manager";
 import Discord from "@auth/core/providers/discord";
 import GitHub from "@auth/core/providers/github";
@@ -50,11 +51,18 @@ const app = new Hono()
                     },
                 },
             },
+            basePath: "/api/auth",
         })),
     )
     .use("/api/auth/*", authHandler())
     .use("/api/*", verifyAuth())
     .get("/", (c) => {
+        SocketEvents.testEvent.dispatch(
+            {
+                message: "Hello world!",
+            },
+            manager,
+        );
         return c.text("Hello Hono!");
     })
     .get(

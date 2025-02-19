@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { auth } from "@/auth";
 import { CustomResponse } from "@/errors";
 import getMember from "@/lib/auth-helper";
 import { prisma } from "@/lib/prisma";
@@ -56,7 +55,7 @@ export async function DELETE(
         return CustomResponse.unauthorized();
     }
 
-    const member = await getMember(session.user.id, familyId);
+    const member = await getMember(session?.user?.id, familyId);
     if (!member || !member.isAdmin) {
         return CustomResponse.noPermission();
     }

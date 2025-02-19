@@ -2,7 +2,6 @@
 
 import { Family, Invite, Member } from "@prisma/client";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 interface StatusSuccess {
@@ -47,7 +46,7 @@ export async function checkInvite(link: string): Promise<ValidateStatus> {
 
     if (
         invite.Family.Members.some(
-            (member) => member.userId === session.user.id,
+            (member) => member.userId === session?.user?.id,
         )
     ) {
         return {
@@ -73,7 +72,7 @@ export async function joinInvite(link: string): Promise<ValidateStatus> {
     await prisma.member.create({
         data: {
             familyId: checkResult.invite.Family.id,
-            userId: session.user.id,
+            userId: session?.user?.id,
         },
     });
 

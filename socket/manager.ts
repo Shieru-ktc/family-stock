@@ -38,7 +38,7 @@ class WebSocketClient implements Emittable, Listener {
     }
 
     emit(event: string, data: any) {
-        this.context.send(event, data);
+        this.context.send(JSON.stringify({ event, data }));
     }
 
     on(event: string, callback: (data: any) => void) {

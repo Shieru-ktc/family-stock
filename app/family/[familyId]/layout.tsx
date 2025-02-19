@@ -1,30 +1,34 @@
-import { ReactNode } from "react";
+"use client";
 
-import { auth } from "@/auth";
+import { ReactNode, use } from "react";
+
 import { prisma } from "@/lib/prisma";
 import FamilyPageAtomSetter from "./atomSetter";
+import { useAtomValue } from "jotai";
+import { sessionAtom } from "@/atoms/sessionAtom";
 
-export default async function FamilyPageLayout({
+export default function FamilyPageLayout({
   children,
   params,
 }: {
   children: ReactNode;
   params: Promise<{ familyId: string }>;
 }) {
-  const session = await auth();
-  const familyId = (await params).familyId;
+  const session = useAtomValue(sessionAtom)
+  const familyId = use(params).familyId;
 
   // TODO: middlewareでやるべき…？
-  const member = await prisma.member.findFirst({
+  const member = prisma.member.findFirst({
     where: {
       familyId,
-      userId: session?.user.id,
+      userId: session?.user?.id,
       Family: {
         active: true,
       },
     },
   });
-  if (member) {
+  return <p>working</p>
+  if (true) {
     return (
       <>
         <FamilyPageAtomSetter familyId={familyId}>
