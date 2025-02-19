@@ -8,6 +8,7 @@ import { Server } from "socket.io";
 // カスタムサーバーをApp Routerで使うのは厳しいのでPages Routerを使う
 // （handler関数がないので）
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    return;
     if (res.socket?.server.io) {
         console.log("Socket.io server already running");
         res.end();
