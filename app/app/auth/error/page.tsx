@@ -32,7 +32,7 @@ export default async function ErrorPage({
       <hr className="my-3 h-[1px] border-none bg-red-400" />
       <p>
         時間をおいて再度お試しください。問題が解決しない場合は、
-        <Link href="/contact" className="font-bold underline">
+        <Link href="/app/contact" className="font-bold underline">
           サポートにご連絡ください。
         </Link>
       </p>
@@ -41,7 +41,7 @@ export default async function ErrorPage({
         className="mt-3 border-none bg-red-400 text-red-950 hover:bg-red-200 hover:text-red-700"
         variant={"outline"}
       >
-        <Link href="/auth/signIn">ログインページに戻る</Link>
+        <Link href="/app/auth/signIn">ログインページに戻る</Link>
       </Button>
     </div>
   );

@@ -89,6 +89,7 @@ export const SocketEvents = {
 
     /** テスト用のイベント */
     testEvent: new SocketEvent<{ message: string }>("test-event"),
+    testEvent2: new SocketEvent<{ message: string }>("test-event-2"),
 
     // Client-side
     // クライアントが発火し、サーバーがリッスンするイベント

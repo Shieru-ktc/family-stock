@@ -21,7 +21,7 @@ const app = new Hono()
         "*",
         cors({
             origin: "http://localhost:3000",
-            credentials: true, // これを追加
+            credentials: true,
         }),
     )
     .use(
@@ -63,7 +63,10 @@ const app = new Hono()
             },
             manager,
         );
-        return c.text("Hello Hono!");
+        return c.json({
+            text: "Hello hono!",
+            greeting: "How about you today?",
+        });
     })
     .get(
         "/api/ws",
@@ -87,3 +90,5 @@ export default {
     port: 3030,
     websocket,
 };
+
+export type ApiAppType = typeof app;

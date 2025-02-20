@@ -31,7 +31,7 @@ export default function AppSidebar() {
                         <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
-                                    <Link href={"/profile"}>
+                                    <Link href={"/app/profile"}>
                                         <User />
                                         プロフィール
                                     </Link>
@@ -39,7 +39,7 @@ export default function AppSidebar() {
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
-                                    <Link href={"/settings"}>
+                                    <Link href={"/app/settings"}>
                                         <Cog />
                                         設定
                                     </Link>
@@ -47,7 +47,7 @@ export default function AppSidebar() {
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
-                                    <Link href={"/sandbox"}>
+                                    <Link href={"/app/sandbox"}>
                                         <Sandwich />
                                         サンドボックス
                                     </Link>
@@ -63,13 +63,13 @@ export default function AppSidebar() {
                         <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
-                                    <Link href={"/family/create"}>
+                                    <Link href={"/app/family/create"}>
                                         <Plus />
                                         ファミリーを作成
                                     </Link>
                                 </SidebarMenuButton>
                                 <SidebarMenuButton asChild>
-                                    <Link href={"/family/join"}>
+                                    <Link href={"/app/family/join"}>
                                         <UserPlus />
                                         ファミリーに参加
                                     </Link>

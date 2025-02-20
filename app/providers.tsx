@@ -10,7 +10,7 @@ import {
     useSession,
 } from "@hono/auth-js/react";
 import { sessionAtom } from "@/atoms/sessionAtom";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 authConfigManager.setConfig({
     baseUrl: "http://localhost:3030",
@@ -30,10 +30,22 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
     const queryClient = getQueryClient();
     useEffect(() => {
         console.log(session);
-        if (session && session.status !== "loading" && session.data !== null) {
-            setSession(session.data);
+        if (session) {
+            if (session.status !== "loading" && session.data !== null) {
+                setSession(session.data);
+            }
+        } else {
+            setSession(undefined);
         }
     }, [session, setSession]);
+
+    if (session?.status === "loading") {
+        return (
+            <div className="flex h-screen w-screen items-center justify-center">
+                <p>Loading...</p>
+            </div>
+        );
+    }
 
     return (
         <QueryClientProvider client={queryClient}>

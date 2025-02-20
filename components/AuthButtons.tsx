@@ -4,7 +4,11 @@ import { signIn, signOut } from "@hono/auth-js/react";
 import { Button } from "./ui/button";
 import { Session } from "@auth/core/types";
 
-export default function AuthButtons({ session }: { session: Session | null }) {
+export default function AuthButtons({
+    session,
+}: {
+    session: Session | null | undefined;
+}) {
     if (session) {
         return (
             <>
