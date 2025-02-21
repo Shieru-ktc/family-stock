@@ -65,8 +65,11 @@ export class WebSocketManager extends Channelable implements Emittable {
         super();
     }
 
-    addClient(client: WSContext) {
+    addClient(client: WSContext, userId?: string) {
         const wsClient = new WebSocketClient(client);
+        if (userId) {
+            wsClient.join(userId);
+        }
         this.clients.push(wsClient);
         return wsClient;
     }
@@ -93,7 +96,10 @@ export class WebSocketManager extends Channelable implements Emittable {
         this.clients.forEach((client) => client.emit(event, data));
     }
 
-    in(roomName: string) {
+    in(roomName: string | undefined) {
+        if (!roomName) {
+            return this;
+        }
         const chain = new RoomsChain(this);
         chain.roomNames.push(roomName);
         return chain;

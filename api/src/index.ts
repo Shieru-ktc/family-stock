@@ -12,9 +12,11 @@ import { createBunWebSocket } from "hono/bun";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { generalFamily } from "./family/general";
+import { manager } from "./ws";
+import { FamilyNotFoundError, NoPermissionError } from "./errors";
+import { HTTPException } from "hono/http-exception";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
-const manager = new WebSocketManager();
 
 const app = new Hono()
     .use("*", logger())
@@ -85,29 +87,28 @@ const app = new Hono()
         });
     })
     .get("/api/protected", (c) => {
-        const { session } = c.var.authUser;
+        const { token } = c.var.authUser;
         return c.json({
-            text: `Hello, ${session.user?.name}!`,
+            text: `Hello, ${token?.id}!`,
         });
     })
     .route("/api/family", generalFamily)
     .get(
         "/api/ws",
         upgradeWebSocket((c) => {
-            const { session } = c.get("authUser");
-            console.log("Auth user", session);
+            const { token } = c.var.authUser;
             return {
                 onMessage(e, ws) {
                     console.log(`Message from client: ${e.data}`);
                 },
                 onOpen(_, ws) {
                     console.log("Client connected");
-                    const client = manager.addClient(ws);
-                    ClientEventHandler(manager, client, session.user?.id ?? "");
+                    const client = manager.addClient(ws, token?.sub);
+                    ClientEventHandler(manager, client, token?.sub ?? "");
 
                     SocketEvents.testEvent.dispatch(
                         {
-                            message: `Hello, ${session.user?.name}!`,
+                            message: `Hello, ${token?.name}!`,
                         },
                         client,
                     );
@@ -118,7 +119,20 @@ const app = new Hono()
                 },
             };
         }),
-    );
+    )
+    .onError((e, c) => {
+        if (e instanceof FamilyNotFoundError) {
+            return c.json({ error: "Family not found" }, 404);
+        }
+        if (e instanceof NoPermissionError) {
+            return c.json({ error: e.message }, 403);
+        }
+
+        if (e instanceof HTTPException) {
+            return e.getResponse();
+        }
+        throw e;
+    });
 
 export default {
     fetch: app.fetch,

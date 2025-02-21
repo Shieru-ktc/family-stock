@@ -4,17 +4,16 @@ import { useMutation } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiClient } from "@/lib/apiClient";
 
 export default function FamilyCreatePage() {
   const createFamily = useMutation({
     mutationFn: (name: string) => {
-      return fetch(`/api/family/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
-      });
+      return apiClient.api.family.$post({
+        json: {
+          name,
+        }
+      })
     },
   });
 
