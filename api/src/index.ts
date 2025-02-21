@@ -11,6 +11,7 @@ import { Hono } from "hono";
 import { createBunWebSocket } from "hono/bun";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { generalFamily } from "./family/general";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 const manager = new WebSocketManager();
@@ -52,6 +53,21 @@ const app = new Hono()
                 },
             },
             basePath: "/api/auth",
+            callbacks: {
+                redirect: async ({ url, baseUrl }) => {
+                    return url.startsWith(baseUrl) ||
+                        url.startsWith(process.env.BASE_URL ?? baseUrl)
+                        ? Promise.resolve(url)
+                        : Promise.resolve(baseUrl);
+                },
+                jwt: async ({ token, user }) => {
+                    if (user) {
+                        console.log(token, user);
+                        token.id = user.id;
+                    }
+                    return token;
+                },
+            },
         })),
     )
     .use("/api/auth/*", authHandler())
@@ -68,18 +84,37 @@ const app = new Hono()
             greeting: "How about you today?",
         });
     })
+    .get("/api/protected", (c) => {
+        const { session } = c.var.authUser;
+        return c.json({
+            text: `Hello, ${session.user?.name}!`,
+        });
+    })
+    .route("/api/family", generalFamily)
     .get(
         "/api/ws",
         upgradeWebSocket((c) => {
-            const auth = c.get("authUser");
+            const { session } = c.get("authUser");
+            console.log("Auth user", session);
             return {
                 onMessage(e, ws) {
                     console.log(`Message from client: ${e.data}`);
                 },
-                onOpen(event, ws) {
+                onOpen(_, ws) {
                     console.log("Client connected");
                     const client = manager.addClient(ws);
-                    ClientEventHandler(manager, client, auth.user?.id ?? "");
+                    ClientEventHandler(manager, client, session.user?.id ?? "");
+
+                    SocketEvents.testEvent.dispatch(
+                        {
+                            message: `Hello, ${session.user?.name}!`,
+                        },
+                        client,
+                    );
+                },
+                onClose(_, ws) {
+                    console.log("Client disconnected");
+                    manager.removeClient(ws);
                 },
             };
         }),

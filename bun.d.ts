@@ -2,7 +2,7 @@ declare module "bun" {
     interface Env {
         DATABASE_URL: string;
 
-        AUTH_URL: string;
+        NEXTAUTH_URL: string;
         AUTH_SECRET: string;
 
         GITHUB_ID: string;
@@ -13,5 +13,7 @@ declare module "bun" {
 
         HOSTNAME: string;
         PORT: string;
+
+        API_URL: string;
     }
 }

@@ -5,10 +5,7 @@ import { useEffect, useState } from "react";
 
 import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
-import { hc } from "hono/client";
-import { ApiAppType } from "@/api/src";
-
-const client = hc<ApiAppType>("http://localhost:3030");
+import { apiClient } from "@/lib/apiClient";
 
 export default function HomePage() {
     const [messages, setMessages] = useState<string[]>([]);
@@ -23,7 +20,7 @@ export default function HomePage() {
     }, [socket]);
 
     useEffect(() => {
-        client.index.$get().then(async (data) => {
+        apiClient.index.$get().then(async (data) => {
             const response = await data.json();
             setApiRootText(response.text);
         });
