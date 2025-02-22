@@ -20,7 +20,7 @@ type FamilyWithInclude<T extends Prisma.FamilyInclude | undefined> =
 interface ContextVariables<T extends Prisma.FamilyInclude | undefined> {
     familyId: string;
     authUser: AuthUser;
-    family: FamilyWithInclude<T> | undefined; // `undefined` を許容
+    family: FamilyWithInclude<T>;
 }
 
 export const familyMiddleware = <

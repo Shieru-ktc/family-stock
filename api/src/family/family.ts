@@ -1,80 +1,90 @@
 import { Hono } from "hono";
 import { familyMiddleware } from "./familyMiddleware";
+import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { SocketEvents } from "@/socket/events";
-import { manager } from "../ws";
 
 export const familyApi = new Hono()
-    .get("/:familyId", familyMiddleware({ Owner: true, Members: true }), async (c) => {
-        const familyId = c.req.param("familyId");
-        const family = c.var.family;
-        const { token } = c.var.authUser;
+    .get(
+        "/:familyId",
+        familyMiddleware({ Owner: true, Members: true }),
+        async (c) => {
+            const familyId = c.req.param("familyId");
+            const family = c.var.family;
+            const { token } = c.var.authUser;
 
-        return c.json({ message: "Hello, family!", familyId, family, token });
-    })
+            return c.json({
+                message: "Hello, family!",
+                familyId,
+                family,
+                token,
+            });
+        },
+    )
     .get("/:familyId/protected", familyMiddleware({}, "OWNER"), async (c) => {
         return c.json({ message: "Hello, owner!" });
     })
-    .post(
-        "/join",
-        zValidator(
-            "json",
-            z.object({
-                inviteId: z.string(),
-            }),
-        ),
+    .delete("/:familyId", familyMiddleware({}, "OWNER"), async (c) => {
+        const familyId = c.req.param("familyId");
+        await prisma.family.delete({
+            where: {
+                id: familyId,
+            },
+        });
+        return c.status(204);
+    })
+    .get(
+        "/:familyId/members",
+        familyMiddleware({ Members: true }),
         async (c) => {
-            const { token } = c.var.authUser;
-            const { inviteId } = c.req.valid("json");
-
-            const invite = await prisma.invite.findFirst({
-                where: {
-                    id: inviteId,
-                    active: true,
-                    expiresAt: {
-                        gte: new Date(),
-                    },
-                },
-                include: {
-                    Family: {
-                        include: {
-                            Members: true,
-                        },
-                    },
-                    CreatedBy: true,
-                },
-            });
-
-            if (!invite) {
-                return c.json({ message: "Invalid invite link" }, 400);
-            }
-
-            const member = await prisma.member.create({
-                data: {
-                    familyId: invite.familyId,
-                    userId: token?.sub!,
-                },
-                select: {
-                    Family: true,
-                },
-            });
-
-            SocketEvents.familyCreated.dispatch(
-                {
-                    family: member.Family,
-                },
-                manager.in(token?.sub),
+            const family = c.var.family;
+            return c.json(
+                family?.Members.map((m) => ({
+                    ...m,
+                    isOwner: m.userId === family?.ownerId,
+                })),
             );
-
-            return c.json(member.Family);
         },
     )
-    .post("/:familyId", familyMiddleware({}, "ADMIN"), async (c) => {
-        const familyId = c.req.param("familyId");
-        return c.json({ message: "Hello, family! (POST)", familyId });
-    })
+    .patch(
+        "/:familyId/member/:userId",
+        zValidator("json", z.object({ role: z.enum(["MEMBER", "ADMIN"]) })),
+        familyMiddleware({ Members: true }, "OWNER"),
+        async (c) => {
+            const family = c.var.family;
+            const userId = c.req.param("userId");
+            const data = c.req.valid("json");
+            const member = await prisma.member.update({
+                where: {
+                    userId_familyId: {
+                        userId,
+                        familyId: family.id,
+                    },
+                },
+                data: {
+                    role: data.role,
+                },
+            });
+            return c.json(member);
+        },
+    )
+    .delete(
+        "/:familyId/member/:userId",
+        familyMiddleware({}, "OWNER"),
+        async (c) => {
+            const family = c.var.family;
+            const userId = c.req.param("userId");
+            await prisma.member.delete({
+                where: {
+                    userId_familyId: {
+                        userId,
+                        familyId: family.id,
+                    },
+                },
+            });
+            return c.status(204);
+        },
+    )
     .get(
         "/:familyId/invites",
         familyMiddleware({ Invites: true }),
@@ -83,15 +93,32 @@ export const familyApi = new Hono()
             return c.json(family?.Invites);
         },
     )
-    .post("/:familyId/invite", familyMiddleware({ Invites: true }, "ADMIN"), async (c) => {
-        const { token } = c.var.authUser;
-        const familyId = c.req.param("familyId");
-        const invite = await prisma.invite.create({
-            data: {
-                familyId: familyId,
-                createdById: token?.sub,
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-            },
-        });
-        return c.json(invite);
-    });
+    .post(
+        "/:familyId/invite",
+        familyMiddleware({ Invites: true }, "ADMIN"),
+        async (c) => {
+            const { token } = c.var.authUser;
+            const familyId = c.req.param("familyId");
+            const invite = await prisma.invite.create({
+                data: {
+                    familyId: familyId,
+                    createdById: token?.sub,
+                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                },
+            });
+            return c.json(invite);
+        },
+    )
+    .delete(
+        "/:familyId/invite/:inviteId",
+        familyMiddleware({ Invites: true }, "ADMIN"),
+        async (c) => {
+            const inviteId = c.req.param("inviteId");
+            await prisma.invite.delete({
+                where: {
+                    id: inviteId,
+                },
+            });
+            return c.status(204);
+        },
+    );

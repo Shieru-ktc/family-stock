@@ -15,6 +15,7 @@ import { generalFamily } from "./family/general";
 import { manager } from "./ws";
 import { FamilyNotFoundError, NoPermissionError } from "./errors";
 import { HTTPException } from "hono/http-exception";
+import { inviteApi } from "./invite/general";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 
@@ -91,6 +92,7 @@ const app = new Hono()
         return c.json(token);
     })
     .route("/api/family", generalFamily)
+    .route("/api/invite", inviteApi)
     .get(
         "/api/ws",
         upgradeWebSocket((c) => {
