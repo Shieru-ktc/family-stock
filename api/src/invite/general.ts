@@ -31,22 +31,25 @@ export const inviteApi = new Hono()
         const invite = await getInvite(inviteId);
 
         if (!invite) {
-            return c.json({ message: "Invalid invite link" }, 400);
+            return c.json({ message: "Invalid invite link" }, 404);
         }
 
-        return c.json({
-            id: invite.id,
-            familyId: invite.familyId,
-            createdBy: invite.CreatedBy,
-            expiresAt: invite.expiresAt,
-            active: invite.active,
-            Family: {
-                MemberCount: invite.Family.Members.length,
-                ownerId: invite.Family.ownerId,
-                name: invite.Family.name,
-                createdAt: invite.Family.createdAt,
+        return c.json(
+            {
+                id: invite.id,
+                familyId: invite.familyId,
+                createdBy: invite.CreatedBy,
+                expiresAt: invite.expiresAt,
+                active: invite.active,
+                Family: {
+                    MemberCount: invite.Family.Members.length,
+                    ownerId: invite.Family.ownerId,
+                    name: invite.Family.name,
+                    createdAt: invite.Family.createdAt,
+                },
             },
-        });
+            200,
+        );
     })
     .post("/:inviteId", async (c) => {
         const inviteId = c.req.param("inviteId");
