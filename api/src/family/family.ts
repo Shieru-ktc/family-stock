@@ -7,7 +7,7 @@ import { SocketEvents } from "@/socket/events";
 import { manager } from "../ws";
 
 export const familyApi = new Hono()
-    .get("/:familyId", familyMiddleware({ Owner: true }), async (c) => {
+    .get("/:familyId", familyMiddleware({ Owner: true, Members: true }), async (c) => {
         const familyId = c.req.param("familyId");
         const family = c.var.family;
         const { token } = c.var.authUser;
@@ -18,7 +18,7 @@ export const familyApi = new Hono()
         return c.json({ message: "Hello, owner!" });
     })
     .post(
-        "/:familyId/join",
+        "/join",
         zValidator(
             "json",
             z.object({
@@ -26,7 +26,6 @@ export const familyApi = new Hono()
             }),
         ),
         async (c) => {
-            const familyId = c.req.param("familyId");
             const { token } = c.var.authUser;
             const { inviteId } = c.req.valid("json");
 
@@ -75,4 +74,24 @@ export const familyApi = new Hono()
     .post("/:familyId", familyMiddleware({}, "ADMIN"), async (c) => {
         const familyId = c.req.param("familyId");
         return c.json({ message: "Hello, family! (POST)", familyId });
+    })
+    .get(
+        "/:familyId/invites",
+        familyMiddleware({ Invites: true }),
+        async (c) => {
+            const family = c.var.family;
+            return c.json(family?.Invites);
+        },
+    )
+    .post("/:familyId/invite", familyMiddleware({ Invites: true }, "ADMIN"), async (c) => {
+        const { token } = c.var.authUser;
+        const familyId = c.req.param("familyId");
+        const invite = await prisma.invite.create({
+            data: {
+                familyId: familyId,
+                createdById: token?.sub,
+                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+            },
+        });
+        return c.json(invite);
     });

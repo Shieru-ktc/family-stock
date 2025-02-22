@@ -86,11 +86,9 @@ const app = new Hono()
             greeting: "How about you today?",
         });
     })
-    .get("/api/protected", (c) => {
+    .get("/api/me", (c) => {
         const { token } = c.var.authUser;
-        return c.json({
-            text: `Hello, ${token?.id}!`,
-        });
+        return c.json(token);
     })
     .route("/api/family", generalFamily)
     .get(

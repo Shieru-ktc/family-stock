@@ -12,12 +12,10 @@ interface AuthUser {
     };
 }
 
-type FamilyBase = Prisma.FamilyGetPayload<{ include: { Members: true } }>;
+type FamilyBase = Prisma.FamilyGetPayload<{ include: {} }>;
 
 type FamilyWithInclude<T extends Prisma.FamilyInclude | undefined> =
-    T extends undefined
-        ? FamilyBase // include なしの場合は基本型のみ
-        : Prisma.FamilyGetPayload<{ include: T & { Members: true } }>;
+    T extends undefined ? FamilyBase : Prisma.FamilyGetPayload<{ include: T }>;
 
 interface ContextVariables<T extends Prisma.FamilyInclude | undefined> {
     familyId: string;
@@ -47,7 +45,6 @@ export const familyMiddleware = <
             include: {
                 Family: {
                     include: {
-                        Members: true,
                         ...(properties ?? {}),
                     },
                 },
@@ -72,6 +69,9 @@ export function checkRole(
     } else if (requiredRole === "OWNER") {
         return member.Family.ownerId === member.userId;
     } else {
-        return member.role === requiredRole;
+        return (
+            member.role === requiredRole ||
+            member.Family.ownerId === member.userId
+        );
     }
 }
