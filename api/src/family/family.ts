@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { stocksApi } from "./stocks";
+import { shoppingApi } from "./shopping";
 
 export const familyApi = new Hono()
     .get(
@@ -81,7 +82,7 @@ export const familyApi = new Hono()
     )
     .get(
         "/:familyId/invites",
-        familyMiddleware({ Invites: true }),
+        familyMiddleware({ Invites: { include: { CreatedBy: true } } }),
         async (c) => {
             const family = c.var.family;
             return c.json(family?.Invites);
@@ -116,4 +117,5 @@ export const familyApi = new Hono()
             return c.status(204);
         },
     )
-    .route("/:familyId", stocksApi);
+    .route("/:familyId", stocksApi)
+    .route("/:familyId", shoppingApi);

@@ -26,13 +26,11 @@ import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 import { apiClient } from "@/lib/apiClient";
 import { InferRequestType, InferResponseType } from "hono";
+import { useGetStocksQuery } from "@/app/app/queries/Stocks";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]
 >["json"];
-type StocksGetResponse = InferResponseType<
-    (typeof apiClient.api.family)[":familyId"]["stocks"]["$get"]
->;
 
 export default function StocksPage({
     params,
@@ -69,7 +67,9 @@ export default function StocksPage({
             mutationFn: async (
                 stock: { item: { id: string } } & StockPostRequest,
             ) => {
-                return await apiClient.api.family[":familyId"].stocks[":stockId"].$patch({
+                return await apiClient.api.family[":familyId"].stocks[
+                    ":stockId"
+                ].$patch({
                     param: {
                         familyId,
                         stockId: stock.item.id,
@@ -100,29 +100,7 @@ export default function StocksPage({
         z.infer<typeof StockItemFormSchema> | undefined
     >(undefined);
 
-    const { data: stocks, isPending } = useQuery({
-        queryKey: ["family", familyId, "stocks"],
-        queryFn: async () => {
-            const response = await apiClient.api.family[
-                ":familyId"
-            ].stocks.$get({
-                param: { familyId },
-            });
-            return response.json();
-        },
-        select: (data) =>
-            data.map((stock) => ({
-                ...stock,
-                createdAt: new Date(stock.createdAt),
-                Meta: {
-                    ...stock.Meta,
-                    createdAt: new Date(stock.Meta.createdAt),
-                },
-            })),
-        refetchOnMount: "always",
-        refetchOnReconnect: "always",
-        refetchOnWindowFocus: "always",
-    });
+    const { data: stocks, isPending } = useGetStocksQuery(familyId);
 
     useEffect(() => {
         const unsubscribeCreated = SocketEvents.stockCreated(familyId).listen(

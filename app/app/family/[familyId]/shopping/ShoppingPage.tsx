@@ -4,14 +4,14 @@ import { socketAtom } from "@/atoms/socketAtom";
 import Counter from "@/components/Counter";
 import { Button } from "@/components/ui/button";
 import { SocketEvents } from "@/socket/events";
-import { FullShopping } from "@/types";
+import { FullShopping, PartialShopping } from "@/types";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 
 export default function OnGoingShoppingPage({
   shopping: _shopping,
 }: {
-  shopping: FullShopping;
+  shopping: PartialShopping;
 }) {
   const [shopping, setShopping] = useState(_shopping);
 

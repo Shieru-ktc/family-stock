@@ -30,7 +30,9 @@ export type FamilyWithUserMember = {
     Members: MemberWithUser[];
 } & FamilyWithMember;
 
-export type PartialShopping = Shopping;
+export type PartialShopping = Shopping & {
+    Items: PartialShoppingItemWithStockItemMeta[]
+}
 export type PartialShoppingWithFamily = PartialShopping & {
     Family: Family;
 };
