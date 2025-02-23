@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ClientEventHandler from "@/socket/client-events";
 import { SocketEvents } from "@/socket/events";
-import { WebSocketManager } from "@/socket/manager";
 import Discord from "@auth/core/providers/discord";
 import GitHub from "@auth/core/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -99,11 +98,23 @@ const app = new Hono()
             const { token } = c.var.authUser;
             return {
                 onMessage(e, ws) {
-                    console.log(`Message from client: ${e.data}`);
+                    const { event, data } = JSON.parse(e.data.toString());
+                    manager.getClient(ws)?.fire(event, data);
                 },
-                onOpen(_, ws) {
+                onOpen: async (_, ws) => {
                     console.log("Client connected");
-                    const client = manager.addClient(ws, token?.sub);
+                    const client = manager.addClient(ws, token?.sub!);
+                    (
+                        await prisma.family.findMany({
+                            where: {
+                                Members: {
+                                    some: {
+                                        userId: token?.sub,
+                                    },
+                                },
+                            },
+                        })
+                    ).forEach((family) => client.join(family.id));
                     ClientEventHandler(manager, client, token?.sub ?? "");
 
                     SocketEvents.testEvent.dispatch(

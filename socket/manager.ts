@@ -23,10 +23,12 @@ class WebSocketClient implements Emittable, Listener {
     joinedRooms: string[] = [];
     listeners: { [key: string]: ((data: any) => void)[] } = {};
     id: string;
+    userId: string;
 
-    constructor(context: WSContext) {
+    constructor(context: WSContext, userId: string) {
         this.context = context;
         this.id = randomUUIDv7();
+        this.userId = userId;
     }
 
     join(roomName: string) {
@@ -39,6 +41,13 @@ class WebSocketClient implements Emittable, Listener {
 
     emit(event: string, data: any) {
         this.context.send(JSON.stringify({ event, data }));
+    }
+
+    fire(event: string, data: any) {
+        if (!this.listeners[event]) {
+            return;
+        }
+        this.listeners[event].forEach((listener) => listener(data));
     }
 
     on(event: string, callback: (data: any) => void) {
@@ -65,8 +74,8 @@ export class WebSocketManager extends Channelable implements Emittable {
         super();
     }
 
-    addClient(client: WSContext, userId?: string) {
-        const wsClient = new WebSocketClient(client);
+    addClient(client: WSContext, userId: string) {
+        const wsClient = new WebSocketClient(client, userId);
         if (userId) {
             wsClient.join(userId);
         }
@@ -85,10 +94,11 @@ export class WebSocketManager extends Channelable implements Emittable {
     }
 
     getClient(client: WSContext | string) {
+        console.log("getClient", client);
         if (typeof client === "string") {
-            return this.clients.find((c) => c.id === client);
+            return this.clients.find((c) => c.userId === client);
         } else {
-            return this.clients.find((c) => c.context === client);
+            return this.clients.find((c) => c.context.raw === client.raw);
         }
     }
 

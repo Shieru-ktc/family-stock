@@ -3,22 +3,15 @@ import { familyMiddleware } from "./familyMiddleware";
 import { prisma } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { stocksApi } from "./stocks";
 
 export const familyApi = new Hono()
     .get(
         "/:familyId",
-        familyMiddleware({ Owner: true, Members: true }),
+        familyMiddleware({ Owner: true, Members: { include: { User: true } } }),
         async (c) => {
-            const familyId = c.req.param("familyId");
             const family = c.var.family;
-            const { token } = c.var.authUser;
-
-            return c.json({
-                message: "Hello, family!",
-                familyId,
-                family,
-                token,
-            });
+            return c.json(family);
         },
     )
     .get("/:familyId/protected", familyMiddleware({}, "OWNER"), async (c) => {
@@ -82,6 +75,7 @@ export const familyApi = new Hono()
                     },
                 },
             });
+            // TODO: WebSocketのルームからも削除する
             return c.status(204);
         },
     )
@@ -121,4 +115,5 @@ export const familyApi = new Hono()
             });
             return c.status(204);
         },
-    );
+    )
+    .route("/:familyId", stocksApi);

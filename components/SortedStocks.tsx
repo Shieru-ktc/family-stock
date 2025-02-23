@@ -2,7 +2,7 @@
 
 import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
-import { StockItemWithFullMeta } from "@/types";
+import { StockItemWithMeta, StockItemWithPartialMeta } from "@/types";
 import { useAtom } from "jotai";
 import { MouseEvent } from "react";
 import Stock from "./Stock";
@@ -16,13 +16,13 @@ export default function SortedStocks({
   onDuplicate,
   onCopy,
 }: {
-  stocks: StockItemWithFullMeta[];
+  stocks: StockItemWithPartialMeta[];
   sortCondition: string;
   reverse: boolean;
-  onEdit: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
-  onDelete: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
-  onDuplicate: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
-  onCopy: (stock: StockItemWithFullMeta, event: MouseEvent) => void;
+  onEdit: (stock: StockItemWithPartialMeta, event: MouseEvent) => void;
+  onDelete: (stock: StockItemWithPartialMeta, event: MouseEvent) => void;
+  onDuplicate: (stock: StockItemWithPartialMeta, event: MouseEvent) => void;
+  onCopy: (stock: StockItemWithPartialMeta, event: MouseEvent) => void;
 }) {
   const [socket] = useAtom(socketAtom);
 
@@ -39,7 +39,7 @@ export default function SortedStocks({
     return reverse ? -sort() : sort();
   });
 
-  return sortedStocks.map((stock: StockItemWithFullMeta) => (
+  return sortedStocks.map((stock: StockItemWithPartialMeta) => (
     <Stock
       key={stock.id}
       stock={stock}
