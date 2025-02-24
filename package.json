@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "start": "NODE_ENV=production npx prisma migrate deploy && next start",
+        "start": "NODE_ENV=production next start",
         "lint": "next lint",
         "api": "bun run --hot api/src/index.ts"
     },
