@@ -89,14 +89,14 @@ export default function FamilyItems() {
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuButton asChild>
-                                <Link href={`/app/family/${family.id}/stocks`}>
+                                <Link href={`/main/family/${family.id}/stocks`}>
                                     <Box />
                                     在庫リスト
                                 </Link>
                             </SidebarMenuButton>
                             <SidebarMenuButton asChild>
                                 <Link
-                                    href={`/app/family/${family.id}/shopping`}
+                                    href={`/main/family/${family.id}/shopping`}
                                 >
                                     <ShoppingCart />
                                     買い物
@@ -104,7 +104,7 @@ export default function FamilyItems() {
                             </SidebarMenuButton>
                             <SidebarMenuButton asChild>
                                 <Link
-                                    href={`/app/family/${family.id}/settings/general`}
+                                    href={`/main/family/${family.id}/settings/general`}
                                 >
                                     <Cog />
                                     ファミリー設定

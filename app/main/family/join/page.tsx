@@ -57,7 +57,7 @@ export default function FamilyJoinPage() {
                     inviteId: response.result.id,
                 },
             });
-            router.push(`/app/family/${response.result.familyId}`);
+            router.push(`/main/family/${response.result.familyId}`);
         }
     };
 
