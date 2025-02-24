@@ -11,7 +11,7 @@ import {
 } from "@hono/auth-js/react";
 import { sessionAtom } from "@/atoms/sessionAtom";
 import { useEffect } from "react";
-import SignIn from "./app/auth/signIn/page";
+import SignIn from "./main/auth/signIn/page";
 import Loading from "@/components/Loading";
 
 authConfigManager.setConfig({

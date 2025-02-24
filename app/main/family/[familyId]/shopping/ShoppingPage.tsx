@@ -1,21 +1,14 @@
 "use client";
 
-import { useGetStocksQuery } from "@/app/app/queries/Stocks";
+import { useGetStocksQuery } from "@/app/main/queries/Stocks";
 import { socketAtom } from "@/atoms/socketAtom";
 import ShoppingItem from "@/components/ShoppingItem";
 import StockItemSelector from "@/components/StockItemSelector";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { apiClient } from "@/lib/apiClient";
 import { SocketEvents } from "@/socket/events";
-import {
-    PartialShopping,
-    StockItemWithPartialMeta,
-} from "@/types";
+import { PartialShopping, StockItemWithPartialMeta } from "@/types";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 

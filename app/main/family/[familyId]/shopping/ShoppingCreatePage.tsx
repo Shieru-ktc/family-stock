@@ -11,7 +11,7 @@ import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { InferRequestType } from "hono";
 import { apiClient } from "@/lib/apiClient";
-import { useGetStocksQuery } from "@/app/app/queries/Stocks";
+import { useGetStocksQuery } from "@/app/main/queries/Stocks";
 
 type ShoppingPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["shopping"]["$post"]

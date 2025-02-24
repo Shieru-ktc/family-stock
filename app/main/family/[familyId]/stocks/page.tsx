@@ -26,7 +26,7 @@ import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 import { apiClient } from "@/lib/apiClient";
 import { InferRequestType, InferResponseType } from "hono";
-import { useGetStocksQuery } from "@/app/app/queries/Stocks";
+import { useGetStocksQuery } from "@/app/main/queries/Stocks";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]

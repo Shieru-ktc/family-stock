@@ -5,10 +5,10 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "start": "NODE_ENV=production next start",
+        "start": "next start",
         "lint": "next lint",
         "api": "bun run --hot api/src/index.ts",
-	"startApi": "bunx prisma generate deploy && bun run api/src/index.ts"
+        "startApi": "bunx prisma generate deploy && bun run api/src/index.ts"
     },
     "dependencies": {
         "@auth/core": "^0.37.4",
