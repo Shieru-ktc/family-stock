@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAtom } from "jotai";
 import { apiClient } from "@/lib/apiClient";
 
-export default function FamilySettingsPage({
-    params,
-}: {
-    params: Promise<{ familyId: string }>;
-}) {
+export default function FamilySettingsPage() {
     const [family] = useAtom(familyAtom);
 
     return family ? (
