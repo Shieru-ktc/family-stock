@@ -20,5 +20,4 @@ RUN bunx prisma generate
 EXPOSE 3001
 
 # Start the Hono backend API
-CMD ["bun", "api"]
-
+CMD ["bun", "run", "startApi"]
