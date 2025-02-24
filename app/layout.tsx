@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 import type { Metadata } from "next";
@@ -23,7 +24,13 @@ export default function RootLayout({
             <body
                 className={`${notoSansJP.variable} antialiased transition-all duration-200`}
             >
-                {children}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                >
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     );
