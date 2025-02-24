@@ -77,7 +77,7 @@ export const familyApi = new Hono()
                 },
             });
             // TODO: WebSocketのルームからも削除する
-            return c.status(204);
+            return c.body(null, 204);
         },
     )
     .get(
@@ -114,7 +114,7 @@ export const familyApi = new Hono()
                     id: inviteId,
                 },
             });
-            return c.status(204);
+            return c.body(null, 204);
         },
     )
     .route("/:familyId", stocksApi)

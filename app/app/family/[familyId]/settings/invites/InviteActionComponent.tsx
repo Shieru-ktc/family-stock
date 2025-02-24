@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TableCell } from "@/components/ui/table";
+import { apiClient } from "@/lib/apiClient";
 
 export default function InviteActionComponent({
     invite,
@@ -26,13 +27,13 @@ export default function InviteActionComponent({
 }) {
     const useDeleteInvite = () =>
         useMutation({
-            mutationFn: (invite: Invite) => {
-                return fetch(
-                    `/api/family/${invite.familyId}/invites/${invite.id}`,
-                    {
-                        method: "DELETE",
+            mutationFn: async (invite: Invite) => {
+                return await apiClient.api.family[":familyId"].invite[":inviteId"].$delete({
+                    param: {
+                        familyId: invite.familyId,
+                        inviteId: invite.id,
                     },
-                );
+                });
             },
         });
     const deleteInvite = useDeleteInvite();

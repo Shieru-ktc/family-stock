@@ -69,6 +69,10 @@ const app = new Hono()
                     }
                     return token;
                 },
+                session: async ({ session, token }) => {
+                    session.user.id = token.sub!;
+                    return session;
+                },
             },
         })),
     )
