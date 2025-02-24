@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
 import ShoppingCreatePage from "./ShoppingCreatePage";
 import OnGoingShoppingPage from "./ShoppingPage";
-import { InferResponseType } from "hono";
 import { apiClient } from "@/lib/apiClient";
 
 export default function ShoppingPage({
@@ -55,7 +54,12 @@ export default function ShoppingPage({
     if (isPending) {
         return <div>loading...</div>;
     } else if (ongoingShopping) {
-        return <OnGoingShoppingPage shopping={ongoingShopping} />;
+        return (
+            <OnGoingShoppingPage
+                shopping={ongoingShopping}
+                familyId={familyId}
+            />
+        );
     } else {
         return <ShoppingCreatePage familyId={familyId} />;
     }
