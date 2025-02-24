@@ -5,6 +5,7 @@ import { use } from "react";
 import ShoppingCreatePage from "./ShoppingCreatePage";
 import OnGoingShoppingPage from "./ShoppingPage";
 import { apiClient } from "@/lib/apiClient";
+import LoadingPage from "@/app/loading/page";
 
 export default function ShoppingPage({
     params,
@@ -52,7 +53,7 @@ export default function ShoppingPage({
     });
 
     if (isPending) {
-        return <div>loading...</div>;
+        return <LoadingPage />;
     } else if (ongoingShopping) {
         return (
             <OnGoingShoppingPage

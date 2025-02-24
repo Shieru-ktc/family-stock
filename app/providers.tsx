@@ -12,6 +12,7 @@ import {
 import { sessionAtom } from "@/atoms/sessionAtom";
 import { useEffect } from "react";
 import SignIn from "./app/auth/signIn/page";
+import Loading from "@/components/Loading";
 
 authConfigManager.setConfig({
     baseUrl: "http://localhost:3030",
@@ -45,7 +46,7 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
     }, [session, setSession]);
 
     if (session?.status === "loading") {
-        return <p>Loading...</p>;
+        return <Loading />;
     } else if (session?.status === "authenticated") {
         return <>{children}</>;
     } else {
