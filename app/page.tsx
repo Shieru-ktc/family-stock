@@ -1,7 +1,11 @@
-import { auth } from "@/auth";
+import { sessionAtom } from "@/atoms/sessionAtom";
 import AuthButtons from "@/components/AuthButtons";
+import { useAtomValue } from "jotai";
 
 export default async function Home() {
-  const session = await auth();
-  return <AuthButtons session={session} />;
+    return (
+        <>
+            <h1>Family Stock</h1>
+        </>
+    );
 }
