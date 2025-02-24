@@ -110,12 +110,60 @@ export const shoppingApi = new Hono()
             });
         },
     )
-    .delete("/shopping", familyMiddleware({ Shopping: true }), async (c) => {
-        const family = c.var.family;
-        await prisma.shopping.delete({
-            where: {
-                id: family.Shopping?.id,
-            },
-        });
-        return c.status(204);
-    });
+    .delete(
+        "/shopping",
+        familyMiddleware({
+            Shopping: { include: { Items: true } },
+            StockItems: true,
+        }),
+        zValidator(
+            "json",
+            z.object({
+                isCompleted: z.boolean(),
+            }),
+        ),
+        async (c) => {
+            const family = c.var.family;
+            const { isCompleted } = c.req.valid("json");
+            if (isCompleted) {
+                family.Shopping?.Items.forEach((item) => {
+                    const stockItem = family.StockItems.find(
+                        (stockItem) => stockItem.id === item.stockItemId,
+                    );
+                    if (stockItem) {
+                        stockItem.quantity += item.quantity;
+                        SocketEvents.stockQuantityChanged.dispatch(
+                            {
+                                stock: stockItem,
+                            },
+                            manager.in(family.id),
+                        );
+                    }
+                });
+                await prisma.family.update({
+                    where: {
+                        id: family.id,
+                    },
+                    data: {
+                        StockItems: {
+                            updateMany: family.StockItems.map((stockItem) => ({
+                                where: {
+                                    id: stockItem.id,
+                                },
+                                data: {
+                                    quantity: stockItem.quantity,
+                                },
+                            })),
+                        },
+                    },
+                });
+            }
+
+            await prisma.shopping.delete({
+                where: {
+                    id: family.Shopping?.id,
+                },
+            });
+            return c.status(204);
+        },
+    );

@@ -3,7 +3,7 @@
 import { atom } from "jotai";
 
 const ENDPOINT =
-    process.env.NODE_ENV === "development" ? "localhost:3030" : "example.com";
+    process.env.NODE_ENV === "development" ? "localhost:3030" : process.env.SOCKET_URL;
 
 class WebSocketClient {
     socket: WebSocket;
