@@ -21,6 +21,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
+                suppressHydrationWarning
                 className={`${notoSans.className} antialiased transition-all duration-200`}
             >
                 <ThemeProvider
