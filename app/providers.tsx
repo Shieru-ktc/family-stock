@@ -15,7 +15,10 @@ import SignIn from "./app/auth/signIn/page";
 import Loading from "@/components/Loading";
 
 authConfigManager.setConfig({
-    baseUrl: "http://localhost:3030",
+    baseUrl:
+        process.env.NODE_ENV === "production"
+            ? "https://stocks-api.shieru-lab.com"
+            : "http://localhost:3030",
     credentials: "include",
 });
 export default function Providers({ children }: { children: React.ReactNode }) {

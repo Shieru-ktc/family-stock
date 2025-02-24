@@ -23,7 +23,7 @@ const app = new Hono()
     .use(
         "*",
         cors({
-            origin: "http://localhost:3000",
+            origin: ["http://localhost:3000", "https://stocks.shieru-lab.com"],
             credentials: true,
         }),
     )
