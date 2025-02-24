@@ -7,10 +7,6 @@ import OnGoingShoppingPage from "./ShoppingPage";
 import { InferResponseType } from "hono";
 import { apiClient } from "@/lib/apiClient";
 
-type ShoppingGetResponse = InferResponseType<
-    (typeof apiClient.api.family)[":familyId"]["shopping"]["$get"]
->;
-
 export default function ShoppingPage({
     params,
 }: {
