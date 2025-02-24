@@ -1,0 +1,24 @@
+# Backend Dockerfile (Hono API)
+FROM oven/bun:latest AS backend
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the lockfile and package.json for dependency resolution first
+COPY bun.lock package.json ./
+
+# Install dependencies using Bun
+RUN bun install --frozen-lockfile
+
+# Copy the rest of the application source code to the container
+COPY . .
+
+# Generate Prisma client (used for interacting with the database)
+RUN bunx prisma generate
+
+# Expose the backend API port (3001)
+EXPOSE 3001
+
+# Start the Hono backend API
+CMD ["bun", "api"]
+

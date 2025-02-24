@@ -1,0 +1,24 @@
+# Frontend Dockerfile (Next.js)
+FROM oven/bun:latest AS frontend
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the lockfile and package.json for dependency resolution first
+# This ensures that dependencies are installed only when they change, optimizing caching
+COPY bun.lock package.json ./
+
+# Install dependencies using Bun
+RUN bun install --frozen-lockfile
+
+# Copy the rest of the application source code to the container
+COPY . .
+RUN bunx prisma generate
+# Build the Next.js application to optimize performance
+RUN bun run build
+
+# Expose the frontend port (3000)
+EXPOSE 3000
+
+# Start the Next.js frontend
+CMD ["bun", "start"]
