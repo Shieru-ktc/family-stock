@@ -103,6 +103,10 @@ const app = new Hono()
             return {
                 onMessage(e, ws) {
                     const { event, data } = JSON.parse(e.data.toString());
+                    if (event === "ping") {
+                        ws.send(JSON.stringify({ event: "pong", data: {} }));
+                        return;
+                    }
                     manager.getClient(ws)?.fire(event, data);
                 },
                 onOpen: async (_, ws) => {

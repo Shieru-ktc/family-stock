@@ -17,9 +17,11 @@ import FamilyItems from "./FamilyItems";
 import { SignInItem, SignOutItem } from "./SignButtons";
 import { useAtomValue } from "jotai";
 import { sessionAtom } from "@/atoms/sessionAtom";
+import { socketAtom } from "@/atoms/socketAtom";
 
 export default function AppSidebar() {
     const session = useAtomValue(sessionAtom);
+    const socket = useAtomValue(socketAtom);
 
     let sidebar;
     if (session?.user) {
