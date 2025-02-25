@@ -12,14 +12,22 @@ import { PartialShopping, StockItemWithPartialMeta } from "@/types";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 
+function filterNotInShopping(
+    stocks: StockItemWithPartialMeta[],
+    shopping: PartialShopping,
+) {
+    return stocks.filter(
+        (stock) =>
+            !shopping.Items.map((item) => item.stockItemId).includes(stock.id),
+    );
+}
 export default function OnGoingShoppingPage({
-    shopping: _shopping,
+    shopping,
     familyId,
 }: {
     shopping: PartialShopping;
     familyId: string;
 }) {
-    const [shopping, setShopping] = useState(_shopping);
     const [addItemsOpen, setAddItemsOpen] = useState(false);
     const [addItemsSending, setAddItemsSending] = useState(false);
 
@@ -29,46 +37,8 @@ export default function OnGoingShoppingPage({
     );
     const [checked, setChecked] = useState<string[]>([]);
 
-    const setCount = (id: string, quantity: number) => {
-        setShopping((prevShopping) => ({
-            ...prevShopping,
-            Items: prevShopping.Items.map((item) =>
-                item.id === id ? { ...item, quantity } : item,
-            ),
-        }));
-    };
-    const { data: stocks, isPending } = useGetStocksQuery(familyId);
+    const { data: stocks } = useGetStocksQuery(familyId);
 
-    useEffect(() => {
-        const unsubscribeQuantityChanged =
-            SocketEvents.shoppingQuantityChanged.listen(socket, (data) => {
-                setCount(data.item.id, data.item.quantity);
-            });
-        const unsubscribeItemsAdded = SocketEvents.shoppingItemsAdded(
-            shopping.familyId,
-        ).listen(socket, (data) => {
-            setShopping((prev) => ({
-                ...prev,
-                Items: [...prev.Items, ...data.items],
-            }));
-        });
-        const unsubscribeItemsDeleted = SocketEvents.shoppingItemsDeleted(
-            shopping.familyId,
-        ).listen(socket, (data) => {
-            setShopping((prev) => ({
-                ...prev,
-                Items: prev.Items.filter(
-                    (item) =>
-                        !data.items.some((dataItem) => dataItem.id === item.id),
-                ),
-            }));
-        });
-        return () => {
-            unsubscribeQuantityChanged();
-            unsubscribeItemsAdded();
-            unsubscribeItemsDeleted();
-        };
-    }, [socket]);
 
     const handleEnd = async (isCompleted: boolean) => {
         await apiClient.api.family[":familyId"].shopping.$delete({
@@ -105,17 +75,12 @@ export default function OnGoingShoppingPage({
                     {stocks && (
                         <StockItemSelector
                             stocks={
-                                stocks
-                                    .filter(
-                                        (stock) =>
-                                            !shopping.Items.map(
-                                                (s) => s.stockItemId,
-                                            ).includes(stock.id),
-                                    )
-                                    .map((stock) => ({
+                                filterNotInShopping(stocks, shopping).map(
+                                    (stock) => ({
                                         ...stock,
                                         checked: checked.includes(stock.id),
-                                    })) as (StockItemWithPartialMeta & {
+                                    }),
+                                ) as (StockItemWithPartialMeta & {
                                     checked: boolean;
                                 })[]
                             }
@@ -130,7 +95,18 @@ export default function OnGoingShoppingPage({
                             }}
                         />
                     )}
-                    <Button disabled={addItemsSending} onClick={handleAddItems}>
+                    {stocks &&
+                        filterNotInShopping(stocks, shopping).length === 0 && (
+                            <p>追加できる在庫アイテムがありません。</p>
+                        )}
+                    <Button
+                        disabled={
+                            addItemsSending ||
+                            filterNotInShopping(stocks ?? [], shopping)
+                                .length === 0
+                        }
+                        onClick={handleAddItems}
+                    >
                         アイテムを追加する
                     </Button>
                 </DialogContent>

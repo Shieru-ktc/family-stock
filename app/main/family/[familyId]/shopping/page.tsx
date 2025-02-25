@@ -1,11 +1,18 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { use } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { use, useEffect } from "react";
 import ShoppingCreatePage from "./ShoppingCreatePage";
 import OnGoingShoppingPage from "./ShoppingPage";
 import { apiClient } from "@/lib/apiClient";
 import LoadingPage from "@/app/loading/page";
+import { SocketEvents } from "@/socket/events";
+import { useAtomValue } from "jotai";
+import { socketAtom } from "@/atoms/socketAtom";
+
+type PartialShoppingType = {
+    Items: { id: string; quantity: number }[];
+} | undefined;
 
 export default function ShoppingPage({
     params,
@@ -13,6 +20,9 @@ export default function ShoppingPage({
     params: Promise<{ familyId: string }>;
 }) {
     const familyId = use(params).familyId;
+    const socket = useAtomValue(socketAtom);
+    const queryClient = useQueryClient();
+
     const { data: ongoingShopping, isPending } = useQuery({
         queryKey: ["family", familyId, "shopping"],
         queryFn: async () => {
@@ -51,6 +61,70 @@ export default function ShoppingPage({
         refetchOnReconnect: "always",
         refetchOnWindowFocus: "always",
     });
+
+    useEffect(() => {
+        const unsubscribeQuantityChanged =
+            SocketEvents.shoppingQuantityChanged.listen(socket, (data) => {
+                queryClient.setQueryData(
+                    ["family", familyId, "shopping"],
+                    (prevShopping: PartialShoppingType) => {
+                        if (prevShopping) {
+                            return {
+                                ...prevShopping,
+                                Items: prevShopping.Items.map((item) =>
+                                    item.id === data.item.id
+                                        ? { ...item, quantity: data.item.quantity }
+                                        : item,
+                                ),
+                            };
+                        }
+                        return prevShopping;
+                    },
+                );
+            });
+        const unsubscribeItemsAdded = SocketEvents.shoppingItemsAdded(
+            familyId,
+        ).listen(socket, (data) => {
+            queryClient.setQueryData(
+                ["family", familyId, "shopping"],
+                (prevShopping: PartialShoppingType) => {
+                    if (prevShopping) {
+                        return {
+                            ...prevShopping,
+                            Items: [...prevShopping.Items, ...data.items],
+                        };
+                    }
+                    return prevShopping;
+                },
+            );
+        });
+        const unsubscribeItemsDeleted = SocketEvents.shoppingItemsDeleted(
+            familyId,
+        ).listen(socket, (data) => {
+            queryClient.setQueryData(
+                ["family", familyId, "shopping"],
+                (prevShopping: PartialShoppingType) => {
+                    if (prevShopping) {
+                        return {
+                            ...prevShopping,
+                            Items: prevShopping.Items.filter(
+                                (item) =>
+                                    !data.items.some(
+                                        (dataItem) => dataItem.id === item.id,
+                                    ),
+                            ),
+                        };
+                    }
+                    return prevShopping;
+                },
+            );
+        });
+        return () => {
+            unsubscribeQuantityChanged();
+            unsubscribeItemsAdded();
+            unsubscribeItemsDeleted();
+        };
+    }, [socket]);
 
     if (isPending) {
         return <LoadingPage />;
