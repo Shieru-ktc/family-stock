@@ -10,7 +10,7 @@ import { apiClient } from "@/lib/apiClient";
 import { SocketEvents } from "@/socket/events";
 import { PartialShopping, StockItemWithPartialMeta } from "@/types";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function filterNotInShopping(
     stocks: StockItemWithPartialMeta[],
