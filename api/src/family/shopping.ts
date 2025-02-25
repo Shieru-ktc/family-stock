@@ -106,7 +106,7 @@ export const shoppingApi = new Hono()
             }
             const newItems = await prisma.shoppingItem.createManyAndReturn({
                 data: stockItems.map((stockItem) => ({
-                    shoppingId: family.id,
+                    shoppingId: family.Shopping!.id,
                     stockItemId: stockItem.id,
                     quantity: 1,
                 })),
@@ -143,7 +143,7 @@ export const shoppingApi = new Hono()
             const items = await prisma.shoppingItem.findMany({
                 where: {
                     id: { in: data },
-                    shoppingId: family.id,
+                    shoppingId: family.Shopping.id,
                 },
             });
             if (items.length !== data.length) {

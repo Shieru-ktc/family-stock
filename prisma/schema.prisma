@@ -243,6 +243,6 @@ model ShoppingItem {
 
   quantity Int @default(0)
 
-  Shopping  Shopping  @relation(fields: [shoppingId], references: [familyId], onDelete: Cascade)
+  Shopping  Shopping  @relation(fields: [shoppingId], references: [id], onDelete: Cascade)
   StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
 }
