@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 import { JSX } from "react";
 
 export default function Chip({
@@ -11,7 +11,7 @@ export default function Chip({
 } & React.HTMLAttributes<HTMLDivElement>): JSX.Element {
     return (
         <div
-            className={clsx(
+            className={cn(
                 "inline-flex items-center rounded-full bg-gray-900 px-2 py-1 text-sm font-medium text-gray-100 dark:bg-gray-100 dark:text-gray-800",
                 className,
             )}
