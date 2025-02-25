@@ -37,7 +37,7 @@ class WebSocketClient {
                 this.socket.close();
                 this.socket = new WebSocket(`${ENDPOINT}/api/ws`);
             }, 3000);
-        }, 30000);
+        }, 10000);
     }
 
     on(event: string, callback: (data: any) => void) {
