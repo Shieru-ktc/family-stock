@@ -42,4 +42,5 @@ export const StockItemFormSchema = z.object({
         .nonnegative({
             message: "数量の閾値は0以上で入力してください",
         }),
+    tags: z.array(z.string()),
 });

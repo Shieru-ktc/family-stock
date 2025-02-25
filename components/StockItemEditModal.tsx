@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 
-import { StockItemWithPartialMeta } from "@/types";
+import { StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
 import StockItemBaseForm from "./stock-item-form/StockItemBaseForm";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
@@ -11,11 +11,13 @@ export default function StockItemEditModal({
     stock,
     onOpenChange,
     handleSubmit,
+    tags,
 }: {
     open?: boolean;
-    stock: StockItemWithPartialMeta;
+    stock: StockItemWithPartialTagMeta;
     onOpenChange?: (open: boolean) => void;
     handleSubmit: (data: z.infer<typeof StockItemFormSchema>) => void;
+    tags: { id: string; label: string }[];
 }) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -32,7 +34,9 @@ export default function StockItemEditModal({
                         quantity: stock.quantity,
                         step: stock.Meta.step,
                         threshold: stock.Meta.threshold,
+                        tags: stock.Meta.Tags.map((tag) => tag.id),
                     }}
+                    tags={tags}
                 />
             </DialogContent>
         </Dialog>

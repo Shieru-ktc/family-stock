@@ -9,7 +9,9 @@ import { prisma } from "@/lib/prisma";
 export const stocksApi = new Hono()
     .get(
         "/stocks",
-        familyMiddleware({ StockItems: { include: { Meta: true } } }),
+        familyMiddleware({
+            StockItems: { include: { Meta: { include: { Tags: true } } } },
+        }),
         async (c) => {
             const family = c.var.family;
             return c.json(family.StockItems);
@@ -28,6 +30,7 @@ export const stocksApi = new Hono()
                 price: z.number(),
                 step: z.number(),
                 threshold: z.number(),
+                tags: z.array(z.string()),
             }),
         ),
         async (c) => {
@@ -48,6 +51,11 @@ export const stocksApi = new Hono()
                                 connect: {
                                     id: family.id,
                                 },
+                            },
+                            Tags: {
+                                connect: data.tags.map((tag) => ({
+                                    id: tag,
+                                })),
                             },
                         },
                     },
@@ -93,6 +101,7 @@ export const stocksApi = new Hono()
                 price: z.number(),
                 step: z.number(),
                 threshold: z.number(),
+                tags: z.array(z.string()),
             }),
         ),
         async (c) => {
@@ -113,6 +122,11 @@ export const stocksApi = new Hono()
                             price: data.price,
                             step: data.step,
                             threshold: data.threshold,
+                            Tags: {
+                                set: data.tags.map((tag) => ({
+                                    id: tag,
+                                })),
+                            },
                         },
                     },
                 },

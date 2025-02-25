@@ -22,12 +22,13 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { SocketEvents } from "@/socket/events";
-import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
+import { StockItemWithFullMeta, StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 import { apiClient } from "@/lib/apiClient";
 import { InferRequestType, InferResponseType } from "hono";
 import { useGetStocksQuery } from "@/app/main/queries/Stocks";
 import Loading from "@/components/Loading";
+import { useGetTagsQuery } from "@/app/main/queries/Tags";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]
@@ -42,6 +43,7 @@ export default function StocksPage({
     const [socket] = useAtom(socketAtom);
     const { toast } = useToast();
     const queryClient = useQueryClient();
+    const tags = useGetTagsQuery(familyId);
 
     const useCreateNewStockItem = () =>
         useMutation({
@@ -57,6 +59,7 @@ export default function StocksPage({
                             price: stock.price,
                             step: stock.step,
                             threshold: stock.threshold,
+                            tags: stock.tags,
                         },
                     },
                 );
@@ -83,6 +86,7 @@ export default function StocksPage({
                         price: stock.price,
                         step: stock.step,
                         threshold: stock.threshold,
+                        tags: stock.tags,
                     },
                 });
             },
@@ -93,7 +97,7 @@ export default function StocksPage({
     const [open, setOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [editStock, setEditStock] = useState<
-        StockItemWithPartialMeta | undefined
+        StockItemWithPartialTagMeta | undefined
     >(undefined);
     const [sortCondition, setSortCondition] = useState("id");
     const [sortReverse, setSortReverse] = useState(false);
@@ -195,6 +199,12 @@ export default function StocksPage({
                 }}
                 handleSubmit={handleCreateNewStockItem}
                 defaultValues={createFormDefaultValues}
+                tags={
+                    tags.data?.map((tag) => ({
+                        label: tag.name,
+                        id: tag.id,
+                    })) ?? []
+                }
             />
             {editStock && (
                 <StockItemEditModal
@@ -204,6 +214,12 @@ export default function StocksPage({
                     }}
                     stock={editStock!}
                     handleSubmit={handleEditStockItem}
+                    tags={
+                        tags.data?.map((tag) => ({
+                            label: tag.name,
+                            id: tag.id,
+                        })) ?? []
+                    }
                 />
             )}
             <div>
@@ -266,6 +282,7 @@ export default function StocksPage({
                                 quantity: stock.quantity,
                                 step: stock.Meta.step,
                                 threshold: stock.Meta.threshold,
+                                tags: [],
                             });
                         } else {
                             setCreateFormDefaultValues({
@@ -276,6 +293,7 @@ export default function StocksPage({
                                 quantity: stock.quantity,
                                 step: stock.Meta.step,
                                 threshold: stock.Meta.threshold,
+                                tags: [],
                             });
                             setOpen(true);
                         }

@@ -15,11 +15,13 @@ export default function StockItemCreateModal({
   onOpenChange,
   handleSubmit,
   defaultValues,
+  tags
 }: {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   handleSubmit: (data: z.infer<typeof StockItemFormSchema>) => void;
-  defaultValues?: z.infer<typeof StockItemFormSchema>;
+    defaultValues?: z.infer<typeof StockItemFormSchema>;
+  tags: { id: string; label: string }[];
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -39,8 +41,10 @@ export default function StockItemCreateModal({
               quantity: 0,
               step: 1,
               threshold: 0,
+              tags: [],
             }
           }
+          tags={tags}
         />
       </DialogContent>
     </Dialog>

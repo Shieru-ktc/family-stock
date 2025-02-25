@@ -7,23 +7,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { familyAtom } from "@/atoms/familyAtom";
 import { useAtomValue } from "jotai";
 import { apiClient } from "@/lib/apiClient";
+import { useGetTagsQuery } from "@/app/main/queries/Tags";
 
 export default function TagManagePage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const family = useAtomValue(familyAtom);
     const queryClient = useQueryClient();
-
-    const { data: tags, isLoading } = useQuery({
-        queryKey: ["family", family?.id, "tags"],
-        queryFn: async () => {
-            const res = await apiClient.api.family[":familyId"].tags.$get({
-                param: {
-                    familyId: family!.id,
-                },
-            });
-            return await res.json();
-        },
-    });
+    const { data: tags } = useGetTagsQuery(family!.id);
 
     return (
         <div>

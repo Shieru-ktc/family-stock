@@ -12,7 +12,7 @@ export default function Chip({
     return (
         <div
             className={cn(
-                "inline-flex items-center rounded-full bg-gray-900 px-2 py-1 text-sm font-medium text-gray-100 dark:bg-gray-100 dark:text-gray-800",
+                "inline-flex items-center rounded-md bg-gray-900 px-2 py-1 text-sm font-medium text-gray-100 dark:bg-gray-100 dark:text-gray-800",
                 className,
             )}
             {...props}

@@ -10,6 +10,10 @@ import {
 } from "@prisma/client";
 
 export type StockItemWithPartialMeta = StockItem & { Meta: StockItemMeta };
+export type StockItemWithPartialTagMeta = StockItemWithPartialMeta & {
+    Meta: { Tags: StockItemTag[] };
+};
+
 export type StockItemWithMeta = StockItemWithPartialMeta & {
     Meta: { Family: Family };
 };
@@ -31,8 +35,8 @@ export type FamilyWithUserMember = {
 } & FamilyWithMember;
 
 export type PartialShopping = Shopping & {
-    Items: PartialShoppingItemWithStockItemMeta[]
-}
+    Items: PartialShoppingItemWithStockItemMeta[];
+};
 export type PartialShoppingWithFamily = PartialShopping & {
     Family: Family;
 };
