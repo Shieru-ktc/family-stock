@@ -115,8 +115,8 @@ export default function TagActionComponent({ tag }: { tag: StockItemTag }) {
                     </DialogHeader>
                     <div className="flex flex-col space-y-4">
                         <p>
-                            タグ「{tag.name}
-                            」を削除します。この操作は取り消せません。
+                            タグ "{tag.name}"
+                            を削除しようとしています。この操作は取り消すことができません。
                             <br />
                             このタグが適用されている在庫アイテムからは、このタグが削除されます。
                         </p>
