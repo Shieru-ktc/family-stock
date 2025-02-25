@@ -82,6 +82,14 @@ export const SocketEvents = {
         new SocketEvent<{ shoppingId: string }>(
             `shopping-completed-${familyId}`,
         ),
+    shoppingItemsAdded: (familyId: string) =>
+        new SocketEvent<{ items: ShoppingItem[] }>(
+            `shopping-items-added-${familyId}`,
+        ),
+    shoppingItemsRemoved: (familyId: string) =>
+        new SocketEvent<{ items: ShoppingItem[] }>(
+            `shopping-items-removed-${familyId}`,
+        ),
 
     shoppingQuantityChanged: new SocketEvent<{
         item: ShoppingItem;

@@ -72,41 +72,55 @@ export const shoppingApi = new Hono()
             });
         },
     )
-    .patch(
-        "/shopping",
-        familyMiddleware({ Shopping: { include: { Items: true } } }),
+    .post(
+        "/shopping/items",
+        familyMiddleware({ Shopping: true }),
         zValidator("json", z.array(z.string())),
         async (c) => {
             const family = c.var.family;
             const data = c.req.valid("json");
-            const items = family.Shopping?.Items;
-            if (!items) {
-                return c.json({
-                    success: false,
-                    error: "買い物リストが見つかりませんでした",
-                });
-            }
-            const itemIds = items.map((item) => item.stockItemId);
-            const toAdd = data.filter((id) => !itemIds.includes(id));
-            const toRemove = itemIds.filter((id) => !data.includes(id));
-            await prisma.shoppingItem.deleteMany({
-                where: {
-                    shoppingId: family.Shopping?.id,
-                    stockItemId: {
-                        in: toRemove,
+            console.log(family.Shopping?.id, family.shoppingId);
+            if (!family.Shopping) {
+                return c.json(
+                    {
+                        success: false,
+                        error: "Shopping not found",
                     },
+                    404,
+                );
+            }
+            const stockItems = await prisma.stockItem.findMany({
+                where: {
+                    id: { in: data },
+                    familyId: family.id,
                 },
             });
-            await prisma.shoppingItem.createMany({
-                data: toAdd.map((id) => ({
-                    shoppingId: family.Shopping?.id!,
-                    stockItemId: id,
-                    quantity: 0,
+            if (stockItems.length !== data.length) {
+                return c.json(
+                    {
+                        success: false,
+                        error: "One or more stock items not found",
+                    },
+                    404,
+                );
+            }
+            const newItems = await prisma.shoppingItem.createManyAndReturn({
+                data: stockItems.map((stockItem) => ({
+                    shoppingId: family.id,
+                    stockItemId: stockItem.id,
+                    quantity: 1,
                 })),
+                include: { StockItem: { include: { Meta: true } } },
             });
-            // TODO: WebSocketで通知
+            SocketEvents.shoppingItemsAdded(family.id).dispatch(
+                {
+                    items: newItems,
+                },
+                manager.in(family.id),
+            );
             return c.json({
                 success: true,
+                items: newItems,
             });
         },
     )

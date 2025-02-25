@@ -21,6 +21,7 @@ export default function OnGoingShoppingPage({
 }) {
     const [shopping, setShopping] = useState(_shopping);
     const [addItemsOpen, setAddItemsOpen] = useState(false);
+    const [addItemsSending, setAddItemsSending] = useState(false);
 
     const [socket] = useAtom(socketAtom);
     const sortedItems = shopping.Items.toSorted((a, b) =>
@@ -63,6 +64,18 @@ export default function OnGoingShoppingPage({
         setAddItemsOpen(true);
     };
 
+    const handleAddItems = async () => {
+        setAddItemsSending(true);
+        await apiClient.api.family[":familyId"].shopping.items.$post({
+            param: {
+                familyId: familyId,
+            },
+            json: checked,
+        });
+        setAddItemsSending(false);
+        setAddItemsOpen(false);
+    };
+
     return (
         <>
             <Dialog open={addItemsOpen} onOpenChange={setAddItemsOpen}>
@@ -96,7 +109,9 @@ export default function OnGoingShoppingPage({
                             }}
                         />
                     )}
-                    <Button>アイテムを追加する</Button>
+                    <Button disabled={addItemsSending} onClick={handleAddItems}>
+                        アイテムを追加する
+                    </Button>
                 </DialogContent>
             </Dialog>
             <div className="mr-2 flex-row items-end justify-between lg:flex">
