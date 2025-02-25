@@ -102,6 +102,10 @@ export class WebSocketManager extends Channelable implements Emittable {
         }
     }
 
+    getClientsByUserId(userId: string) {
+        return this.clients.filter((c) => c.userId === userId);
+    }
+
     emit(event: string, data: any) {
         this.clients.forEach((client) => client.emit(event, data));
     }

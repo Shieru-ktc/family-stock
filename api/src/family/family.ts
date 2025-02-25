@@ -5,6 +5,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { stocksApi } from "./stocks";
 import { shoppingApi } from "./shopping";
+import { manager } from "../ws";
 
 export const familyApi = new Hono()
     .get(
@@ -76,7 +77,9 @@ export const familyApi = new Hono()
                     },
                 },
             });
-            // TODO: WebSocketのルームからも削除する
+            manager.getClientsByUserId(userId).forEach((client) => {
+                client.leave(family.id);
+            });
             return c.body(null, 204);
         },
     )
