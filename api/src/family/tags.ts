@@ -1,4 +1,4 @@
-import { StockItem } from "@prisma/client";
+import { StockItem, TagColor } from "@prisma/client";
 import { Hono } from "hono";
 import { familyMiddleware } from "./familyMiddleware";
 import { z } from "zod";
@@ -12,11 +12,17 @@ export const tagsApi = new Hono()
     })
     .post(
         "/tag",
-        familyMiddleware(),
-        zValidator("json", z.string()),
+        familyMiddleware({}, "ADMIN"),
+        zValidator(
+            "json",
+            z.object({
+                name: z.string(),
+                color: z.nativeEnum(TagColor),
+                description: z.string().optional(),
+            }),
+        ),
         async (c) => {
             const family = c.var.family;
-            const { token } = c.var.authUser;
             const data = c.req.valid("json");
             const tag = await prisma.stockItemTag.create({
                 data: {
@@ -25,7 +31,9 @@ export const tagsApi = new Hono()
                             id: family.id,
                         },
                     },
-                    name: data,
+                    name: data.name,
+                    color: data.color,
+                    description: data.description,
                 },
             });
             return c.json(tag);
@@ -33,11 +41,10 @@ export const tagsApi = new Hono()
     )
     .delete(
         "/tag/:tagId",
-        familyMiddleware(),
+        familyMiddleware({}, "ADMIN"),
         zValidator("param", z.object({ tagId: z.string() })),
         async (c) => {
             const family = c.var.family;
-            const { token } = c.var.authUser;
             const { tagId } = c.req.valid("param");
             await prisma.stockItemTag.deleteMany({
                 where: {
