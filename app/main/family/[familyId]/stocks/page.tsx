@@ -22,7 +22,11 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { SocketEvents } from "@/socket/events";
-import { StockItemWithFullMeta, StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
+import {
+    StockItemWithFullMeta,
+    StockItemWithPartialMeta,
+    StockItemWithPartialTagMeta,
+} from "@/types";
 import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 import { apiClient } from "@/lib/apiClient";
 import { InferRequestType, InferResponseType } from "hono";
@@ -282,7 +286,7 @@ export default function StocksPage({
                                 quantity: stock.quantity,
                                 step: stock.Meta.step,
                                 threshold: stock.Meta.threshold,
-                                tags: [],
+                                tags: stock.Meta.Tags.map((tag) => tag.id),
                             });
                         } else {
                             setCreateFormDefaultValues({
@@ -293,7 +297,7 @@ export default function StocksPage({
                                 quantity: stock.quantity,
                                 step: stock.Meta.step,
                                 threshold: stock.Meta.threshold,
-                                tags: [],
+                                tags: stock.Meta.Tags.map((tag) => tag.id),
                             });
                             setOpen(true);
                         }
