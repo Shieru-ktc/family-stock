@@ -6,6 +6,7 @@ import { z } from "zod";
 import { stocksApi } from "./stocks";
 import { shoppingApi } from "./shopping";
 import { manager } from "../ws";
+import { tagsApi } from "./tags";
 
 export const familyApi = new Hono()
     .get(
@@ -121,4 +122,5 @@ export const familyApi = new Hono()
         },
     )
     .route("/:familyId", stocksApi)
-    .route("/:familyId", shoppingApi);
+    .route("/:familyId", shoppingApi)
+    .route("/:familyId", tagsApi);

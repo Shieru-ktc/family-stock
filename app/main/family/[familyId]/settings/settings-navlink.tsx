@@ -27,6 +27,7 @@ export default function SettingsNavLink() {
       <LinkTab href="general">一般</LinkTab>
       <LinkTab href="invites">招待リンク</LinkTab>
       <LinkTab href="members">メンバー</LinkTab>
+      <LinkTab href="tags">タグ</LinkTab>
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
 import { apiClient } from "@/lib/apiClient";
+import Chip from "@/components/ui/chip";
+import { cn, tagColorToCn } from "@/lib/utils";
 
 export default function HomePage() {
     const [messages, setMessages] = useState<string[]>([]);

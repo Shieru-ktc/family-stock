@@ -2,18 +2,16 @@
 
 import { socketAtom } from "@/atoms/socketAtom";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import Chip from "@/components/ui/chip";
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn, tagColorToCn } from "@/lib/utils";
+import { TagColor } from "@prisma/client";
 import { useAtomValue } from "jotai";
 import { CircleHelp } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -33,6 +31,11 @@ export default function SettingsPage() {
                     ? "ライトテーマに変更"
                     : "ダークテーマに変更"}
             </Button>
+            {Object.values(TagColor).map((color) => (
+                <Chip key={color} className={cn(tagColorToCn(color))}>
+                    {color}
+                </Chip>
+            ))}
             <Card className="my-2 w-96">
                 <CardHeader>
                     <CardTitle>WebSocket 接続ステータス</CardTitle>
