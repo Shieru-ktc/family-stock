@@ -2,18 +2,35 @@
 
 import { Button } from "@/components/ui/button";
 import CreateNewTagDialog from "./CreateNewTagDialog";
-import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { use, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { familyAtom } from "@/atoms/familyAtom";
 import { useAtomValue } from "jotai";
 import { apiClient } from "@/lib/apiClient";
 import { useGetTagsQuery } from "@/app/main/queries/Tags";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import Chip from "@/components/ui/chip";
+import { tagColorToCn } from "@/lib/utils";
+import ActionButtons from "@/components/ActionButtons";
 
-export default function TagManagePage() {
+export default function TagManagePage({
+    params,
+}: {
+    params: Promise<{ familyId: string }>;
+}) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { familyId } = use(params);
     const family = useAtomValue(familyAtom);
     const queryClient = useQueryClient();
-    const { data: tags } = useGetTagsQuery(family!.id);
+    const { data: tags } = useGetTagsQuery(familyId);
 
     return (
         <div>
@@ -48,15 +65,34 @@ export default function TagManagePage() {
                 新しいタグを作成
             </Button>
             {tags && (
-                // TOOD: ここもうちょっと頑張る
-                <div>
-                    {tags.map((tag) => (
-                        <div key={tag.id}>
-                            <h2>{tag.name}</h2>
-                            <p>{tag.description}</p>
-                        </div>
-                    ))}
-                </div>
+                <Table>
+                    <TableCaption>作成されたタグの一覧</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>タグ</TableHead>
+                            <TableHead className="text-right">
+                                アクション
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {tags.map((tag) => (
+                            <TableRow key={tag.id}>
+                                <TableCell>
+                                    <Chip className={tagColorToCn(tag.color)}>
+                                        {tag.name}
+                                    </Chip>
+                                </TableCell>
+                                <TableCell className="flex justify-end space-x-4">
+                                    <ActionButtons
+                                        onEditClick={() => {}}
+                                        onDeleteClick={() => {}}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             )}
         </div>
     );

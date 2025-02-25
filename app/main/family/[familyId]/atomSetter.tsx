@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { apiClient } from "@/lib/apiClient";
 import { familyAtom } from "@/atoms/familyAtom";
+import Loading from "@/components/Loading";
 
 export default function FamilyPageAtomSetter({
     children,
@@ -16,7 +17,7 @@ export default function FamilyPageAtomSetter({
     familyId: string;
 }) {
     const setFamily = useSetAtom(familyAtom);
-    const { data: family } = useQuery({
+    const { data: family, isPending } = useQuery({
         queryKey: ["family", familyId],
         queryFn: async () => {
             return await (
@@ -27,23 +28,25 @@ export default function FamilyPageAtomSetter({
                 })
             ).json();
         },
-        select: (data) => ({
-            ...data,
-            createdAt: new Date(data.createdAt),
-            Members: data.Members.map((member) => ({
-                ...member,
-                isOwner: member.userId === data.ownerId,
-                createdAt: new Date(member.createdAt),
-                User: {
-                    ...member.User,
-                    createdAt: new Date(member.User.createdAt),
-                },
-            })),
-        } as FamilyWithUserMember),
+        select: (data) =>
+            ({
+                ...data,
+                createdAt: new Date(data.createdAt),
+                Members: data.Members.map((member) => ({
+                    ...member,
+                    isOwner: member.userId === data.ownerId,
+                    createdAt: new Date(member.createdAt),
+                    User: {
+                        ...member.User,
+                        createdAt: new Date(member.User.createdAt),
+                    },
+                })),
+            }) as FamilyWithUserMember,
     });
 
     useEffect(() => {
         setFamily(family);
     }, [family]);
-    return <>{children}</>;
+
+    return <>{isPending ? <Loading /> : children}</>;
 }
