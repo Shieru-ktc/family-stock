@@ -17,10 +17,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import Chip from "@/components/ui/chip";
-import { tagColorToCn } from "@/lib/utils";
-import ActionButtons from "@/components/ActionButtons";
 import TagActionComponent from "./TagActionComponent";
+import Tag from "@/components/Tag";
 
 export default function TagManagePage({
     params,
@@ -80,9 +78,7 @@ export default function TagManagePage({
                         {tags.map((tag) => (
                             <TableRow key={tag.id}>
                                 <TableCell>
-                                    <Chip className={tagColorToCn(tag.color)}>
-                                        {tag.name}
-                                    </Chip>
+                                    <Tag tag={tag} />
                                 </TableCell>
                                 <TagActionComponent tag={tag} />
                             </TableRow>

@@ -16,6 +16,7 @@ import {
 import { StockItemTag } from "@prisma/client";
 import Chip from "./ui/chip";
 import { cn, tagColorToCn } from "@/lib/utils";
+import Tag from "./Tag";
 
 export default function Stock({
     stock,
@@ -40,12 +41,7 @@ export default function Stock({
                 </h2>
                 <div className="flex gap-2">
                     {stock.Meta.Tags.map((tag: StockItemTag) => (
-                        <Chip
-                            key={tag.id}
-                            className={cn(tagColorToCn(tag.color))}
-                        >
-                            {tag.name}
-                        </Chip>
+                        <Tag key={tag.id} tag={tag} />
                     ))}
                 </div>
             </div>
