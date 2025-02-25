@@ -44,8 +44,29 @@ export default function OnGoingShoppingPage({
             SocketEvents.shoppingQuantityChanged.listen(socket, (data) => {
                 setCount(data.item.id, data.item.quantity);
             });
+        const unsubscribeItemsAdded = SocketEvents.shoppingItemsAdded(
+            shopping.familyId,
+        ).listen(socket, (data) => {
+            setShopping((prev) => ({
+                ...prev,
+                Items: [...prev.Items, ...data.items],
+            }));
+        });
+        const unsubscribeItemsDeleted = SocketEvents.shoppingItemsDeleted(
+            shopping.familyId,
+        ).listen(socket, (data) => {
+            setShopping((prev) => ({
+                ...prev,
+                Items: prev.Items.filter(
+                    (item) =>
+                        !data.items.some((dataItem) => dataItem.id === item.id),
+                ),
+            }));
+        });
         return () => {
             unsubscribeQuantityChanged();
+            unsubscribeItemsAdded();
+            unsubscribeItemsDeleted();
         };
     }, [socket]);
 
@@ -146,7 +167,16 @@ export default function OnGoingShoppingPage({
                             );
                         }}
                         onEdit={() => {}}
-                        onDelete={() => {}}
+                        onDelete={() => {
+                            apiClient.api.family[
+                                ":familyId"
+                            ].shopping.items.$delete({
+                                param: {
+                                    familyId: familyId,
+                                },
+                                json: [item.id],
+                            });
+                        }}
                     />
                 ))}
             </div>

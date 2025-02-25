@@ -125,6 +125,53 @@ export const shoppingApi = new Hono()
         },
     )
     .delete(
+        "/shopping/items",
+        familyMiddleware({ Shopping: true }),
+        zValidator("json", z.array(z.string())),
+        async (c) => {
+            const family = c.var.family;
+            const data = c.req.valid("json");
+            if (!family.Shopping) {
+                return c.json(
+                    {
+                        success: false,
+                        error: "Shopping not found",
+                    },
+                    404,
+                );
+            }
+            const items = await prisma.shoppingItem.findMany({
+                where: {
+                    id: { in: data },
+                    shoppingId: family.id,
+                },
+            });
+            if (items.length !== data.length) {
+                return c.json(
+                    {
+                        success: false,
+                        error: "One or more items not found",
+                    },
+                    404,
+                );
+            }
+            await prisma.shoppingItem.deleteMany({
+                where: {
+                    id: { in: data },
+                },
+            });
+            SocketEvents.shoppingItemsDeleted(family.id).dispatch(
+                {
+                    items,
+                },
+                manager.in(family.id),
+            );
+            return c.json({
+                success: true,
+            });
+        },
+    )
+    .delete(
         "/shopping",
         familyMiddleware({
             Shopping: { include: { Items: true } },

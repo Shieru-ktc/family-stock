@@ -1,4 +1,7 @@
-import { StockItemWithFullMeta } from "@/types";
+import {
+    PartialShoppingItemWithStockItemMeta,
+    StockItemWithFullMeta,
+} from "@/types";
 import { Family, ShoppingItem, StockItem } from "@prisma/client";
 import { Emittable } from "./manager";
 
@@ -83,12 +86,12 @@ export const SocketEvents = {
             `shopping-completed-${familyId}`,
         ),
     shoppingItemsAdded: (familyId: string) =>
-        new SocketEvent<{ items: ShoppingItem[] }>(
+        new SocketEvent<{ items: PartialShoppingItemWithStockItemMeta[] }>(
             `shopping-items-added-${familyId}`,
         ),
-    shoppingItemsRemoved: (familyId: string) =>
+    shoppingItemsDeleted: (familyId: string) =>
         new SocketEvent<{ items: ShoppingItem[] }>(
-            `shopping-items-removed-${familyId}`,
+            `shopping-items-deleted-${familyId}`,
         ),
 
     shoppingQuantityChanged: new SocketEvent<{
