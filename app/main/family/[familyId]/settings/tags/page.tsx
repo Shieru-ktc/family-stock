@@ -20,6 +20,7 @@ import {
 import Chip from "@/components/ui/chip";
 import { tagColorToCn } from "@/lib/utils";
 import ActionButtons from "@/components/ActionButtons";
+import TagActionComponent from "./TagActionComponent";
 
 export default function TagManagePage({
     params,
@@ -83,12 +84,7 @@ export default function TagManagePage({
                                         {tag.name}
                                     </Chip>
                                 </TableCell>
-                                <TableCell className="flex justify-end space-x-4">
-                                    <ActionButtons
-                                        onEditClick={() => {}}
-                                        onDeleteClick={() => {}}
-                                    />
-                                </TableCell>
+                                <TagActionComponent tag={tag} />
                             </TableRow>
                         ))}
                     </TableBody>

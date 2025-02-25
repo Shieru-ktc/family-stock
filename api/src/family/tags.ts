@@ -8,7 +8,9 @@ import { prisma } from "@/lib/prisma";
 export const tagsApi = new Hono()
     .get("/tags", familyMiddleware({ StockItemTags: true }), async (c) => {
         const family = c.var.family;
-        return c.json(family.StockItemTags);
+        return c.json(
+            family.StockItemTags.sort((a, b) => a.id.localeCompare(b.id)),
+        );
     })
     .post(
         "/tag",
@@ -39,6 +41,34 @@ export const tagsApi = new Hono()
             return c.json(tag);
         },
     )
+    .patch(
+        "/tag/:tagId",
+        familyMiddleware({}, "ADMIN"),
+        zValidator("param", z.object({ tagId: z.string() })),
+        zValidator(
+            "json",
+            z.object({
+                name: z.string(),
+                color: z.nativeEnum(TagColor),
+                description: z.string().optional(),
+            }),
+        ),
+        async (c) => {
+            const { tagId } = c.req.valid("param");
+            const data = c.req.valid("json");
+            const tag = await prisma.stockItemTag.update({
+                where: {
+                    id: tagId,
+                },
+                data: {
+                    name: data.name,
+                    color: data.color,
+                    description: data.description,
+                },
+            });
+            return c.json(tag);
+        },
+    )
     .delete(
         "/tag/:tagId",
         familyMiddleware({}, "ADMIN"),
@@ -52,6 +82,6 @@ export const tagsApi = new Hono()
                     familyId: family.id,
                 },
             });
-            return c.status(204);
+            return c.body(null, 204);
         },
     );
