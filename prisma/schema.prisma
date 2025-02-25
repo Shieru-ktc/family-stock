@@ -19,6 +19,20 @@ enum FamilyPlan {
   GOLD
 }
 
+enum TagColor {
+  RED
+  ORANGE
+  YELLOW
+  GREEN
+  BLUE
+  PURPLE
+  PINK
+  BROWN
+  GREY
+  BLACK
+  WHITE
+}
+
 model User {
   id            String    @id @default(cuid())
   active        Boolean   @default(true)
@@ -213,8 +227,8 @@ model StockItemTag {
   createdAt DateTime @default(now())
 
   name        String
-  description String @default("")
-  color       String
+  description String   @default("")
+  color       TagColor @default(WHITE)
   familyId    String
 
   Family         Family          @relation(fields: [familyId], references: [id], onDelete: Cascade)
