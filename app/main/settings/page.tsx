@@ -6,9 +6,7 @@ import {
     Card,
     CardHeader,
     CardTitle,
-    CardDescription,
     CardContent,
-    CardFooter,
 } from "@/components/ui/card";
 import {
     Tooltip,

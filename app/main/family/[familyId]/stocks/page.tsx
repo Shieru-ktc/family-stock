@@ -27,6 +27,7 @@ import { StockItemFormSchema } from "@/validations/schemas/StockItemFormSchema";
 import { apiClient } from "@/lib/apiClient";
 import { InferRequestType, InferResponseType } from "hono";
 import { useGetStocksQuery } from "@/app/main/queries/Stocks";
+import Loading from "@/components/Loading";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]
@@ -239,7 +240,7 @@ export default function StocksPage({
                 </div>
             </div>
 
-            {isPending && <p>読み込み中...</p>}
+            {isPending && <Loading />}
             {stocks && (
                 <SortedStocks
                     stocks={stocks}
