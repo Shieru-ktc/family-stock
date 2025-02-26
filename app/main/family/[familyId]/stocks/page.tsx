@@ -233,19 +233,24 @@ export default function StocksPage({
                 />
             )}
             <div>
-                <Label htmlFor="orderByTrigger">以下で並び替え:</Label>
-                <Select
-                    value={sortCondition}
-                    onValueChange={(value) => setSortCondition(value)}
-                >
-                    <SelectTrigger className="w-[180px]" id="orderByTrigger">
-                        <SelectValue placeholder="並び替え条件を選択..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="id">ID</SelectItem>
-                        <SelectItem value="name">名前</SelectItem>
-                    </SelectContent>
-                </Select>
+                <div className="items-top my-2 flex space-x-2">
+                    <Label htmlFor="orderByTrigger">以下で並び替え:</Label>
+                    <Select
+                        value={sortCondition}
+                        onValueChange={(value) => setSortCondition(value)}
+                    >
+                        <SelectTrigger
+                            className="w-[180px]"
+                            id="orderByTrigger"
+                        >
+                            <SelectValue placeholder="並び替え条件を選択..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="id">ID</SelectItem>
+                            <SelectItem value="name">名前</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
                 <div className="items-top my-2 flex space-x-2">
                     <Checkbox
