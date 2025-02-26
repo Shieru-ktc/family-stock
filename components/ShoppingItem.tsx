@@ -1,11 +1,7 @@
 "use client";
 
-import { ClipboardCopy, CopyPlus, Edit2, Menu, Trash } from "lucide-react";
+import { Edit2, Menu, Trash } from "lucide-react";
 
-import {
-    PartialShoppingItemWithStockItemMeta,
-    StockItemWithPartialMeta,
-} from "@/types";
 
 import { MouseEvent } from "react";
 import Counter from "./Counter";

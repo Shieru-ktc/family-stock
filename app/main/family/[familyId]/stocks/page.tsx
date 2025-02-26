@@ -33,6 +33,12 @@ import { InferRequestType, InferResponseType } from "hono";
 import { useGetStocksQuery } from "@/app/main/queries/Stocks";
 import Loading from "@/components/Loading";
 import { useGetTagsQuery } from "@/app/main/queries/Tags";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]
@@ -48,6 +54,7 @@ export default function StocksPage({
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const tags = useGetTagsQuery(familyId);
+    const [filteredTags, setFilteredTags] = useState<string[]>([]);
 
     const useCreateNewStockItem = () =>
         useMutation({
@@ -108,7 +115,6 @@ export default function StocksPage({
     const [createFormDefaultValues, setCreateFormDefaultValues] = useState<
         z.infer<typeof StockItemFormSchema> | undefined
     >(undefined);
-
     const { data: stocks, isPending } = useGetStocksQuery(familyId);
 
     useEffect(() => {
@@ -258,12 +264,57 @@ export default function StocksPage({
                         </label>
                     </div>
                 </div>
+
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="tagFilter">
+                        <AccordionTrigger>
+                            タグでフィルタリング
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            {tags.data?.map((tag) => (
+                                <div
+                                    key={tag.id}
+                                    className="items-top my-2 flex space-x-2"
+                                >
+                                    <Checkbox
+                                        checked={filteredTags.includes(tag.id)}
+                                        onCheckedChange={(checked) => {
+                                            setFilteredTags((prev) =>
+                                                checked
+                                                    ? [...prev, tag.id]
+                                                    : prev.filter(
+                                                          (t) => t !== tag.id,
+                                                      ),
+                                            );
+                                        }}
+                                        id={`tag-${tag.id}`}
+                                    />
+                                    <div className="grid gap-1.5 leading-none">
+                                        <Label htmlFor={`tag-${tag.id}`}>
+                                            {tag.name}
+                                        </Label>
+                                    </div>
+                                </div>
+                            ))}
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
 
             {isPending && <Loading />}
             {stocks && (
                 <SortedStocks
-                    stocks={stocks}
+                    stocks={
+                        filteredTags.length === 0
+                            ? stocks
+                            : stocks.filter((stock) =>
+                                  filteredTags.every((tag) =>
+                                      stock.Meta.Tags.some(
+                                          (stockTag) => stockTag.id === tag,
+                                      ),
+                                  ),
+                              )
+                    }
                     sortCondition={sortCondition}
                     reverse={sortReverse}
                     onEdit={(stock) => {
