@@ -255,13 +255,8 @@ export default function StocksPage({
                             setSortReverse(checked === true)
                         }
                     />
-                    <div className="grid gap-1.5 leading-none">
-                        <label
-                            htmlFor="reverseOrder"
-                            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                            降順で並び替え
-                        </label>
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="reverseOrder">降順で並び替え</Label>
                     </div>
                 </div>
 
@@ -289,7 +284,7 @@ export default function StocksPage({
                                         }}
                                         id={`tag-${tag.id}`}
                                     />
-                                    <div className="grid gap-1.5 leading-none">
+                                    <div className="grid gap-1.5">
                                         <Label htmlFor={`tag-${tag.id}`}>
                                             {tag.name}
                                         </Label>
