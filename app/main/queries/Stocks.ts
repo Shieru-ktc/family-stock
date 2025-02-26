@@ -22,7 +22,7 @@ export function useGetStocksQuery(familyId: string) {
                     Tags: stock.Meta.Tags.map((tag) => ({
                         ...tag,
                         createdAt: new Date(tag.createdAt),
-                    })),
+                    })).sort((a, b) => a.id.localeCompare(b.id)),
                 },
             })),
         refetchOnMount: "always",
