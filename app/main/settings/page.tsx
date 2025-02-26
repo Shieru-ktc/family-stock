@@ -31,11 +31,6 @@ export default function SettingsPage() {
                     ? "ライトテーマに変更"
                     : "ダークテーマに変更"}
             </Button>
-            {Object.values(TagColor).map((color) => (
-                <Chip key={color} className={cn(tagColorToCn(color))}>
-                    {color}
-                </Chip>
-            ))}
             <Card className="my-2 w-96">
                 <CardHeader>
                     <CardTitle>WebSocket 接続ステータス</CardTitle>
