@@ -14,7 +14,18 @@ export default function StockItemEditModal({
     tags,
 }: {
     open?: boolean;
-    stock: StockItemWithPartialTagMeta;
+    stock: {
+        Meta: {
+            name: string;
+            description: string;
+            unit: string;
+            price: number;
+            step: number;
+            threshold: number;
+            Tags: { id: string }[];
+        };
+        quantity: number;
+    };
     onOpenChange?: (open: boolean) => void;
     handleSubmit: (data: z.infer<typeof StockItemFormSchema>) => void;
     tags: { id: string; label: string }[];
@@ -23,7 +34,6 @@ export default function StockItemEditModal({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="flex h-[80vh] min-w-[80vw] flex-col">
                 <DialogTitle>商品を編集</DialogTitle>
-                <p>{stock.id}</p>
                 <StockItemBaseForm
                     handleSubmit={handleSubmit}
                     defaultValues={{

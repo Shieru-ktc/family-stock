@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { StockItemTag } from "@prisma/client";
+import { StockItemTag, TagColor } from "@prisma/client";
 import Chip from "./ui/chip";
 import { cn, tagColorToCn } from "@/lib/utils";
 import Tag from "./Tag";
@@ -26,7 +26,18 @@ export default function Stock({
     onDuplicate,
     onCopy,
 }: {
-    stock: StockItemWithPartialTagMeta;
+    stock: {
+        quantity: number;
+        Meta: {
+            name: string;
+            Tags: {
+                id: string;
+                name: string;
+                color: TagColor;
+                description?: string;
+            }[];
+        };
+    };
     onQuantityChange: (quantity: number) => void;
     onEdit: (event: MouseEvent) => void;
     onDelete: (event: MouseEvent) => void;
@@ -40,7 +51,7 @@ export default function Stock({
                     {stock.Meta.name}
                 </h2>
                 <div className="flex gap-2">
-                    {stock.Meta.Tags.map((tag: StockItemTag) => (
+                    {stock.Meta.Tags.map((tag) => (
                         <Tag key={tag.id} tag={tag} />
                     ))}
                 </div>

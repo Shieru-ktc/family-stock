@@ -2,7 +2,7 @@
 
 import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
-import { StockItemWithMeta, StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
+import { StockItemWithPartialTagMeta } from "@/types";
 import { useAtom } from "jotai";
 import { MouseEvent } from "react";
 import Stock from "./Stock";

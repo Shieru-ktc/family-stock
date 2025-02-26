@@ -23,7 +23,14 @@ export default function ShoppingItem({
     onEdit,
     onDelete,
 }: {
-    item: PartialShoppingItemWithStockItemMeta;
+    item: {
+        quantity: number;
+        StockItem: {
+            Meta: {
+                name: string;
+            };
+        };
+    };
     onQuantityChange: (quantity: number) => void;
     onEdit: (event: MouseEvent) => void;
     onDelete: (event: MouseEvent) => void;
