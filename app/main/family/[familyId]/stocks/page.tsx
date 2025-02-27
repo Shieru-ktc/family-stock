@@ -110,7 +110,7 @@ export default function StocksPage({
     const [editStock, setEditStock] = useState<
         StockItemWithPartialTagMeta | undefined
     >(undefined);
-    const [sortCondition, setSortCondition] = useState("id");
+    const [sortCondition, setSortCondition] = useState("custom");
     const [sortReverse, setSortReverse] = useState(false);
     const [createFormDefaultValues, setCreateFormDefaultValues] = useState<
         z.infer<typeof StockItemFormSchema> | undefined
@@ -246,6 +246,7 @@ export default function StocksPage({
                             <SelectValue placeholder="並び替え条件を選択..." />
                         </SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="custom">ユーザー定義</SelectItem>
                             <SelectItem value="id">ID</SelectItem>
                             <SelectItem value="name">名前</SelectItem>
                         </SelectContent>
