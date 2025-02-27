@@ -26,6 +26,12 @@ import { cn, tagColorToCn } from "@/lib/utils";
 import Tag from "./Tag";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "./ui/tooltip";
 
 export default function Stock({
     stock,
@@ -81,11 +87,26 @@ export default function Stock({
             <div className="p-2">
                 <div className="flex items-center justify-center gap-3">
                     {canDrag ? (
-                        <div {...listeners} {...attributes}>
+                        <div
+                            {...listeners}
+                            {...attributes}
+                            className="inline-flex"
+                        >
                             <GripVertical />
                         </div>
                     ) : (
-                        <div>{stock.Meta.position}</div>
+                        <div className="inline-flex">
+                            <TooltipProvider delayDuration={100}>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <GripVertical className="text-gray-300 dark:text-gray-700" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>この設定では並び替えできません。</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
                     )}
                     <div>
                         <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
