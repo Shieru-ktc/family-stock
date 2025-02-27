@@ -1,6 +1,13 @@
 "use client";
 
-import { ClipboardCopy, CopyPlus, Edit2, Menu, Trash } from "lucide-react";
+import {
+    ClipboardCopy,
+    CopyPlus,
+    Edit2,
+    GripVertical,
+    Menu,
+    Trash,
+} from "lucide-react";
 
 import { StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
 
@@ -17,9 +24,12 @@ import { StockItemTag, TagColor } from "@prisma/client";
 import Chip from "./ui/chip";
 import { cn, tagColorToCn } from "@/lib/utils";
 import Tag from "./Tag";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Stock({
     stock,
+    canDrag,
     onQuantityChange,
     onEdit,
     onDelete,
@@ -28,6 +38,7 @@ export default function Stock({
 }: {
     stock: {
         quantity: number;
+        id: string;
         Meta: {
             name: string;
             Tags: {
@@ -36,24 +47,56 @@ export default function Stock({
                 color: TagColor;
                 description?: string;
             }[];
+            position: string;
         };
     };
+    canDrag: boolean;
     onQuantityChange: (quantity: number) => void;
     onEdit: (event: MouseEvent) => void;
     onDelete: (event: MouseEvent) => void;
     onDuplicate: (event: MouseEvent) => void;
     onCopy: (event: MouseEvent) => void;
 }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: stock.id });
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        transition,
+    };
     return (
-        <div className="m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800">
+        <div
+            className={cn(
+                "m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800",
+                isDragging ? "border-4 border-dotted" : "",
+            )}
+            ref={setNodeRef}
+            style={style}
+        >
             <div className="p-2">
-                <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
-                    {stock.Meta.name}
-                </h2>
-                <div className="flex gap-2">
-                    {stock.Meta.Tags.map((tag) => (
-                        <Tag key={tag.id} tag={tag} />
-                    ))}
+                <div className="flex items-center justify-center gap-3">
+                    {canDrag ? (
+                        <div {...listeners} {...attributes}>
+                            <GripVertical />
+                        </div>
+                    ) : (
+                        <div>{stock.Meta.position}</div>
+                    )}
+                    <div>
+                        <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
+                            {stock.Meta.name}
+                        </h2>
+                        <div className="flex gap-2">
+                            {stock.Meta.Tags.map((tag) => (
+                                <Tag key={tag.id} tag={tag} />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex-grow p-2" />

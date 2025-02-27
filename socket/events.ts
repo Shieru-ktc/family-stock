@@ -68,6 +68,11 @@ export const SocketEvents = {
     /** 在庫アイテムが削除された際に発火されるイベント。 */
     stockDeleted: (familyId: string) =>
         new SocketEvent<{ stockId: string }>(`stock-deleted-${familyId}`),
+    /**在庫アイテムの並び替えが行われた際に発火されるイベント。 */
+    stockPositionChanged: (familyId: string) =>
+        new SocketEvent<{ stockId: string; position: string }>(
+            `stock-position-changed-${familyId}`,
+        ),
     /** 在庫の数量が変更された際に発火されるイベント。 */
     stockQuantityChanged: new SocketEvent<{ stock: StockItem }>(
         "stock-quantity-changed",
@@ -118,4 +123,11 @@ export const SocketEvents = {
 
     /** クライアントが在庫を削除した際に発火されるイベント */
     clientStockDeleted: new SocketEvent<{ stockId: string }>("stock-deleted"),
+
+    /** クライアントが在庫を並び替えた際に発火されるイベント */
+    clientStockPositionChanged: new SocketEvent<{
+        stockId: string;
+        backItemId: string | undefined;
+        frontItemId: string | undefined;
+    }>("stock-position-changed"),
 };
