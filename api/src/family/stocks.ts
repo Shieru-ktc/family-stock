@@ -5,6 +5,7 @@ import { manager } from "../ws";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { prisma } from "@/lib/prisma";
+import { LexoRank } from "@dalet-oss/lexorank";
 
 export const stocksApi = new Hono()
     .get(
@@ -14,7 +15,11 @@ export const stocksApi = new Hono()
         }),
         async (c) => {
             const family = c.var.family;
-            return c.json(family.StockItems);
+            return c.json(
+                family.StockItems.sort((a, b) =>
+                    a.Meta.position.localeCompare(b.Meta.position),
+                ),
+            );
         },
     )
     .post(
@@ -36,6 +41,24 @@ export const stocksApi = new Hono()
         async (c) => {
             const family = c.var.family;
             const data = c.req.valid("json");
+            const lastStockItem = await prisma.stockItem.findFirst({
+                where: {
+                    familyId: family.id,
+                },
+                include: {
+                    Meta: true,
+                },
+                orderBy: {
+                    Meta: {
+                        position: "desc",
+                    },
+                },
+            });
+            const position = lastStockItem
+                ? LexoRank.parse(lastStockItem.Meta.position)
+                      .between(LexoRank.max())
+                      .toString()
+                : LexoRank.min().toString();
             const createdItem = await prisma.stockItem.create({
                 data: {
                     quantity: data.quantity,
@@ -47,6 +70,7 @@ export const stocksApi = new Hono()
                             price: data.price,
                             step: data.step,
                             threshold: data.threshold,
+                            position: position,
                             Family: {
                                 connect: {
                                     id: family.id,
@@ -88,6 +112,132 @@ export const stocksApi = new Hono()
             });
         },
     )
+    .post(
+        "/stocks/position",
+        familyMiddleware(),
+        zValidator(
+            "json",
+            z.object({
+                prevPos: z.string().optional(),
+                id: z.string(),
+                nextPos: z.string().optional(),
+            }),
+        ),
+        async (c) => {
+            const family = c.var.family;
+            const data = c.req.valid("json");
+            const stockItems = await prisma.stockItem.findMany({
+                where: {
+                    familyId: family.id,
+                    id: {
+                        in: [data.id, data.prevPos, data.nextPos].filter(
+                            (x) => x !== undefined,
+                        ),
+                    },
+                },
+                take: 3,
+                include: {
+                    Meta: true,
+                },
+            });
+            if (stockItems.length === 3) {
+                const [stockItem, prevStockItem, nextStockItem] = stockItems;
+                const newPosition = LexoRank.parse(prevStockItem.Meta.position)
+                    .between(LexoRank.parse(nextStockItem.Meta.position))
+                    .toString();
+                await prisma.stockItem.update({
+                    where: {
+                        id: stockItem.id,
+                    },
+                    data: {
+                        Meta: {
+                            update: {
+                                position: newPosition,
+                            },
+                        },
+                    },
+                });
+                SocketEvents.stockPositionChanged(family.id).dispatch(
+                    {
+                        stockId: stockItem.id,
+                        position: newPosition,
+                    },
+                    manager.in(family.id),
+                );
+                return c.json({
+                    success: true,
+                });
+            } else if (stockItems.length === 2) {
+                // if prev is null
+                if (data.prevPos === undefined) {
+                    const [stockItem, nextStockItem] = stockItems;
+                    const newPosition = LexoRank.min()
+                        .between(LexoRank.parse(nextStockItem.Meta.position))
+                        .toString();
+                    await prisma.stockItem.update({
+                        where: {
+                            id: stockItem.id,
+                        },
+                        data: {
+                            Meta: {
+                                update: {
+                                    position: newPosition,
+                                },
+                            },
+                        },
+                    });
+                    SocketEvents.stockPositionChanged(family.id).dispatch(
+                        {
+                            stockId: stockItem.id,
+                            position: newPosition,
+                        },
+                        manager.in(family.id),
+                    );
+                    return c.json({
+                        success: true,
+                    });
+                } else {
+                    const [prevStockItem, stockItem] = stockItems;
+                    const newPosition = LexoRank.parse(
+                        prevStockItem.Meta.position,
+                    )
+                        .between(LexoRank.max())
+                        .toString();
+                    await prisma.stockItem.update({
+                        where: {
+                            id: stockItem.id,
+                        },
+                        data: {
+                            Meta: {
+                                update: {
+                                    position: newPosition,
+                                },
+                            },
+                        },
+                    });
+                    SocketEvents.stockPositionChanged(family.id).dispatch(
+                        {
+                            stockId: stockItem.id,
+                            position: newPosition,
+                        },
+                        manager.in(family.id),
+                    );
+                    return c.json({
+                        success: true,
+                    });
+                }
+            } else {
+                return c.json(
+                    {
+                        success: false,
+                        message: "Invalid request",
+                    },
+                    400,
+                );
+            }
+        },
+    )
+
     .patch(
         "/stocks/:stockId",
         familyMiddleware(),

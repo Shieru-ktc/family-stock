@@ -212,6 +212,7 @@ model StockItemMeta {
   price       Float
   step        Int
   threshold   Int
+  position    String
 
   familyId String
 
@@ -220,6 +221,8 @@ model StockItemMeta {
 
   Tags       StockItemTag[]
   Categories CategoryOnStockItem[]
+
+  @@unique([familyId, position])
 }
 
 model StockItemTag {

@@ -39,6 +39,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]
@@ -110,7 +112,7 @@ export default function StocksPage({
     const [editStock, setEditStock] = useState<
         StockItemWithPartialTagMeta | undefined
     >(undefined);
-    const [sortCondition, setSortCondition] = useState("id");
+    const [sortCondition, setSortCondition] = useState("custom");
     const [sortReverse, setSortReverse] = useState(false);
     const [createFormDefaultValues, setCreateFormDefaultValues] = useState<
         z.infer<typeof StockItemFormSchema> | undefined
@@ -166,13 +168,59 @@ export default function StocksPage({
                 );
             },
         );
+
+        const unsubscribePositionChanged = SocketEvents.stockPositionChanged(
+            familyId,
+        ).listen(socket, (data) => {
+            queryClient.setQueryData<StockItemWithFullMeta[]>(
+                ["family", familyId, "stocks"],
+                (prevStocks) =>
+                    prevStocks?.map((stock) =>
+                        stock.id === data.stockId
+                            ? {
+                                  ...stock,
+                                  Meta: {
+                                      ...stock.Meta,
+                                      position: data.position,
+                                  },
+                              }
+                            : stock,
+                    ) ?? [],
+            );
+        });
         return () => {
             unsubscribeCreated();
             unsubscribeEdited();
             unsubscribeDeleted();
             unsubscribeQuantityChanged();
+            unsubscribePositionChanged();
         };
     }, [socket, familyId]);
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+        if (!stocks) return;
+
+        const oldIndex = stocks.findIndex((stock) => stock.id === active.id);
+        const newIndex = stocks.findIndex((stock) => stock.id === over.id);
+        const newStocks = arrayMove(stocks, oldIndex, newIndex);
+
+        const item = newStocks[newIndex];
+        const backItem = newIndex > 0 ? newStocks[newIndex - 1] : null;
+        const frontItem =
+            newIndex < newStocks.length - 1 ? newStocks[newIndex + 1] : null;
+        console.log(backItem?.Meta.name, frontItem?.Meta.name);
+
+        SocketEvents.clientStockPositionChanged.dispatch(
+            {
+                stockId: item.id,
+                backItemId: backItem?.id,
+                frontItemId: frontItem?.id,
+            },
+            socket,
+        );
+    };
 
     function handleCreateNewStockItem(
         item: z.infer<typeof StockItemFormSchema>,
@@ -246,6 +294,7 @@ export default function StocksPage({
                             <SelectValue placeholder="並び替え条件を選択..." />
                         </SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="custom">ユーザー定義</SelectItem>
                             <SelectItem value="id">ID</SelectItem>
                             <SelectItem value="name">名前</SelectItem>
                         </SelectContent>
@@ -304,19 +353,34 @@ export default function StocksPage({
             {isPending && <Loading />}
             {stocks && (
                 <SortedStocks
-                    stocks={
-                        filteredTags.length === 0
-                            ? stocks
-                            : stocks.filter((stock) =>
-                                  filteredTags.every((tag) =>
-                                      stock.Meta.Tags.some(
-                                          (stockTag) => stockTag.id === tag,
-                                      ),
+                    stocks={(filteredTags.length === 0
+                        ? stocks
+                        : stocks.filter((stock) =>
+                              filteredTags.every((tag) =>
+                                  stock.Meta.Tags.some(
+                                      (stockTag) => stockTag.id === tag,
                                   ),
-                              )
-                    }
-                    sortCondition={sortCondition}
-                    reverse={sortReverse}
+                              ),
+                          )
+                    ).sort((a, b) => {
+                        function sort() {
+                            switch (sortCondition) {
+                                case "name":
+                                    return a.Meta.name.localeCompare(
+                                        b.Meta.name,
+                                    );
+                                case "id":
+                                    return a.id.localeCompare(b.id);
+                                case "custom":
+                                default:
+                                    return a.Meta.position.localeCompare(
+                                        b.Meta.position,
+                                    );
+                            }
+                        }
+                        return sortReverse ? -sort() : sort();
+                    })}
+                    canDrag={sortCondition === "custom" && !sortReverse}
                     onEdit={(stock) => {
                         setEditStock(stock);
                         setEditOpen(true);
@@ -387,6 +451,7 @@ export default function StocksPage({
                             });
                         });
                     }}
+                    handleDragEnd={handleDragEnd}
                 />
             )}
         </div>
