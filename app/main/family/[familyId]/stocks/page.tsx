@@ -212,6 +212,28 @@ export default function StocksPage({
             newIndex < newStocks.length - 1 ? newStocks[newIndex + 1] : null;
         console.log(backItem?.Meta.name, frontItem?.Meta.name);
 
+        // 楽観的に「並び替えられた」と仮定する
+        queryClient.setQueryData<StockItemWithFullMeta[]>(
+            ["family", familyId, "stocks"],
+            (prevStocks) =>
+                prevStocks?.map((stock) =>
+                    stock.id === item.id
+                        ? {
+                              ...stock,
+                              Meta: {
+                                  ...stock.Meta,
+                                  position: backItem
+                                      ? backItem.Meta.position + "z"
+                                      : (frontItem?.Meta.position.slice(
+                                            0,
+                                            -2,
+                                        ) ?? "0"),
+                              },
+                          }
+                        : stock,
+                ) ?? [],
+        );
+
         SocketEvents.clientStockPositionChanged.dispatch(
             {
                 stockId: item.id,

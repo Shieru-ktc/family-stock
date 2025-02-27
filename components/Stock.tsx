@@ -70,7 +70,7 @@ export default function Stock({
         transform,
         transition,
         isDragging,
-    } = useSortable({ id: stock.id, animateLayoutChanges: () => false });
+    } = useSortable({ id: stock.id });
     const style = {
         transform: CSS.Translate.toString(transform),
         transition,
