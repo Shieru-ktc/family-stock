@@ -15,7 +15,7 @@
 ALTER TABLE "StockItemMeta" ADD COLUMN "position" TEXT;
 
 UPDATE "StockItemMeta"
-SET "position" = '0:' || SUBSTRING("id" FROM LENGTH("id") - 4 FOR 5) || ':'
+SET "position" = '0|' || SUBSTRING("id" FROM LENGTH("id") - 4 FOR 5) || ':'
 WHERE "position" IS NULL;
 
 ALTER TABLE "StockItemMeta" ALTER COLUMN "position" SET NOT NULL;
