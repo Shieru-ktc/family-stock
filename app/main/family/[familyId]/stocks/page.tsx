@@ -402,7 +402,7 @@ export default function StocksPage({
                         }
                         return sortReverse ? -sort() : sort();
                     })}
-                    canDrag={sortCondition === "custom" && !sortReverse}
+                    canDrag={sortCondition === "custom" && !sortReverse && filteredTags.length === 0}
                     onEdit={(stock) => {
                         setEditStock(stock);
                         setEditOpen(true);
