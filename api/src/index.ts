@@ -15,6 +15,8 @@ import { manager } from "./ws";
 import { FamilyNotFoundError, NoPermissionError } from "./errors";
 import { HTTPException } from "hono/http-exception";
 import { inviteApi } from "./invite/general";
+import { AdapterUser } from "@auth/core/adapters";
+import { User } from "@prisma/client";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 
@@ -65,12 +67,16 @@ const app = new Hono()
                 jwt: async ({ token, user }) => {
                     if (user) {
                         console.log(token, user);
+                        const typedUser = user as User & AdapterUser;
                         token.id = user.id;
+                        token.role = typedUser.role;
                     }
                     return token;
                 },
                 session: async ({ session, token }) => {
+                    console.log(session, token);
                     session.user.id = token.sub!;
+                    session.user.role = token.role;
                     return session;
                 },
             },
