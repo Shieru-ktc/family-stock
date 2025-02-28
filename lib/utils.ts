@@ -33,7 +33,7 @@ export function tagColorToCn(color: TagColor) {
     }
 }
 
-function getRole(member: Member, ownerId: string) {
+export function getRole(member: Member, ownerId: string) {
     if (ownerId == member.userId) {
         return "OWNER";
     } else if (member.role == MemberRole.ADMIN) {
@@ -43,7 +43,7 @@ function getRole(member: Member, ownerId: string) {
     }
 }
 
-function getRoleLabel(member: Member, ownerId: string) {
+export function getRoleLabel(member: Member, ownerId: string) {
     switch (getRole(member, ownerId)) {
         case "OWNER":
             return "オーナー";

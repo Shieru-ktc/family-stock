@@ -19,16 +19,13 @@ import { useAtomValue } from "jotai";
 import { sessionAtom } from "@/atoms/sessionAtom";
 import { familyAtom } from "@/atoms/familyAtom";
 import { MemberWithUser } from "@/types";
+import { getRoleLabel } from "@/lib/utils";
 
 export default function FamilyMembersPage() {
     const session = useAtomValue(sessionAtom);
     const family = useAtomValue(familyAtom);
     if (family) {
         const members = family.Members;
-
-        function getRoleLabel(member: MemberWithUser, ownerId: string): import("react").ReactNode {
-            throw new Error("Function not implemented.");
-        }
 
         return (
             <div>
