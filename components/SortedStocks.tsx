@@ -11,6 +11,11 @@ import {
     closestCenter,
     DragEndEvent,
     CollisionDetection,
+    KeyboardSensor,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
 } from "@dnd-kit/core";
 import {
     SortableContext,
@@ -39,6 +44,11 @@ export default function SortedStocks({
     handleDragEnd: (event: DragEndEvent) => void;
 }) {
     const [socket] = useAtom(socketAtom);
+    const sensors = useSensors(
+        useSensor(MouseSensor),
+        useSensor(TouchSensor),
+        useSensor(KeyboardSensor),
+    );
 
     return (
         <DndContext
