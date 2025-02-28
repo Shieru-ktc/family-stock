@@ -18,22 +18,17 @@ import MemberActionComponent from "./MemberAction";
 import { useAtomValue } from "jotai";
 import { sessionAtom } from "@/atoms/sessionAtom";
 import { familyAtom } from "@/atoms/familyAtom";
-
-function getRoleLabel(member: Member, ownerId: string) {
-    if (ownerId == member.userId) {
-        return "オーナー";
-    } else if (member.role == MemberRole.ADMIN) {
-        return "管理者";
-    } else {
-        return "メンバー";
-    }
-}
+import { MemberWithUser } from "@/types";
 
 export default function FamilyMembersPage() {
     const session = useAtomValue(sessionAtom);
     const family = useAtomValue(familyAtom);
     if (family) {
         const members = family.Members;
+
+        function getRoleLabel(member: MemberWithUser, ownerId: string): import("react").ReactNode {
+            throw new Error("Function not implemented.");
+        }
 
         return (
             <div>
