@@ -47,14 +47,14 @@ export default function AppSidebar() {
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                            <SidebarMenuItem>
+                            {/* <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
                                     <Link href={"/main/sandbox"}>
                                         <Sandwich />
                                         サンドボックス
                                     </Link>
                                 </SidebarMenuButton>
-                            </SidebarMenuItem>
+                            </SidebarMenuItem> */}
                             <SignOutItem />
                         </SidebarMenu>
                     </SidebarGroupContent>

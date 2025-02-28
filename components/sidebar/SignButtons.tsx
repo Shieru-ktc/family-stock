@@ -1,9 +1,15 @@
 "use client";
 
-import { LogIn, LogOut } from "lucide-react";
+import { CircleHelp, LogIn, LogOut } from "lucide-react";
 
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import { signIn, signOut } from "@hono/auth-js/react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "../ui/tooltip";
 
 export function SignInItem() {
     return (
@@ -19,10 +25,19 @@ export function SignInItem() {
 export function SignOutItem() {
     return (
         <SidebarMenuItem>
-            <SidebarMenuButton onClick={() => signOut()}>
-                <LogOut />
-                ログアウト
-            </SidebarMenuButton>
+            <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <SidebarMenuButton onClick={() => signOut()} disabled>
+                            <LogOut />
+                            ログアウト
+                        </SidebarMenuButton>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>展示期間中はご利用いただけません。</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         </SidebarMenuItem>
     );
 }
