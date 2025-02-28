@@ -79,7 +79,7 @@ export default function Stock({
         <div
             className={cn(
                 "m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800",
-                isDragging ? "border-4 border-dotted" : "",
+                isDragging ? "border-4 border-dashed" : "",
             )}
             ref={setNodeRef}
             style={style}
