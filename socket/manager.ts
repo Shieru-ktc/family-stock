@@ -94,7 +94,6 @@ export class WebSocketManager extends Channelable implements Emittable {
     }
 
     getClient(client: WSContext | string) {
-        console.log("getClient", client);
         if (typeof client === "string") {
             return this.clients.find((c) => c.userId === client);
         } else {

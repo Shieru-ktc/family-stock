@@ -12,7 +12,6 @@ export default function ClientEventHandler(
     userId: string,
 ) {
     SocketEvents.clientStockQuantityChanged.listen(socket, (data) => {
-        console.log(data);
         prisma.stockItem
             .update({
                 where: {
@@ -42,7 +41,6 @@ export default function ClientEventHandler(
     });
 
     SocketEvents.clientShoppingQuantityChanged.listen(socket, (data) => {
-        console.log(data);
         prisma.shoppingItem
             .update({
                 where: {
@@ -191,6 +189,7 @@ export default function ClientEventHandler(
                 position = LexoRank.min()
                     .between(LexoRank.parse(frontItem.Meta.position))
                     .toString();
+                console.log(position);
                 await prisma.stockItemMeta.update({
                     where: {
                         id: item.metaId,
@@ -203,6 +202,7 @@ export default function ClientEventHandler(
                 position = LexoRank.parse(backItem.Meta.position)
                     .between(LexoRank.max())
                     .toString();
+                console.log(position);
                 await prisma.stockItemMeta.update({
                     where: {
                         id: item.metaId,
@@ -215,6 +215,7 @@ export default function ClientEventHandler(
                 position = LexoRank.parse(backItem.Meta.position)
                     .between(LexoRank.parse(frontItem.Meta.position))
                     .toString();
+                console.log(position);
                 await prisma.stockItemMeta.update({
                     where: {
                         id: item.metaId,
@@ -224,7 +225,6 @@ export default function ClientEventHandler(
                     },
                 });
             }
-            console.log(position);
 
             SocketEvents.stockPositionChanged(item.familyId).dispatch(
                 {
