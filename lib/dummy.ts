@@ -9,5 +9,6 @@ export function dummyUser(): User {
         emailVerified: null,
         createdAt: new Date(2021, 0, 1, 0, 0, 0),
         image: null,
+        role: "USER",
     };
 }
