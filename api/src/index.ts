@@ -17,6 +17,7 @@ import { HTTPException } from "hono/http-exception";
 import { inviteApi } from "./invite/general";
 import { AdapterUser } from "@auth/core/adapters";
 import { User } from "@prisma/client";
+import { generalAdmin } from "./admin/general";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 
@@ -102,6 +103,7 @@ const app = new Hono()
     })
     .route("/api/family", generalFamily)
     .route("/api/invite", inviteApi)
+    .route("/api/admin", generalAdmin)
     .get(
         "/api/ws",
         upgradeWebSocket((c) => {
