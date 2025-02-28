@@ -28,7 +28,7 @@ export function SignOutItem() {
             <TooltipProvider delayDuration={100}>
                 <Tooltip>
                     <TooltipTrigger>
-                        <SidebarMenuButton onClick={() => signOut()} disabled>
+                        <SidebarMenuButton aria-disabled="true">
                             <LogOut />
                             ログアウト
                         </SidebarMenuButton>
