@@ -90,7 +90,7 @@ export default function Stock({
                         <div
                             {...listeners}
                             {...attributes}
-                            className="inline-flex"
+                            className="inline-flex touch-none"
                         >
                             <GripVertical />
                         </div>
