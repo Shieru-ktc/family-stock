@@ -9,8 +9,8 @@
 ## アプリケーションを実行する
 
 > [!NOTE]
-> パッケージマネージャーには`pnpm`を利用しています。  
-> npm, yarnなどその他のパッケージマネージャーを利用する場合は、適宜読み替えてください。
+> パッケージマネージャーには`bun`を利用しています。  
+> npm, yarn, pnpmなどその他のパッケージマネージャーを利用する場合は、適宜読み替えてください。
 
 `.env`の名前で、以下の内容を書き込みます:
 
@@ -33,20 +33,20 @@ PORT="3000"
 依存関係をインストールします。
 
 ```bash
-pnpm install
+bun i
 ```
 
 アプリケーションを開発モードで起動します。
 
 ```bash
-pnpm run dev
+bun dev
 ```
 
 プロダクションビルドが必要な場合は、以下を実行してください:
 
 ```bash
-pnpm run build
-pnpm start
+bun build
+bun start
 ```
 
 その際、`.env`をホスト先に合わせて設定してください。例えば:
@@ -60,4 +60,10 @@ NEXTAUTH_URL=https://family-stock.example.com
 
 HOSTNAME="family-stock.example.com"
 PORT="443"
+```
+
+APIサーバーは、以下で実行できます:
+
+```bash
+bun api
 ```
