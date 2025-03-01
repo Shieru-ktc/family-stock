@@ -46,11 +46,14 @@ export const generalFamily = new Hono()
                     },
                 },
                 take: MAX_FAMILIES_PER_USER,
-            })
+            });
             if (familyCount >= MAX_FAMILIES_PER_USER) {
-                return c.json({
-                    error: "You have reached the maximum number of families.",
-                }, 400);
+                return c.json(
+                    {
+                        error: "You have reached the maximum number of families.",
+                    },
+                    400,
+                );
             }
             const family = await prisma.family.create({
                 data: {
