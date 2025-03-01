@@ -5,6 +5,7 @@ import NavBar from "@/components/navbar/Navbar";
 import AppSidebar from "@/components/sidebar/AppSidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
+import Banner from "@/components/Banner";
 
 export default async function AppLayout({
     children,
@@ -15,8 +16,13 @@ export default async function AppLayout({
         <Providers>
             <SidebarProvider defaultOpen>
                 <AppSidebar />
+
                 <div className="flex h-full min-h-screen w-full flex-col space-y-4">
-                    <NavBar />
+                    <div>
+                        <Banner />
+                        <NavBar />
+                    </div>
+
                     <div className="px-6 py-2">{children}</div>
                 </div>
                 <Toaster />
