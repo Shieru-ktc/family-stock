@@ -135,22 +135,22 @@ model Family {
   ownerId    String
   shoppingId String?  @unique
 
-  Owner          User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  Members        Member[]
-  Invites        Invite[]
-  StockItems     StockItem[]
-  StockItemMetas StockItemMeta[]
-  StockItemTags  StockItemTag[]
-  Shopping       Shopping?
-  Categories     Category[]
-  CategoryGenre  CategoryGenre[]
+  Owner           User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  Members         Member[]
+  Invites         Invite[]
+  StockItems      StockItem[]
+  StockItemMetas  StockItemMeta[]
+  StockItemTags   StockItemTag[]
+  Shopping        Shopping?
+  Categories      Category[]
+  CategoryGenre   CategoryGenre[]
   FamilyOverrides FamilyOverride[]
 }
 
 model FamilyOverride {
-  familyId String
+  familyId  String
   parameter String
-  value    String
+  value     String
 
   Family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
@@ -210,31 +210,28 @@ model StockItem {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   quantity  Int      @default(0)
+  familyId  String
 
-  familyId String
-  metaId   String @unique
-
-  Family       Family        @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  Meta         StockItemMeta @relation(fields: [metaId], references: [id], onDelete: Cascade)
+  Family       Family         @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  Meta         StockItemMeta?
   ShoppingItem ShoppingItem?
 }
 
 model StockItemMeta {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  stockItemId String   @unique
   name        String
-  description String @default("")
+  description String   @default("")
   unit        String
   price       Float
   step        Int
   threshold   Int
   position    String
+  familyId    String
 
-  familyId String
-
-  StockItem StockItem?
-  Family    Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
+  Family    Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   Tags       StockItemTag[]
   Categories CategoryOnStockItem[]
