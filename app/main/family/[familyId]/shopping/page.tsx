@@ -45,9 +45,9 @@ export default function ShoppingPage({
                         StockItem: {
                             ...item.StockItem,
                             Meta: {
-                                ...item.StockItem.Meta,
+                                ...item.StockItem.Meta!,
                                 createdAt: new Date(
-                                    item.StockItem.Meta.createdAt,
+                                    item.StockItem.Meta!.createdAt,
                                 ),
                             },
                             createdAt: new Date(item.StockItem.createdAt),

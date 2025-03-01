@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { prisma } from "../lib/prisma";
+import { assertStockItemWithMeta, prisma } from "../lib/prisma";
 import { SocketEvents } from "./events";
 import { Channelable, Emittable, Listener } from "./manager";
 import { StockItem } from "@prisma/client";
@@ -126,7 +126,7 @@ export default function ClientEventHandler(
                             Meta: true,
                         },
                     })
-                    .then((stock) => (backItem = stock)),
+                    .then((stock) => (backItem = assertStockItemWithMeta(stock))),
             );
         }
         if (data.frontItemId) {
@@ -149,7 +149,7 @@ export default function ClientEventHandler(
                             Meta: true,
                         },
                     })
-                    .then((stock) => (frontItem = stock)),
+                    .then((stock) => (frontItem = assertStockItemWithMeta(stock))),
             );
         }
         promises.push(
@@ -171,7 +171,7 @@ export default function ClientEventHandler(
                         Meta: true,
                     },
                 })
-                .then((stock) => (item = stock)),
+                .then((stock) => (item = assertStockItemWithMeta(stock))),
         );
 
         Promise.all(promises).then(async () => {
@@ -192,7 +192,7 @@ export default function ClientEventHandler(
                 console.log(position);
                 await prisma.stockItemMeta.update({
                     where: {
-                        id: item.metaId,
+                        id: item.Meta.id,
                     },
                     data: {
                         position,
@@ -205,7 +205,7 @@ export default function ClientEventHandler(
                 console.log(position);
                 await prisma.stockItemMeta.update({
                     where: {
-                        id: item.metaId,
+                        id: item.Meta.id,
                     },
                     data: {
                         position,
@@ -218,7 +218,7 @@ export default function ClientEventHandler(
                 console.log(position);
                 await prisma.stockItemMeta.update({
                     where: {
-                        id: item.metaId,
+                        id: item.Meta.id,
                     },
                     data: {
                         position,

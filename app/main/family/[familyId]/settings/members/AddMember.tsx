@@ -26,10 +26,13 @@ export default function AddMember({ family }: { family: Family }) {
                 familyId: family.id,
             },
         });
-        const invite = await data.json();
-        setLink(
-            new URL("/family/join/" + invite.id, window.location.href).href,
-        );
+
+        if (data.ok) {
+            const invite = await data.json();
+            setLink(
+                new URL("/family/join/" + invite.id, window.location.href).href,
+            );
+        }
     }
     return (
         <>

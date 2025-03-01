@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/accordion";
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { assertStockItemWithMeta } from "@/lib/prisma";
 
 type StockPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["stock"]["$post"]
@@ -224,7 +225,7 @@ export default function StocksPage({
                                   ...stock.Meta,
                                   position: backItem
                                       ? backItem.Meta.position + "z"
-                                      : (frontItem?.Meta.position.slice(
+                                      : (frontItem?.Meta!.position!.slice(
                                             0,
                                             -2,
                                         ) ?? "0"),
@@ -388,21 +389,25 @@ export default function StocksPage({
                         function sort() {
                             switch (sortCondition) {
                                 case "name":
-                                    return a.Meta.name.localeCompare(
-                                        b.Meta.name,
+                                    return a.Meta!.name!.localeCompare(
+                                        b.Meta!.name!,
                                     );
                                 case "id":
                                     return a.id.localeCompare(b.id);
                                 case "custom":
                                 default:
-                                    return a.Meta.position.localeCompare(
-                                        b.Meta.position,
+                                    return a.Meta!.position!.localeCompare(
+                                        b.Meta!.position!,
                                     );
                             }
                         }
                         return sortReverse ? -sort() : sort();
                     })}
-                    canDrag={sortCondition === "custom" && !sortReverse && filteredTags.length === 0}
+                    canDrag={
+                        sortCondition === "custom" &&
+                        !sortReverse &&
+                        filteredTags.length === 0
+                    }
                     onEdit={(stock) => {
                         setEditStock(stock);
                         setEditOpen(true);
@@ -447,7 +452,7 @@ export default function StocksPage({
                         const copy = async () => {
                             if (isShiftCtrl) {
                                 await navigator.clipboard.writeText(
-                                    `${stock.familyId} stock-${stock.id} meta-${stock.metaId}`,
+                                    `${stock.familyId} stock-${stock.id} meta-${stock.Meta.id}`,
                                 );
                                 return "詳細ID";
                             } else if (isShiftPressed) {

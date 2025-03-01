@@ -4,7 +4,7 @@ import { SocketEvents } from "@/socket/events";
 import { manager } from "../ws";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { prisma } from "@/lib/prisma";
+import { assertStockItemWithMeta, prisma } from "@/lib/prisma";
 
 export const shoppingApi = new Hono()
     .get(
@@ -114,7 +114,10 @@ export const shoppingApi = new Hono()
             });
             SocketEvents.shoppingItemsAdded(family.id).dispatch(
                 {
-                    items: newItems,
+                    items: newItems.map((item) => ({
+                        ...item,
+                        StockItem: assertStockItemWithMeta(item.StockItem),
+                    })),
                 },
                 manager.in(family.id),
             );

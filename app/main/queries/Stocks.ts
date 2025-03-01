@@ -17,9 +17,9 @@ export function useGetStocksQuery(familyId: string) {
                 ...stock,
                 createdAt: new Date(stock.createdAt),
                 Meta: {
-                    ...stock.Meta,
-                    createdAt: new Date(stock.Meta.createdAt),
-                    Tags: stock.Meta.Tags.map((tag) => ({
+                    ...stock.Meta!,
+                    createdAt: new Date(stock.Meta!.createdAt),
+                    Tags: stock.Meta!.Tags.map((tag) => ({
                         ...tag,
                         createdAt: new Date(tag.createdAt),
                     })).sort((a, b) => a.id.localeCompare(b.id)),

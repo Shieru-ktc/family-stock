@@ -17,7 +17,7 @@ export const stocksApi = new Hono()
             const family = c.var.family;
             return c.json(
                 family.StockItems.sort((a, b) =>
-                    a.Meta.position.localeCompare(b.Meta.position),
+                    a.Meta!.position.localeCompare(b.Meta!.position),
                 ),
             );
         },
@@ -69,7 +69,7 @@ export const stocksApi = new Hono()
                 },
             });
             const position = lastStockItem
-                ? LexoRank.parse(lastStockItem.Meta.position)
+                ? LexoRank.parse(lastStockItem.Meta!.position)
                       .between(LexoRank.max())
                       .toString()
                 : LexoRank.min().genNext().toString();
@@ -115,7 +115,7 @@ export const stocksApi = new Hono()
                 {
                     stock: {
                         ...createdItem,
-                        Meta: { Family: family, ...createdItem.Meta },
+                        Meta: { Family: family, ...createdItem.Meta! },
                     },
                 },
                 manager.in(family.id),
@@ -180,7 +180,7 @@ export const stocksApi = new Hono()
                 {
                     stock: {
                         ...updatedItem,
-                        Meta: { Family: family, ...updatedItem.Meta },
+                        Meta: { Family: family, ...updatedItem.Meta! },
                     },
                 },
                 manager.in(family.id),
