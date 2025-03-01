@@ -18,7 +18,7 @@ export default async function AppLayout({
                 <AppSidebar />
 
                 <div className="flex h-full min-h-screen w-full flex-col space-y-4">
-                    <div>
+                    <div className="sticky top-0 z-50">
                         <Banner />
                         <NavBar />
                     </div>
