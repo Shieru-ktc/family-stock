@@ -41,6 +41,20 @@ export const stocksApi = new Hono()
         async (c) => {
             const family = c.var.family;
             const data = c.req.valid("json");
+            const exceededStockItem = await prisma.stockItem.findFirst({
+                where: {
+                    familyId: family.id,
+                },
+                skip: family.Config.maxStocksPerFamily - 1,
+            });
+            if (exceededStockItem) {
+                return c.json(
+                    {
+                        error: "You have reached the maximum number of stocks.",
+                    },
+                    400,
+                );
+            }
             const lastStockItem = await prisma.stockItem.findFirst({
                 where: {
                     familyId: family.id,

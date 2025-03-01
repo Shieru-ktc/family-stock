@@ -26,6 +26,20 @@ export const tagsApi = new Hono()
         async (c) => {
             const family = c.var.family;
             const data = c.req.valid("json");
+            const exceededTag = await prisma.stockItemTag.findFirst({
+                where: {
+                    familyId: family.id,
+                },
+                skip: family.Config.maxTagsPerFamily - 1,
+            });
+            if (exceededTag) {
+                return c.json(
+                    {
+                        error: "You have reached the maximum number of tags.",
+                    },
+                    400,
+                );
+            }
             const tag = await prisma.stockItemTag.create({
                 data: {
                     Family: {

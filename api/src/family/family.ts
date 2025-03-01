@@ -98,11 +98,28 @@ export const familyApi = new Hono()
         async (c) => {
             const { token } = c.var.authUser;
             const familyId = c.req.param("familyId");
+            const family = c.var.family;
+            // 招待リンクが既定数を超えているかどうかを確認
+            // findFirstでskipを指定することで、skip番目のデータを取得
+            // まだ余裕がある（これが満たされない）場合はnullなので、!== nullで判定する
+            const exceededInvite = await prisma.invite.findFirst({
+                where: { familyId, active: true },
+                skip: family.Config.maxInvitesPerFamily - 1,
+            });
+
+            if (exceededInvite) {
+                return c.json(
+                    {
+                        error: "You have reached the maximum number of invites for this family.",
+                    },
+                    400,
+                );
+            }
             const invite = await prisma.invite.create({
                 data: {
                     familyId: familyId,
                     createdById: token?.sub,
-                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                 },
             });
             return c.json(invite);

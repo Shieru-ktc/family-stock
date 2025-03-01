@@ -49,13 +49,15 @@ export default function TagManagePage({
                         })
                         .then(async (res) => {
                             // add to tags
-                            const createdTag = await res.json();
-                            queryClient.setQueryData(
-                                ["family", family?.id, "tags"],
-                                (oldTags: any) => {
-                                    return [...oldTags, createdTag];
-                                },
-                            );
+                            if (res.ok) {
+                                const createdTag = await res.json();
+                                queryClient.setQueryData(
+                                    ["family", family?.id, "tags"],
+                                    (oldTags: any) => {
+                                        return [...oldTags, createdTag];
+                                    },
+                                );
+                            }
                         });
                 }}
             />

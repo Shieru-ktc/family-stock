@@ -3,7 +3,7 @@ import { Family, Member, MemberRole } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import { createMiddleware } from "hono/factory";
 import { FamilyNotFoundError, NoPermissionError } from "../errors";
-import { defaultConfig, FamilyConfig } from "./config";
+import { applyOverrides, defaultConfig, FamilyConfig } from "./config";
 
 type Role = "OWNER" | MemberRole;
 
@@ -65,27 +65,7 @@ export const familyMiddleware = <
         const familyObject = {
             ...familyWithoutOverrides,
             Config: {
-                ...defaultConfig(),
-                ...Object.fromEntries(
-                    member.Family.FamilyOverrides.map((o) => {
-                        const key = o.parameter as keyof FamilyConfig;
-                        const defaultValue = defaultConfig()[key];
-
-                        // FamilyConfig のプロパティが number 型ならキャスト
-                        if (typeof defaultValue === "number") {
-                            const parsedValue = Number(o.value);
-                            if (isNaN(parsedValue)) {
-                                console.warn(
-                                    `Invalid FamilyOverride: ${o.parameter}=${o.value}`,
-                                );
-                                return [key, defaultValue]; // デフォルト値を使う
-                            }
-                            return [key, parsedValue];
-                        }
-
-                        return [key, o.value]; // number 以外はそのまま
-                    }),
-                ),
+                ...applyOverrides(defaultConfig(), FamilyOverrides),
             },
         };
         c.set(

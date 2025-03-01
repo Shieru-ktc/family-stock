@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
 import { Hono } from "hono";
 import { manager } from "../ws";
-import { MAX_MEMBERS_PER_FAMILY } from "@/vars";
+import { applyOverrides, defaultConfig } from "../family/config";
 
 async function getInvite(inviteId: string) {
     const invite = await prisma.invite.findFirst({
@@ -17,13 +17,31 @@ async function getInvite(inviteId: string) {
             Family: {
                 include: {
                     Members: true,
+                    FamilyOverrides: true,
                 },
             },
             CreatedBy: true,
         },
     });
 
-    return invite;
+    if (!invite) {
+        return null;
+    }
+    return {
+        ...invite,
+        Family: {
+            ...invite.Family,
+            Members: invite.Family.Members.map((m) => ({
+                ...m,
+            })),
+            Config: {
+                ...applyOverrides(
+                    defaultConfig(),
+                    invite.Family.FamilyOverrides,
+                ),
+            },
+        },
+    };
 }
 
 export const inviteApi = new Hono()
@@ -68,7 +86,10 @@ export const inviteApi = new Hono()
             );
         }
 
-        if (invite.Family.Members.length >= MAX_MEMBERS_PER_FAMILY) {
+        if (
+            invite.Family.Members.length >=
+            invite.Family.Config.maxMembersPerFamily
+        ) {
             return c.json(
                 {
                     message:

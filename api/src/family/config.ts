@@ -1,3 +1,5 @@
+import { FamilyOverride } from "@prisma/client";
+
 export interface FamilyConfig {
     maxMembersPerFamily: number;
     maxStocksPerFamily: number;
@@ -12,4 +14,17 @@ export function defaultConfig(): FamilyConfig {
         maxInvitesPerFamily: 5,
         maxTagsPerFamily: 10,
     };
+}
+
+export function applyOverrides(
+    config: FamilyConfig,
+    overrides: FamilyOverride[],
+): FamilyConfig {
+    return overrides.reduce((acc, o) => {
+        const key = o.parameter as keyof FamilyConfig;
+        return {
+            ...acc,
+            [key]: o.value,
+        };
+    }, config);
 }
