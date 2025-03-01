@@ -4,6 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import NavBar from "@/components/navbar/Navbar";
 import AppSidebar from "@/components/sidebar/AppSidebar";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 
 export default async function AppLayout({
     children,
@@ -19,6 +20,7 @@ export default async function AppLayout({
                     <div className="px-6 py-2">{children}</div>
                 </div>
                 <Toaster />
+                <SonnerToaster />
             </SidebarProvider>
         </Providers>
     );
