@@ -15,5 +15,8 @@ declare module "bun" {
         PORT: string;
 
         API_URL: string;
+
+        MICROCMS_SERVICE_DOMAIN: string;
+        MICROCMS_API_KEY: string;
     }
 }
