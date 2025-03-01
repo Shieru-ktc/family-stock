@@ -37,7 +37,7 @@ export default function NewsPost({
                     <h1 className="text-center text-3xl font-bold">
                         {post.title}
                     </h1>
-                    <div className="my-4 text-sm">
+                    <div className="mx-auto my-4 text-right text-sm">
                         <p>作成日時: {post.createdAt.toLocaleString()}</p>
                         <p>更新日時: {post.updatedAt.toLocaleString()}</p>
                     </div>
@@ -45,7 +45,7 @@ export default function NewsPost({
                     <hr />
 
                     <div
-                        className="prose dark:prose-invert my-4"
+                        className="prose dark:prose-invert mx-auto my-4 max-w-screen-lg"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                     />
                 </div>

@@ -3,7 +3,7 @@
 import Tag from "@/components/Tag";
 import Chip from "@/components/ui/chip";
 import { microCmsClient } from "@/lib/microcms-client";
-import { tagColorToCn } from "@/lib/utils";
+import { cn, tagColorToCn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
@@ -38,19 +38,25 @@ export default function News() {
                     posts.map((post: any) => (
                         <li key={post.id}>
                             <div className="rounded-xl border p-4">
-                                <Link
-                                    href={`/main/news/${post.id}`}
-                                    className="text-blue-700 underline dark:text-blue-300"
-                                >
-                                    {post.title}
-                                </Link>
                                 <Chip
-                                    className={tagColorToCn(
-                                        post.category.color[0],
+                                    className={cn(
+                                        tagColorToCn(post.category.color[0]),
+                                        "text-xs",
                                     )}
                                 >
                                     {post.category.name}
                                 </Chip>
+                                <br />
+                                <Link
+                                    href={`/main/news/${post.id}`}
+                                    className="text-xl text-blue-700 underline dark:text-blue-300"
+                                >
+                                    {post.title}
+                                </Link>
+                                <div className="my-2">
+                                    <hr />
+                                </div>
+
                                 <div className="text-sm text-gray-500">
                                     <p>
                                         作成日時:{" "}
