@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SocketEvents } from "@/socket/events";
 import { Hono } from "hono";
 import { manager } from "../ws";
+import { MAX_MEMBERS_PER_FAMILY } from "@/vars";
 
 async function getInvite(inviteId: string) {
     const invite = await prisma.invite.findFirst({
@@ -63,6 +64,16 @@ export const inviteApi = new Hono()
         if (invite.Family.Members.some((m) => m.userId === token?.sub)) {
             return c.json(
                 { message: "You are already a member of this family" },
+                400,
+            );
+        }
+
+        if (invite.Family.Members.length >= MAX_MEMBERS_PER_FAMILY) {
+            return c.json(
+                {
+                    message:
+                        "This family has reached the maximum number of members",
+                },
                 400,
             );
         }

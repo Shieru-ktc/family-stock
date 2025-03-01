@@ -5,6 +5,7 @@ import { zValidator } from "@hono/zod-validator";
 import { SocketEvents } from "@/socket/events";
 import { manager } from "../ws";
 import { familyApi } from "./family";
+import { MAX_FAMILIES_PER_USER } from "@/vars";
 
 export const generalFamily = new Hono()
     .get("/", async (c) => {
@@ -34,6 +35,23 @@ export const generalFamily = new Hono()
             const { token } = c.var.authUser;
             console.log(token);
             const data = c.req.valid("json");
+            const familyCount = await prisma.family.count({
+                where: {
+                    Members: {
+                        some: {
+                            User: {
+                                id: token?.sub,
+                            },
+                        },
+                    },
+                },
+                take: MAX_FAMILIES_PER_USER,
+            })
+            if (familyCount >= MAX_FAMILIES_PER_USER) {
+                return c.json({
+                    error: "You have reached the maximum number of families.",
+                }, 400);
+            }
             const family = await prisma.family.create({
                 data: {
                     name: data.name,
