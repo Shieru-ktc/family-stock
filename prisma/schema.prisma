@@ -144,6 +144,17 @@ model Family {
   Shopping       Shopping?
   Categories     Category[]
   CategoryGenre  CategoryGenre[]
+  FamilyOverrides FamilyOverride[]
+}
+
+model FamilyOverride {
+  familyId String
+  parameter String
+  value    String
+
+  Family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@id([familyId, parameter])
 }
 
 model Category {
