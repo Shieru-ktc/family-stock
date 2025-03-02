@@ -8,10 +8,11 @@ import { SocketEvents } from "@/socket/events";
 import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InferRequestType } from "hono";
 import { apiClient } from "@/lib/apiClient";
 import { useGetStocksQuery } from "@/app/main/queries/Stocks";
+import { Textarea } from "@/components/ui/textarea";
 
 type ShoppingPostRequest = InferRequestType<
     (typeof apiClient.api.family)[":familyId"]["shopping"]["$post"]
@@ -22,6 +23,8 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
     const { toast } = useToast();
     const { data: stocks, isPending } = useGetStocksQuery(familyId);
     const [checked, setChecked] = useState<string[]>([]);
+
+    const temporaryRef = useRef<HTMLTextAreaElement>(null);
 
     const queryClient = useQueryClient();
 
@@ -44,7 +47,7 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
         if (stocks) {
             createNewShopping.mutate({
                 items: checked,
-                temporary: ["テスト1", "テスト2"],
+                temporary: temporaryRef.current?.value.trim().split("\n"),
             });
         }
     };
@@ -141,6 +144,22 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
                     }}
                 />
             )}
+            <hr className="my-2" />
+            <h2 className="text-2xl">一時的な買い物アイテム</h2>
+            <p>
+                この買い物のために、在庫アイテムを一時的に作成することができます。
+                <br />
+                以下のテキストボックスに、改行区切りでアイテム名を入力してください。
+            </p>
+            <p className="text-red-800 dark:text-red-200">
+                作成されたアイテムは、買い物の終了時に自動で削除されます。
+            </p>
+            <Textarea
+                className="my-2"
+                rows={5}
+                placeholder={"例: 生クリーム\nいちご\n小麦粉"}
+                ref={temporaryRef}
+            />
         </>
     );
 }
