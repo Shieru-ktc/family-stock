@@ -126,10 +126,12 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
             {stocks && (
                 <StockItemSelector
                     stocks={
-                        stocks.map((stock) => ({
-                            ...stock,
-                            checked: checked.includes(stock.id),
-                        })) as (StockItemWithPartialMeta & {
+                        stocks
+                            .filter((stock) => !stock.Meta.system)
+                            .map((stock) => ({
+                                ...stock,
+                                checked: checked.includes(stock.id),
+                            })) as (StockItemWithPartialMeta & {
                             checked: boolean;
                         })[]
                     }
