@@ -16,7 +16,22 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { getRole, getRoleLabel } from "@/lib/utils";
-import { Calendar, Notebook, ShieldCheck, UsersIcon } from "lucide-react";
+import {
+    Calendar,
+    Loader2,
+    Notebook,
+    ShieldCheck,
+    UsersIcon,
+} from "lucide-react";
+import { useState } from "react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 function getRoleDescription(role: "OWNER" | "ADMIN" | "MEMBER") {
     switch (role) {
@@ -52,6 +67,21 @@ function getRoleDescription(role: "OWNER" | "ADMIN" | "MEMBER") {
 }
 export default function FamilySettingsPage() {
     const [family] = useAtom(familyAtom);
+    const [deleteConfirm, setDeleteConfirm] = useState(false);
+    const router = useRouter();
+
+    const deleteFamily = useMutation({
+        mutationFn: async () => {
+            return await apiClient.api.family[":familyId"].$delete({
+                param: {
+                    familyId: family!.id,
+                },
+            });
+        },
+        onSuccess: () => {
+            router.push("/main");
+        },
+    });
 
     return family ? (
         <div>
@@ -150,6 +180,75 @@ export default function FamilySettingsPage() {
                     </CardContent>
                 </Card>
             </div>
+            <div className="mt-4 rounded-xl border border-red-800 p-2 dark:border-red-300">
+                <h2 className="my-2 text-2xl text-red-800 dark:text-red-300">
+                    Danger Zone
+                </h2>
+                <h3 className="text-xl font-bold">ファミリーの削除</h3>
+                <p>
+                    ファミリーを削除すると、すべてのデータが失われます。
+                    <br />
+                    この操作は取り消せません。
+                </p>
+                <Button
+                    variant="destructive"
+                    className="my-2"
+                    onClick={() => setDeleteConfirm(true)}
+                >
+                    このファミリーを削除する
+                </Button>
+            </div>
+            <Dialog
+                open={deleteConfirm}
+                onOpenChange={(open) => {
+                    setDeleteConfirm(open);
+                }}
+            >
+                <DialogContent
+                    className="w-full"
+                    showCloseButton={!deleteFamily.isPending}
+                >
+                    <DialogHeader>
+                        <DialogTitle>ファミリーの削除</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col space-y-4">
+                        <p>
+                            ファミリー "{family.name}"
+                            を削除しようとしています。この操作は取り消すことができません。
+                            <br />
+                            削除すると、登録されている在庫アイテムやメンバー情報がすべて失われます。
+                            <br />
+                            本当に削除してもよろしいですか？
+                        </p>
+
+                        <div className="flex space-x-4">
+                            <Button
+                                type="submit"
+                                variant="destructive"
+                                onClick={() => {
+                                    deleteFamily.mutate();
+                                    setDeleteConfirm(false);
+                                }}
+                                disabled={deleteFamily.isPending}
+                            >
+                                {deleteFamily.isPending && (
+                                    <Loader2 className="animate-spin" />
+                                )}
+                                削除する
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    setDeleteConfirm(false);
+                                }}
+                                variant="outline"
+                                disabled={deleteFamily.isPending}
+                            >
+                                キャンセル
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     ) : (
         <p>Family not found.</p>
