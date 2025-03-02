@@ -6,6 +6,7 @@ interface Props {
   onViewClick?: () => void;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
+  disabled?: boolean;
 }
 export default function ActionButtons(props: Props) {
   return (

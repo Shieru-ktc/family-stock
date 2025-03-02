@@ -54,6 +54,7 @@ export default function Stock({
                 description?: string;
             }[];
             position: string;
+            system: boolean
         };
     };
     canDrag: boolean;
@@ -137,15 +138,15 @@ export default function Stock({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side={"left"} sideOffset={5}>
-                            <DropdownMenuItem onClick={onEdit}>
+                            <DropdownMenuItem onClick={onEdit} disabled={stock.Meta.system}>
                                 <Edit2 />
                                 編集
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={onDuplicate}>
+                            <DropdownMenuItem onClick={onDuplicate} disabled={stock.Meta.system}>
                                 <CopyPlus />
                                 複製
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={onDelete}>
+                            <DropdownMenuItem onClick={onDelete} disabled={stock.Meta.system}>
                                 <Trash />
                                 削除
                             </DropdownMenuItem>

@@ -150,6 +150,7 @@ export default function TagActionComponent({ tag }: { tag: StockItemTag }) {
                 <ActionButtons
                     onEditClick={onEditClick}
                     onDeleteClick={onDeleteClick}
+                    disabled={tag.system}
                 />
             </TableCell>
         </>
