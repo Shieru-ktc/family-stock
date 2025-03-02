@@ -272,11 +272,14 @@ export const shoppingApi = new Hono()
                 Boolean(data.temporary),
             );
 
-            const newItems = await prisma.shoppingItem.findMany({
-                where: {
-                    shoppingId: family.Shopping!.id,
-                    stockItemId: { in: stockItems.map((item) => item.id) },
-                },
+            const newItems = await prisma.shoppingItem.createManyAndReturn({
+                data: [
+                    ...data.items.map((stockId) => ({
+                        shoppingId: family.Shopping!.id,
+                        stockItemId: stockId,
+                        quantity: 0,
+                    })),
+                ],
                 include: {
                     StockItem: {
                         include: { Meta: { include: { Tags: true } } },
@@ -285,7 +288,7 @@ export const shoppingApi = new Hono()
             });
 
             // temporary アイテムを個別に作成
-            const temporaryItems = await Promise.all(
+            await Promise.all(
                 (data.temporary || []).map(async (name) => {
                     position = position.genNext();
                     const stockItem = await prisma.stockItem.create({
@@ -313,12 +316,14 @@ export const shoppingApi = new Hono()
                             stockItemId: stockItem.id,
                             quantity: 0,
                         },
-                        include: { StockItem: { include: { Meta: true } } },
+                        include: {
+                            StockItem: {
+                                include: { Meta: { include: { Tags: true } } },
+                            },
+                        },
                     });
                 }),
             );
-
-            const allNewItems = [...newItems, ...temporaryItems];
 
             if (data.temporary) {
                 dispatchStockCreatedForTemporaryItems(

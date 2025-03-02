@@ -97,6 +97,7 @@ export default function ShoppingPage({
             queryClient.setQueryData(
                 ["family", familyId, "shopping"],
                 (prevShopping: PartialShoppingType) => {
+                    console.log("added", data);
                     if (prevShopping) {
                         return {
                             ...prevShopping,

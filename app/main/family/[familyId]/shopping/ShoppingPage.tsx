@@ -65,8 +65,6 @@ export default function OnGoingShoppingPage({
     );
     const [checked, setChecked] = useState<string[]>([]);
 
-    const temporaryRef = useRef<HTMLTextAreaElement>(null);
-
     const { data: stocks } = useGetStocksQuery(familyId);
 
     const handleEnd = async (isCompleted: boolean) => {
@@ -92,13 +90,12 @@ export default function OnGoingShoppingPage({
             },
             json: {
                 items: checked,
-                temporary: temporaryRef.current?.value
-                    ? temporaryRef.current?.value.trim().split("\n")
-                    : undefined,
+                temporary: undefined,
             },
         });
-        setAddItemsSending(false);
         setAddItemsOpen(false);
+        setAddItemsSending(false);
+        setChecked([]);
     };
 
     return (
@@ -164,7 +161,6 @@ export default function OnGoingShoppingPage({
                                 className="my-2"
                                 rows={5}
                                 placeholder={"例: 生クリーム\nいちご\n小麦粉"}
-                                ref={temporaryRef}
                             />
                         </TabsContent>
                     </Tabs>
