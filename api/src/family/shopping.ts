@@ -7,7 +7,89 @@ import { zValidator } from "@hono/zod-validator";
 import { assertStockItemWithMeta, prisma } from "@/lib/prisma";
 import { LexoRank } from "@dalet-oss/lexorank";
 
+/**
+ * ヘルパー関数: 指定の familyId における最新の StockItem の位置を元に、新規の position を返す
+ */
+async function getInitialPosition(familyId: string) {
+    const lastStockItem = await prisma.stockItem.findFirst({
+        where: { familyId },
+        include: { Meta: true },
+        orderBy: { Meta: { position: "desc" } },
+    });
+    return lastStockItem
+        ? LexoRank.parse(lastStockItem.Meta!.position).between(LexoRank.max())
+        : LexoRank.min().genNext();
+}
+
+/**
+ * ヘルパー関数: Temporary タグが存在しなければ作成（temporary アイテムがある場合のみ）
+ */
+async function ensureTemporaryTag(familyId: string, hasTemporary: boolean) {
+    let tempTag = await prisma.stockItemTag.findFirst({
+        where: {
+            familyId,
+            name: "Temporary",
+            system: true,
+        },
+    });
+    if (hasTemporary && !tempTag) {
+        tempTag = await prisma.stockItemTag.create({
+            data: {
+                name: "Temporary",
+                description: "買い物のために一時的に作成された在庫アイテム",
+                color: "GREY",
+                familyId,
+                system: true,
+            },
+        });
+    }
+    return tempTag;
+}
+
+/**
+ * ヘルパー関数: temporary な StockItem 作成後、stockCreated イベントを dispatch する
+ */
+function dispatchStockCreatedForTemporaryItems(
+    familyId: string,
+    items: any[],
+    family: any,
+) {
+    items
+        .filter((item) => item.StockItem.Meta?.system)
+        .forEach((item) => {
+            const asserted = assertStockItemWithMeta(item.StockItem);
+            SocketEvents.stockCreated(familyId).dispatch(
+                {
+                    stock: {
+                        ...asserted,
+                        Meta: {
+                            ...asserted.Meta,
+                            Family: { ...family },
+                            Tags: item.StockItem.Meta?.Tags
+                                ? [...item.StockItem.Meta.Tags]
+                                : [],
+                        },
+                    },
+                },
+                manager.in(familyId),
+            );
+        });
+}
+
+/**
+ * ヘルパー関数: 指定の StockItem（temporary）削除時のイベント送信
+ */
+function dispatchStockDeletedEvents(familyId: string, items: any[]) {
+    items.forEach((item) => {
+        SocketEvents.stockDeleted(familyId).dispatch(
+            { stockId: item.id },
+            manager.in(familyId),
+        );
+    });
+}
+
 export const shoppingApi = new Hono()
+    // GET /shopping
     .get(
         "/shopping",
         familyMiddleware({
@@ -28,6 +110,8 @@ export const shoppingApi = new Hono()
             return c.json(family.Shopping);
         },
     )
+
+    // POST /shopping
     .post(
         "/shopping",
         familyMiddleware(),
@@ -42,76 +126,44 @@ export const shoppingApi = new Hono()
             const family = c.var.family;
             const { token } = c.var.authUser;
             const data = c.req.valid("json");
-            const lastStockItem = await prisma.stockItem.findFirst({
-                where: {
-                    familyId: family.id,
-                },
-                include: {
-                    Meta: true,
-                },
-                orderBy: {
-                    Meta: {
-                        position: "desc",
-                    },
-                },
-            });
-            let position = lastStockItem
-                ? LexoRank.parse(lastStockItem.Meta!.position).between(
-                      LexoRank.max(),
-                  )
-                : LexoRank.min().genNext();
-            let tempTag = await prisma.stockItemTag.findFirst({
-                where: {
-                    familyId: family.id,
-                    name: "Temporary",
-                    system: true,
-                },
-            });
-            if (data.temporary && !tempTag) {
-                tempTag = await prisma.stockItemTag.create({
-                    data: {
-                        name: "Temporary",
-                        description:
-                            "買い物のために一時的に作成された在庫アイテム",
-                        color: "GREY",
-                        familyId: family.id,
-                        system: true,
-                    },
-                });
-            }
+
+            // 位置の初期値取得
+            let position = await getInitialPosition(family.id);
+
+            // Temporary タグの取得／作成
+            const tempTag = await ensureTemporaryTag(
+                family.id,
+                Boolean(data.temporary),
+            );
+
             const shopping = await prisma.shopping.create({
                 data: {
                     Family: {
-                        connect: {
-                            id: family.id,
-                        },
+                        connect: { id: family.id },
                     },
                     Items: {
                         create: [
                             ...data.items.map((stockId) => ({
                                 StockItem: {
-                                    connect: {
-                                        id: stockId,
-                                    },
+                                    connect: { id: stockId },
                                 },
                                 quantity: 0,
                             })),
-                            ...(data.temporary?.map((name) => {
+                            // temporary アイテムの一括生成（ネストした create で同時生成）
+                            ...(data.temporary || []).map((name) => {
                                 position = position.genNext();
                                 return {
                                     StockItem: {
                                         create: {
                                             Family: {
-                                                connect: {
-                                                    id: family.id,
-                                                },
+                                                connect: { id: family.id },
                                             },
                                             quantity: 0,
                                             Meta: {
                                                 create: {
                                                     position:
                                                         position.toString(),
-                                                    name: name,
+                                                    name,
                                                     unit: "",
                                                     price: 0,
                                                     step: 1,
@@ -133,14 +185,10 @@ export const shoppingApi = new Hono()
                                     },
                                     quantity: 0,
                                 };
-                            }) || []),
+                            }),
                         ],
                     },
-                    User: {
-                        connect: {
-                            id: token.sub,
-                        },
-                    },
+                    User: { connect: { id: token.sub } },
                 },
                 include: {
                     Items: {
@@ -156,66 +204,57 @@ export const shoppingApi = new Hono()
                     },
                 },
             });
+
+            // temporary アイテムがあればイベント送信
             if (data.temporary) {
-                shopping.Items.filter((v) => v.StockItem.Meta?.system).forEach(
-                    (item) => {
-                        const asserted = assertStockItemWithMeta(
-                            item.StockItem,
-                        );
-                        SocketEvents.stockCreated(family.id).dispatch(
-                            {
-                                stock: {
-                                    ...asserted,
-                                    Meta: {
-                                        ...asserted.Meta,
-                                        Family: {
-                                            ...family,
-                                        },
-                                        Tags: [...item.StockItem.Meta!.Tags],
-                                    },
-                                },
-                            },
-                            manager.in(family.id),
-                        );
-                    },
+                dispatchStockCreatedForTemporaryItems(
+                    family.id,
+                    shopping.Items,
+                    family,
                 );
             }
+
             SocketEvents.shoppingCreated(family.id).dispatch(
-                {
-                    shoppingId: shopping.id,
-                },
+                { shoppingId: shopping.id },
                 manager.in(family.id),
             );
+
             return c.json({
                 success: true,
                 shopping,
             });
         },
     )
+
+    // POST /shopping/items
     .post(
         "/shopping/items",
         familyMiddleware({ Shopping: true }),
-        zValidator("json", z.array(z.string())),
+        zValidator(
+            "json",
+            z.object({
+                items: z.array(z.string()),
+                temporary: z.array(z.string()).optional(),
+            }),
+        ),
         async (c) => {
             const family = c.var.family;
             const data = c.req.valid("json");
-            console.log(family.Shopping?.id, family.shoppingId);
+
             if (!family.Shopping) {
                 return c.json(
-                    {
-                        success: false,
-                        error: "Shopping not found",
-                    },
+                    { success: false, error: "Shopping not found" },
                     404,
                 );
             }
+
             const stockItems = await prisma.stockItem.findMany({
                 where: {
-                    id: { in: data },
+                    id: { in: data.items },
                     familyId: family.id,
                 },
             });
-            if (stockItems.length !== data.length) {
+            if (stockItems.length !== data.items.length) {
                 return c.json(
                     {
                         success: false,
@@ -224,14 +263,71 @@ export const shoppingApi = new Hono()
                     404,
                 );
             }
-            const newItems = await prisma.shoppingItem.createManyAndReturn({
-                data: stockItems.map((stockItem) => ({
+
+            // 位置の初期値取得
+            let position = await getInitialPosition(family.id);
+            // Temporary タグの取得／作成
+            const tempTag = await ensureTemporaryTag(
+                family.id,
+                Boolean(data.temporary),
+            );
+
+            const newItems = await prisma.shoppingItem.findMany({
+                where: {
                     shoppingId: family.Shopping!.id,
-                    stockItemId: stockItem.id,
-                    quantity: 1,
-                })),
-                include: { StockItem: { include: { Meta: true } } },
+                    stockItemId: { in: stockItems.map((item) => item.id) },
+                },
+                include: {
+                    StockItem: {
+                        include: { Meta: { include: { Tags: true } } },
+                    },
+                },
             });
+
+            // temporary アイテムを個別に作成
+            const temporaryItems = await Promise.all(
+                (data.temporary || []).map(async (name) => {
+                    position = position.genNext();
+                    const stockItem = await prisma.stockItem.create({
+                        data: {
+                            Family: { connect: { id: family.id } },
+                            quantity: 0,
+                            Meta: {
+                                create: {
+                                    position: position.toString(),
+                                    name,
+                                    unit: "",
+                                    price: 0,
+                                    step: 1,
+                                    threshold: 0,
+                                    Family: { connect: { id: family.id } },
+                                    Tags: { connect: { id: tempTag?.id } },
+                                    system: true,
+                                },
+                            },
+                        },
+                    });
+                    return prisma.shoppingItem.create({
+                        data: {
+                            shoppingId: family.Shopping!.id,
+                            stockItemId: stockItem.id,
+                            quantity: 0,
+                        },
+                        include: { StockItem: { include: { Meta: true } } },
+                    });
+                }),
+            );
+
+            const allNewItems = [...newItems, ...temporaryItems];
+
+            if (data.temporary) {
+                dispatchStockCreatedForTemporaryItems(
+                    family.id,
+                    newItems,
+                    family,
+                );
+            }
+
             SocketEvents.shoppingItemsAdded(family.id).dispatch(
                 {
                     items: newItems.map((item) => ({
@@ -241,12 +337,11 @@ export const shoppingApi = new Hono()
                 },
                 manager.in(family.id),
             );
-            return c.json({
-                success: true,
-                items: newItems,
-            });
+            return c.json({ success: true, items: newItems });
         },
     )
+
+    // DELETE /shopping/items
     .delete(
         "/shopping/items",
         familyMiddleware({ Shopping: true }),
@@ -254,15 +349,14 @@ export const shoppingApi = new Hono()
         async (c) => {
             const family = c.var.family;
             const data = c.req.valid("json");
+
             if (!family.Shopping) {
                 return c.json(
-                    {
-                        success: false,
-                        error: "Shopping not found",
-                    },
+                    { success: false, error: "Shopping not found" },
                     404,
                 );
             }
+
             const items = await prisma.shoppingItem.findMany({
                 where: {
                     id: { in: data },
@@ -271,63 +365,49 @@ export const shoppingApi = new Hono()
             });
             if (items.length !== data.length) {
                 return c.json(
-                    {
-                        success: false,
-                        error: "One or more items not found",
-                    },
+                    { success: false, error: "One or more items not found" },
                     404,
                 );
             }
+
             const temporaryItems = await prisma.stockItem.findMany({
                 where: {
                     id: { in: items.map((item) => item.stockItemId) },
                     Meta: {
                         Tags: {
-                            some: {
-                                name: "Temporary",
-                            },
+                            some: { name: "Temporary" },
                         },
                         system: true,
                     },
                 },
             });
-            temporaryItems.forEach((item) => {
-                SocketEvents.stockDeleted(family.id).dispatch(
-                    {
-                        stockId: item.id,
-                    },
-                    manager.in(family.id),
-                );
-            });
+
+            dispatchStockDeletedEvents(family.id, temporaryItems);
+
             await prisma.stockItem.deleteMany({
                 where: {
                     id: { in: items.map((item) => item.stockItemId) },
                     Meta: {
                         Tags: {
-                            some: {
-                                name: "Temporary",
-                            },
+                            some: { name: "Temporary" },
                         },
                         system: true,
                     },
                 },
             });
             await prisma.shoppingItem.deleteMany({
-                where: {
-                    id: { in: data },
-                },
+                where: { id: { in: data } },
             });
+
             SocketEvents.shoppingItemsDeleted(family.id).dispatch(
-                {
-                    items,
-                },
+                { items },
                 manager.in(family.id),
             );
-            return c.json({
-                success: true,
-            });
+            return c.json({ success: true });
         },
     )
+
+    // DELETE /shopping
     .delete(
         "/shopping",
         familyMiddleware({
@@ -346,41 +426,30 @@ export const shoppingApi = new Hono()
             const shopping = family.Shopping;
             if (!shopping) {
                 return c.json(
-                    {
-                        success: false,
-                        error: "Shopping not found",
-                    },
+                    { success: false, error: "Shopping not found" },
                     404,
                 );
             }
             if (isCompleted) {
                 shopping.Items.forEach((item) => {
                     const stockItem = family.StockItems.find(
-                        (stockItem) => stockItem.id === item.stockItemId,
+                        (si) => si.id === item.stockItemId,
                     );
                     if (stockItem) {
                         stockItem.quantity += item.quantity;
                         SocketEvents.stockQuantityChanged.dispatch(
-                            {
-                                stock: stockItem,
-                            },
+                            { stock: stockItem },
                             manager.in(family.id),
                         );
                     }
                 });
                 await prisma.family.update({
-                    where: {
-                        id: family.id,
-                    },
+                    where: { id: family.id },
                     data: {
                         StockItems: {
                             updateMany: family.StockItems.map((stockItem) => ({
-                                where: {
-                                    id: stockItem.id,
-                                },
-                                data: {
-                                    quantity: stockItem.quantity,
-                                },
+                                where: { id: stockItem.id },
+                                data: { quantity: stockItem.quantity },
                             })),
                         },
                     },
@@ -391,38 +460,26 @@ export const shoppingApi = new Hono()
                 where: {
                     Meta: {
                         Tags: {
-                            some: {
-                                name: "Temporary",
-                            },
+                            some: { name: "Temporary" },
                         },
                         system: true,
                     },
                 },
             });
-            temporaryItems.forEach((item) => {
-                SocketEvents.stockDeleted(family.id).dispatch(
-                    {
-                        stockId: item.id,
-                    },
-                    manager.in(family.id),
-                );
-            });
+            dispatchStockDeletedEvents(family.id, temporaryItems);
+
             await prisma.stockItem.deleteMany({
                 where: {
                     Meta: {
                         Tags: {
-                            some: {
-                                name: "Temporary",
-                            },
+                            some: { name: "Temporary" },
                         },
                         system: true,
                     },
                 },
             });
             await prisma.shopping.delete({
-                where: {
-                    id: family.Shopping?.id,
-                },
+                where: { id: family.Shopping?.id },
             });
             return c.body(null, 204);
         },
