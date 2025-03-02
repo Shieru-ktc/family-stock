@@ -1,6 +1,8 @@
-import { StockItemWithPartialMeta } from "@/types";
+import { StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Checkbox } from "./ui/checkbox";
+import Tag from "./Tag";
+import { TagColor } from "@prisma/client";
 
 export function StockItemSelectCard({
     stock,
@@ -13,6 +15,12 @@ export function StockItemSelectCard({
             name: string;
             unit: string;
             threshold: number;
+            Tags: {
+                id: string;
+                name: string;
+                color: TagColor;
+                description?: string;
+            }[];
         };
     };
     checked?: CheckedState;
@@ -26,11 +34,22 @@ export function StockItemSelectCard({
                 onCheckedChange={onCheckedChange}
             />
             <div>
-                <h2 className="text-lg font-semibold">{stock.Meta.name}</h2>
-                <p>
-                    {stock.quantity}
-                    {stock.Meta.unit} / しきい値: {stock.Meta.threshold}
-                </p>
+                <div>
+                    <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
+                        {stock.Meta.name}
+                    </h2>
+                    <div className="flex gap-2">
+                        {stock.Meta.Tags.map((tag) => (
+                            <Tag key={tag.id} tag={tag} />
+                        ))}
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        {stock.quantity}
+                        {stock.Meta.unit} / しきい値: {stock.Meta.threshold}
+                    </p>
+                </div>
             </div>
         </div>
     );
@@ -39,9 +58,9 @@ export default function StockItemSelector({
     stocks,
     onCheckedChange,
 }: {
-    stocks: (StockItemWithPartialMeta & { checked: CheckedState })[];
+    stocks: (StockItemWithPartialTagMeta & { checked: CheckedState })[];
     onCheckedChange: (
-        stock: StockItemWithPartialMeta,
+        stock: StockItemWithPartialTagMeta,
         checked: CheckedState,
     ) => void;
 }) {

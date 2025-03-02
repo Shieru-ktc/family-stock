@@ -14,7 +14,11 @@ export const shoppingApi = new Hono()
             Shopping: {
                 include: {
                     Items: {
-                        include: { StockItem: { include: { Meta: true } } },
+                        include: {
+                            StockItem: {
+                                include: { Meta: { include: { Tags: true } } },
+                            },
+                        },
                     },
                 },
             },

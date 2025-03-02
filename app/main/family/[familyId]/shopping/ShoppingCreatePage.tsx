@@ -5,7 +5,7 @@ import StockItemSelector from "@/components/StockItemSelector";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { SocketEvents } from "@/socket/events";
-import { StockItemWithFullMeta, StockItemWithPartialMeta } from "@/types";
+import { StockItemWithFullMeta, StockItemWithPartialMeta, StockItemWithPartialTagMeta } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
@@ -133,7 +133,7 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
                             .map((stock) => ({
                                 ...stock,
                                 checked: checked.includes(stock.id),
-                            })) as (StockItemWithPartialMeta & {
+                            })) as (StockItemWithPartialTagMeta & {
                             checked: boolean;
                         })[]
                     }

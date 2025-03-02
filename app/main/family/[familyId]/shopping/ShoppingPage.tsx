@@ -8,13 +8,39 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { apiClient } from "@/lib/apiClient";
 import { SocketEvents } from "@/socket/events";
-import { PartialShopping, StockItemWithPartialMeta } from "@/types";
+import {
+    PartialShopping,
+    PartialShoppingItemWithStockItemMeta,
+    StockItemWithPartialMeta,
+    StockItemWithPartialTagMeta,
+} from "@/types";
+import { TagColor } from "@prisma/client";
 import { useAtom } from "jotai";
 import { useState } from "react";
 
+type ShoppingType = {
+    familyId: string;
+    Items: {
+        id: string;
+        quantity: number;
+        stockItemId: string;
+        StockItem: {
+            Meta: {
+                name: string;
+                position: string;
+                Tags: {
+                    id: string;
+                    name: string;
+                    color: TagColor;
+                    description?: string;
+                }[];
+            };
+        };
+    }[];
+};
 function filterNotInShopping(
-    stocks: StockItemWithPartialMeta[],
-    shopping: PartialShopping,
+    stocks: StockItemWithPartialTagMeta[],
+    shopping: ShoppingType,
 ) {
     return stocks.filter(
         (stock) =>
@@ -25,20 +51,19 @@ export default function OnGoingShoppingPage({
     shopping,
     familyId,
 }: {
-    shopping: PartialShopping;
+    shopping: ShoppingType;
     familyId: string;
 }) {
     const [addItemsOpen, setAddItemsOpen] = useState(false);
     const [addItemsSending, setAddItemsSending] = useState(false);
 
     const [socket] = useAtom(socketAtom);
-    const sortedItems = shopping.Items.toSorted((a, b) =>
-        a.StockItem.Meta.name.localeCompare(b.StockItem.Meta.name),
+    const sortedItems: ShoppingType["Items"] = shopping.Items.toSorted((a, b) =>
+        a.StockItem.Meta.position.localeCompare(b.StockItem.Meta.position),
     );
     const [checked, setChecked] = useState<string[]>([]);
 
     const { data: stocks } = useGetStocksQuery(familyId);
-
 
     const handleEnd = async (isCompleted: boolean) => {
         await apiClient.api.family[":familyId"].shopping.$delete({
@@ -80,7 +105,7 @@ export default function OnGoingShoppingPage({
                                         ...stock,
                                         checked: checked.includes(stock.id),
                                     }),
-                                ) as (StockItemWithPartialMeta & {
+                                ) as (StockItemWithPartialTagMeta & {
                                     checked: boolean;
                                 })[]
                             }

@@ -2,7 +2,6 @@
 
 import { Edit2, Menu, Trash } from "lucide-react";
 
-
 import { MouseEvent } from "react";
 import Counter from "./Counter";
 import { Button } from "./ui/button";
@@ -12,6 +11,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Tag from "./Tag";
+import { TagColor } from "@prisma/client";
 
 export default function ShoppingItem({
     item,
@@ -24,6 +25,12 @@ export default function ShoppingItem({
         StockItem: {
             Meta: {
                 name: string;
+                Tags: {
+                    id: string;
+                    name: string;
+                    color: TagColor;
+                    description?: string;
+                }[];
             };
         };
     };
@@ -33,10 +40,15 @@ export default function ShoppingItem({
 }) {
     return (
         <div className="m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800">
-            <div className="p-2">
+            <div>
                 <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
                     {item.StockItem.Meta.name}
                 </h2>
+                <div className="flex gap-2">
+                    {item.StockItem.Meta.Tags.map((tag) => (
+                        <Tag key={tag.id} tag={tag} />
+                    ))}
+                </div>
             </div>
             <div className="flex-grow p-2" />
 

@@ -10,9 +10,11 @@ import { SocketEvents } from "@/socket/events";
 import { useAtomValue } from "jotai";
 import { socketAtom } from "@/atoms/socketAtom";
 
-type PartialShoppingType = {
-    Items: { id: string; quantity: number }[];
-} | undefined;
+type PartialShoppingType =
+    | {
+          Items: { id: string; quantity: number }[];
+      }
+    | undefined;
 
 export default function ShoppingPage({
     params,
@@ -49,6 +51,10 @@ export default function ShoppingPage({
                                 createdAt: new Date(
                                     item.StockItem.Meta!.createdAt,
                                 ),
+                                Tags: item.StockItem.Meta!.Tags.map((tag) => ({
+                                    ...tag,
+                                    createdAt: new Date(tag.createdAt),
+                                })),
                             },
                             createdAt: new Date(item.StockItem.createdAt),
                         },
@@ -73,7 +79,10 @@ export default function ShoppingPage({
                                 ...prevShopping,
                                 Items: prevShopping.Items.map((item) =>
                                     item.id === data.item.id
-                                        ? { ...item, quantity: data.item.quantity }
+                                        ? {
+                                              ...item,
+                                              quantity: data.item.quantity,
+                                          }
                                         : item,
                                 ),
                             };
