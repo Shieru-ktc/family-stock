@@ -42,7 +42,10 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
 
     const handleCreateShopping = () => {
         if (stocks) {
-            createNewShopping.mutate(checked);
+            createNewShopping.mutate({
+                items: checked,
+                temporary: ["テスト1", "テスト2"],
+            });
         }
     };
 
