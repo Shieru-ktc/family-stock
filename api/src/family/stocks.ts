@@ -68,6 +68,21 @@ export const stocksApi = new Hono()
                     },
                 },
             });
+            const isSystemTagIncluded = await prisma.stockItemTag.findFirst({
+                where: {
+                    id: {
+                        in: data.tags,
+                    },
+                    familyId: family.id,
+                    system: true,
+                },
+            });
+            if (isSystemTagIncluded) {
+                return c.json(
+                    { error: "System tags cannot be included." },
+                    400,
+                );
+            }
             const position = lastStockItem
                 ? LexoRank.parse(lastStockItem.Meta!.position)
                       .between(LexoRank.max())
@@ -152,8 +167,8 @@ export const stocksApi = new Hono()
                     familyId: family.id,
                 },
                 include: {
-                    Meta: true
-                }
+                    Meta: true,
+                },
             });
             if (!stockItem) {
                 return c.json(
@@ -225,8 +240,8 @@ export const stocksApi = new Hono()
                 familyId: family.id,
             },
             include: {
-                Meta: true
-            }
+                Meta: true,
+            },
         });
         if (!stockItem) {
             return c.json(
