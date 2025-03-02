@@ -64,6 +64,7 @@ export default function OnGoingShoppingPage({
         a.StockItem.Meta.position.localeCompare(b.StockItem.Meta.position),
     );
     const [checked, setChecked] = useState<string[]>([]);
+    const temporaryRef = useRef<HTMLTextAreaElement>(null);
 
     const { data: stocks } = useGetStocksQuery(familyId);
 
@@ -90,7 +91,8 @@ export default function OnGoingShoppingPage({
             },
             json: {
                 items: checked,
-                temporary: undefined,
+                temporary:
+                    temporaryRef.current?.value.trim().split("\n") ?? undefined,
             },
         });
         setAddItemsOpen(false);
@@ -147,6 +149,16 @@ export default function OnGoingShoppingPage({
                                     0 && (
                                     <p>追加できる在庫アイテムがありません。</p>
                                 )}
+                            <Button
+                                disabled={
+                                    addItemsSending ||
+                                    filterNotInShopping(stocks ?? [], shopping)
+                                        .length === 0
+                                }
+                                onClick={handleAddItems}
+                            >
+                                選択したアイテムを追加
+                            </Button>
                         </TabsContent>
                         <TabsContent value="temporary">
                             <p>
@@ -161,20 +173,16 @@ export default function OnGoingShoppingPage({
                                 className="my-2"
                                 rows={5}
                                 placeholder={"例: 生クリーム\nいちご\n小麦粉"}
+                                ref={temporaryRef}
                             />
+                            <Button
+                                disabled={addItemsSending}
+                                onClick={handleAddItems}
+                            >
+                                アイテムを追加
+                            </Button>
                         </TabsContent>
                     </Tabs>
-
-                    <Button
-                        disabled={
-                            addItemsSending ||
-                            filterNotInShopping(stocks ?? [], shopping)
-                                .length === 0
-                        }
-                        onClick={handleAddItems}
-                    >
-                        アイテムを追加する
-                    </Button>
                 </DialogContent>
             </Dialog>
             <div className="mr-2 flex-row items-end justify-between lg:flex">
