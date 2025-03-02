@@ -229,6 +229,7 @@ model StockItemMeta {
   threshold   Int
   position    String
   familyId    String
+  system      Boolean  @default(false)
 
   StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
   Family    Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
@@ -247,6 +248,7 @@ model StockItemTag {
   description String   @default("")
   color       TagColor @default(WHITE)
   familyId    String
+  system      Boolean  @default(false)
 
   Family         Family          @relation(fields: [familyId], references: [id], onDelete: Cascade)
   StockItemMetas StockItemMeta[]
