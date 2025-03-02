@@ -49,13 +49,11 @@ export default function FamilyItems() {
         );
         const unsubscribeDeleted = SocketEvents.familyDeleted.listen(
             socket,
-            ({ family }) => {
+            ({ familyId }) => {
                 queryClient.setQueryData(
                     ["families"],
                     (oldData: Family[] | undefined) => {
-                        return oldData
-                            ? oldData.filter((f) => f.id !== family.id)
-                            : [];
+                        return oldData?.filter((f) => f.id !== familyId);
                     },
                 );
             },

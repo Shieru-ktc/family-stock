@@ -7,6 +7,7 @@ import { stocksApi } from "./stocks";
 import { shoppingApi } from "./shopping";
 import { manager } from "../ws";
 import { tagsApi } from "./tags";
+import { SocketEvents } from "@/socket/events";
 
 export const familyApi = new Hono()
     .get(
@@ -27,7 +28,8 @@ export const familyApi = new Hono()
                 id: familyId,
             },
         });
-        return c.status(204);
+        SocketEvents.familyDeleted.dispatch({ familyId }, manager.in(familyId));
+        return c.body(null, 204);
     })
     .get(
         "/:familyId/members",

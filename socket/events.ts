@@ -53,7 +53,7 @@ export const SocketEvents = {
     /** ユーザーがファミリーを作成または参加したことによって、利用可能なファミリーが追加されたときに発火されるイベント */
     familyCreated: new SocketEvent<{ family: Family }>("family-created"),
     /** ユーザーがファミリーを削除した、またはキックされたことによって、ファミリーが利用できなくなったときに発火されるイベント */
-    familyDeleted: new SocketEvent<{ family: Family }>("family-deleted"),
+    familyDeleted: new SocketEvent<{ familyId: string }>("family-deleted"),
 
     /** 新しい在庫アイテムが作成された際に発火されるイベント。 */
     stockCreated: (familyId: string) =>
