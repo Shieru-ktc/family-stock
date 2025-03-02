@@ -146,6 +146,31 @@ export const stocksApi = new Hono()
             const family = c.var.family;
             const stockId = c.req.param("stockId");
             const data = c.req.valid("json");
+            const stockItem = await prisma.stockItem.findFirst({
+                where: {
+                    id: stockId,
+                    familyId: family.id,
+                },
+                include: {
+                    Meta: true
+                }
+            });
+            if (!stockItem) {
+                return c.json(
+                    {
+                        error: "Stock not found.",
+                    },
+                    404,
+                );
+            }
+            if (stockItem.Meta!.system) {
+                return c.json(
+                    {
+                        error: "System managed stocks cannot be deleted.",
+                    },
+                    400,
+                );
+            }
             const updatedItem = await prisma.stockItem.update({
                 where: {
                     id: stockId,
@@ -194,6 +219,31 @@ export const stocksApi = new Hono()
     .delete("/stocks/:stockId", familyMiddleware(), async (c) => {
         const family = c.var.family;
         const stockId = c.req.param("stockId");
+        const stockItem = await prisma.stockItem.findFirst({
+            where: {
+                id: stockId,
+                familyId: family.id,
+            },
+            include: {
+                Meta: true
+            }
+        });
+        if (!stockItem) {
+            return c.json(
+                {
+                    error: "Stock not found.",
+                },
+                404,
+            );
+        }
+        if (stockItem.Meta!.system) {
+            return c.json(
+                {
+                    error: "System managed stocks cannot be deleted.",
+                },
+                400,
+            );
+        }
         await prisma.stockItem.delete({
             where: {
                 id: stockId,

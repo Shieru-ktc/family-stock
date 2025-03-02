@@ -70,9 +70,32 @@ export const tagsApi = new Hono()
         async (c) => {
             const { tagId } = c.req.valid("param");
             const data = c.req.valid("json");
-            const tag = await prisma.stockItemTag.update({
+            const tag = await prisma.stockItemTag.findFirst({
                 where: {
                     id: tagId,
+                    familyId: c.var.family.id,
+                },
+            });
+            if (!tag) {
+                return c.json(
+                    {
+                        error: "Tag not found.",
+                    },
+                    404,
+                );
+            }
+            if (tag.system) {
+                return c.json(
+                    {
+                        error: "System managed tags cannot be updated.",
+                    },
+                    400,
+                );
+            }
+            const updatedTag = await prisma.stockItemTag.update({
+                where: {
+                    id: tagId,
+                    familyId: c.var.family.id,
                 },
                 data: {
                     name: data.name,
@@ -80,7 +103,7 @@ export const tagsApi = new Hono()
                     description: data.description,
                 },
             });
-            return c.json(tag);
+            return c.json(updatedTag);
         },
     )
     .delete(
@@ -90,6 +113,28 @@ export const tagsApi = new Hono()
         async (c) => {
             const family = c.var.family;
             const { tagId } = c.req.valid("param");
+            const tag = await prisma.stockItemTag.findFirst({
+                where: {
+                    id: tagId,
+                    familyId: family.id,
+                },
+            });
+            if (!tag) {
+                return c.json(
+                    {
+                        error: "Tag not found.",
+                    },
+                    404,
+                );
+            }
+            if (tag.system) {
+                return c.json(
+                    {
+                        error: "System managed tags cannot be deleted.",
+                    },
+                    400,
+                );
+            }
             await prisma.stockItemTag.deleteMany({
                 where: {
                     id: tagId,
