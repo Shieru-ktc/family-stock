@@ -1,6 +1,6 @@
 "use client";
 
-import { Cog, Plus, Sandwich, User, UserPlus } from "lucide-react";
+import { Cog, Newspaper, Plus, Sandwich, User, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 import { Sidebar, SidebarMenuItem } from "@/components/ui/sidebar";
@@ -28,6 +28,20 @@ export default function AppSidebar() {
         sidebar = (
             <>
                 <SidebarGroup>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild>
+                                    <Link href={"/main/news"}>
+                                        <Newspaper />
+                                        ニュース
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup>
                     <SidebarGroupLabel>アカウント</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
@@ -44,14 +58,6 @@ export default function AppSidebar() {
                                     <Link href={"/main/settings"}>
                                         <Cog />
                                         設定
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
-                                    <Link href={"/main/sandbox"}>
-                                        <Sandwich />
-                                        サンドボックス
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
