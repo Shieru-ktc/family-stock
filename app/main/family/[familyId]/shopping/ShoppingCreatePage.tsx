@@ -47,7 +47,9 @@ export default function ShoppingCreatePage({ familyId }: { familyId: string }) {
         if (stocks) {
             createNewShopping.mutate({
                 items: checked,
-                temporary: temporaryRef.current?.value.trim().split("\n"),
+                temporary: temporaryRef.current?.value
+                    ? temporaryRef.current?.value.trim().split("\n")
+                    : undefined,
             });
         }
     };
