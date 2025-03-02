@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { familyMiddleware } from "./familyMiddleware";
 import { SocketEvents } from "@/socket/events";
 import { manager } from "../ws";
-import { z } from "zod";
+import { date, z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { assertStockItemWithMeta, prisma } from "@/lib/prisma";
 import { LexoRank } from "@dalet-oss/lexorank";
@@ -140,10 +140,42 @@ export const shoppingApi = new Hono()
                 },
                 include: {
                     Items: {
-                        include: { StockItem: { include: { Meta: true } } },
+                        include: {
+                            StockItem: {
+                                include: {
+                                    Meta: {
+                                        include: { Family: true, Tags: true },
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             });
+            if (data.temporary) {
+                shopping.Items.filter((v) => v.StockItem.Meta?.system).forEach(
+                    (item) => {
+                        const asserted = assertStockItemWithMeta(
+                            item.StockItem,
+                        );
+                        SocketEvents.stockCreated(family.id).dispatch(
+                            {
+                                stock: {
+                                    ...asserted,
+                                    Meta: {
+                                        ...asserted.Meta,
+                                        Family: {
+                                            ...family,
+                                        },
+                                        Tags: [...item.StockItem.Meta!.Tags],
+                                    },
+                                },
+                            },
+                            manager.in(family.id),
+                        );
+                    },
+                );
+            }
             SocketEvents.shoppingCreated(family.id).dispatch(
                 {
                     shoppingId: shopping.id,
@@ -351,19 +383,35 @@ export const shoppingApi = new Hono()
                 });
             }
 
-            await prisma.stockItem.deleteMany({
+            const temporaryItems = await prisma.stockItem.findMany({
                 where: {
-                    familyId: family.id,
-                    ShoppingItem: {
-                        shoppingId: shopping.id,
-                    },
                     Meta: {
-                        system: true,
                         Tags: {
                             some: {
                                 name: "Temporary",
                             },
                         },
+                        system: true,
+                    },
+                },
+            });
+            temporaryItems.forEach((item) => {
+                SocketEvents.stockDeleted(family.id).dispatch(
+                    {
+                        stockId: item.id,
+                    },
+                    manager.in(family.id),
+                );
+            });
+            await prisma.stockItem.deleteMany({
+                where: {
+                    Meta: {
+                        Tags: {
+                            some: {
+                                name: "Temporary",
+                            },
+                        },
+                        system: true,
                     },
                 },
             });
