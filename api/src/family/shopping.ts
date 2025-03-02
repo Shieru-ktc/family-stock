@@ -272,7 +272,7 @@ export const shoppingApi = new Hono()
                 Boolean(data.temporary),
             );
 
-            const newItems = await prisma.shoppingItem.createManyAndReturn({
+            const createdItems = await prisma.shoppingItem.createManyAndReturn({
                 data: [
                     ...data.items.map((stockId) => ({
                         shoppingId: family.Shopping!.id,
@@ -288,7 +288,7 @@ export const shoppingApi = new Hono()
             });
 
             // temporary アイテムを個別に作成
-            await Promise.all(
+            const newItems = await Promise.all(
                 (data.temporary || []).map(async (name) => {
                     position = position.genNext();
                     const stockItem = await prisma.stockItem.create({
@@ -325,24 +325,18 @@ export const shoppingApi = new Hono()
                 }),
             );
 
-            if (data.temporary) {
-                dispatchStockCreatedForTemporaryItems(
-                    family.id,
-                    newItems,
-                    family,
-                );
-            }
+            const allItems = [...createdItems, ...newItems];
 
             SocketEvents.shoppingItemsAdded(family.id).dispatch(
                 {
-                    items: newItems.map((item) => ({
+                    items: allItems.map((item) => ({
                         ...item,
                         StockItem: assertStockItemWithMeta(item.StockItem),
                     })),
                 },
                 manager.in(family.id),
             );
-            return c.json({ success: true, items: newItems });
+            return c.json({ success: true, items: allItems });
         },
     )
 

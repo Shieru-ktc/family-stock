@@ -92,7 +92,10 @@ export default function OnGoingShoppingPage({
             json: {
                 items: checked,
                 temporary:
-                    temporaryRef.current?.value.trim().split("\n") ?? undefined,
+                    temporaryRef.current?.value
+                        .trim()
+                        .split("\n")
+                        .filter((v) => v !== "") ?? undefined,
             },
         });
         setAddItemsOpen(false);
