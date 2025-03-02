@@ -103,9 +103,7 @@ export default function FamilyJoinPage() {
                         </AlertDescription>
                     </Alert>
                 ) : (
-                    <Alert variant="destructive">
-                        {response.result.message}
-                    </Alert>
+                    <Alert variant="destructive">{response.result.error}</Alert>
                 ))}
         </div>
     );

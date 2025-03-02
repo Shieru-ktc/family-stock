@@ -50,7 +50,7 @@ export const inviteApi = new Hono()
         const invite = await getInvite(inviteId);
 
         if (!invite) {
-            return c.json({ message: "Invalid invite link" }, 404);
+            return c.json({ error: "Invalid invite link" }, 404);
         }
 
         return c.json(
@@ -76,12 +76,12 @@ export const inviteApi = new Hono()
         const invite = await getInvite(inviteId);
 
         if (!invite) {
-            return c.json({ message: "Invalid invite link" }, 400);
+            return c.json({ error: "Invalid invite link" }, 400);
         }
 
         if (invite.Family.Members.some((m) => m.userId === token?.sub)) {
             return c.json(
-                { message: "You are already a member of this family" },
+                { error: "You are already a member of this family" },
                 400,
             );
         }
@@ -92,8 +92,7 @@ export const inviteApi = new Hono()
         ) {
             return c.json(
                 {
-                    message:
-                        "This family has reached the maximum number of members",
+                    error: "This family has reached the maximum number of members",
                 },
                 400,
             );
