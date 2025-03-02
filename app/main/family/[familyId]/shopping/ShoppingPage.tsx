@@ -6,6 +6,8 @@ import ShoppingItem from "@/components/ShoppingItem";
 import StockItemSelector from "@/components/StockItemSelector";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { apiClient } from "@/lib/apiClient";
 import { SocketEvents } from "@/socket/events";
 import {
@@ -16,7 +18,7 @@ import {
 } from "@/types";
 import { TagColor } from "@prisma/client";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type ShoppingType = {
     familyId: string;
@@ -63,6 +65,8 @@ export default function OnGoingShoppingPage({
     );
     const [checked, setChecked] = useState<string[]>([]);
 
+    const temporaryRef = useRef<HTMLTextAreaElement>(null);
+
     const { data: stocks } = useGetStocksQuery(familyId);
 
     const handleEnd = async (isCompleted: boolean) => {
@@ -86,7 +90,12 @@ export default function OnGoingShoppingPage({
             param: {
                 familyId: familyId,
             },
-            json: checked,
+            json: {
+                items: checked,
+                temporary: temporaryRef.current?.value
+                    ? temporaryRef.current?.value.trim().split("\n")
+                    : undefined,
+            },
         });
         setAddItemsSending(false);
         setAddItemsOpen(false);
@@ -97,33 +106,69 @@ export default function OnGoingShoppingPage({
             <Dialog open={addItemsOpen} onOpenChange={setAddItemsOpen}>
                 <DialogContent>
                     <DialogTitle>新しいアイテムを追加する</DialogTitle>
-                    {stocks && (
-                        <StockItemSelector
-                            stocks={
-                                filterNotInShopping(stocks, shopping).map(
-                                    (stock) => ({
-                                        ...stock,
-                                        checked: checked.includes(stock.id),
-                                    }),
-                                ) as (StockItemWithPartialTagMeta & {
-                                    checked: boolean;
-                                })[]
-                            }
-                            onCheckedChange={(stock, checked) => {
-                                if (checked) {
-                                    setChecked((prev) => [...prev, stock.id]);
-                                } else {
-                                    setChecked((prev) =>
-                                        prev.filter((id) => id !== stock.id),
-                                    );
-                                }
-                            }}
-                        />
-                    )}
-                    {stocks &&
-                        filterNotInShopping(stocks, shopping).length === 0 && (
-                            <p>追加できる在庫アイテムがありません。</p>
-                        )}
+                    <Tabs defaultValue="addItems">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="addItems">
+                                アイテムを追加
+                            </TabsTrigger>
+                            <TabsTrigger value="temporary">
+                                一時アイテム
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="addItems">
+                            {stocks && (
+                                <StockItemSelector
+                                    stocks={
+                                        filterNotInShopping(
+                                            stocks,
+                                            shopping,
+                                        ).map((stock) => ({
+                                            ...stock,
+                                            checked: checked.includes(stock.id),
+                                        })) as (StockItemWithPartialTagMeta & {
+                                            checked: boolean;
+                                        })[]
+                                    }
+                                    onCheckedChange={(stock, checked) => {
+                                        if (checked) {
+                                            setChecked((prev) => [
+                                                ...prev,
+                                                stock.id,
+                                            ]);
+                                        } else {
+                                            setChecked((prev) =>
+                                                prev.filter(
+                                                    (id) => id !== stock.id,
+                                                ),
+                                            );
+                                        }
+                                    }}
+                                />
+                            )}
+                            {stocks &&
+                                filterNotInShopping(stocks, shopping).length ===
+                                    0 && (
+                                    <p>追加できる在庫アイテムがありません。</p>
+                                )}
+                        </TabsContent>
+                        <TabsContent value="temporary">
+                            <p>
+                                この買い物のために、在庫アイテムを一時的に作成することができます。
+                                <br />
+                                以下のテキストボックスに、改行区切りでアイテム名を入力してください。
+                            </p>
+                            <p className="text-red-800 dark:text-red-200">
+                                作成されたアイテムは、買い物の終了時に自動で削除されます。
+                            </p>
+                            <Textarea
+                                className="my-2"
+                                rows={5}
+                                placeholder={"例: 生クリーム\nいちご\n小麦粉"}
+                                ref={temporaryRef}
+                            />
+                        </TabsContent>
+                    </Tabs>
+
                     <Button
                         disabled={
                             addItemsSending ||
