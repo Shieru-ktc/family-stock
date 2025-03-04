@@ -57,6 +57,7 @@ model User {
   Families       Family[]
   CreatedInvites Invite[]
   Shopping       Shopping[]
+  Recipe         Recipe[]
 }
 
 model Account {
@@ -145,6 +146,7 @@ model Family {
   Categories      Category[]
   CategoryGenre   CategoryGenre[]
   FamilyOverrides FamilyOverride[]
+  Recipe          Recipe[]
 }
 
 model FamilyOverride {
@@ -215,6 +217,7 @@ model StockItem {
   Family       Family         @relation(fields: [familyId], references: [id], onDelete: Cascade)
   Meta         StockItemMeta?
   ShoppingItem ShoppingItem?
+  RecipeItem   RecipeItem[]
 }
 
 model StockItemMeta {
@@ -277,5 +280,32 @@ model ShoppingItem {
   quantity Int @default(0)
 
   Shopping  Shopping  @relation(fields: [shoppingId], references: [id], onDelete: Cascade)
+  StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
+}
+
+model Recipe {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  name        String
+  description String
+  familyId    String
+  createdBy   String
+
+  Family      Family       @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  User        User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  RecipeItems RecipeItem[]
+}
+
+model RecipeItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  recipeId    String
+  stockItemId String
+
+  quantity Int @default(0)
+
+  Recipe    Recipe    @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   StockItem StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
 }
