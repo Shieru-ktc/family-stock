@@ -293,7 +293,7 @@ model Recipe {
   createdBy   String
 
   Family      Family       @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  User        User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  CreatedBy   User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   RecipeItems RecipeItem[]
 }
 
