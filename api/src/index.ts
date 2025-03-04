@@ -60,10 +60,12 @@ const app = new Hono()
             basePath: "/api/auth",
             callbacks: {
                 redirect: async ({ url, baseUrl }) => {
-                    return url.startsWith(baseUrl) ||
-                        url.startsWith(process.env.BASE_URL ?? baseUrl)
-                        ? Promise.resolve(url)
-                        : Promise.resolve(baseUrl);
+                    return (
+                            url.startsWith(baseUrl) ||
+                                url.startsWith(process.env.BASE_URL ?? baseUrl)
+                        ) ?
+                            Promise.resolve(url)
+                        :   Promise.resolve(baseUrl);
                 },
                 jwt: async ({ token, user }) => {
                     if (user) {

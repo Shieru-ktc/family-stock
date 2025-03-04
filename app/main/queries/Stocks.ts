@@ -19,10 +19,12 @@ export function useGetStocksQuery(familyId: string) {
                 Meta: {
                     ...stock.Meta!,
                     createdAt: new Date(stock.Meta!.createdAt),
-                    Tags: stock.Meta!.Tags.map((tag) => ({
-                        ...tag,
-                        createdAt: new Date(tag.createdAt),
-                    })).sort((a, b) => a.id.localeCompare(b.id)),
+                    Tags: stock
+                        .Meta!.Tags.map((tag) => ({
+                            ...tag,
+                            createdAt: new Date(tag.createdAt),
+                        }))
+                        .sort((a, b) => a.id.localeCompare(b.id)),
                 },
             })),
         refetchOnMount: "always",

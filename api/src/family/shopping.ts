@@ -16,9 +16,9 @@ async function getInitialPosition(familyId: string) {
         include: { Meta: true },
         orderBy: { Meta: { position: "desc" } },
     });
-    return lastStockItem
-        ? LexoRank.parse(lastStockItem.Meta!.position).between(LexoRank.max())
-        : LexoRank.min().genNext();
+    return lastStockItem ?
+            LexoRank.parse(lastStockItem.Meta!.position).between(LexoRank.max())
+        :   LexoRank.min().genNext();
 }
 
 /**
@@ -65,9 +65,10 @@ function dispatchStockCreatedForTemporaryItems(
                         Meta: {
                             ...asserted.Meta,
                             Family: { ...family },
-                            Tags: item.StockItem.Meta?.Tags
-                                ? [...item.StockItem.Meta.Tags]
-                                : [],
+                            Tags:
+                                item.StockItem.Meta?.Tags ?
+                                    [...item.StockItem.Meta.Tags]
+                                :   [],
                         },
                     },
                 },

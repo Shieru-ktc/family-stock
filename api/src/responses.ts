@@ -1,1 +1,1 @@
-class FamilyNotFound extends Error { }
+class FamilyNotFound extends Error {}

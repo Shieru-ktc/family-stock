@@ -126,7 +126,9 @@ export default function ClientEventHandler(
                             Meta: true,
                         },
                     })
-                    .then((stock) => (backItem = assertStockItemWithMeta(stock))),
+                    .then(
+                        (stock) => (backItem = assertStockItemWithMeta(stock)),
+                    ),
             );
         }
         if (data.frontItemId) {
@@ -149,7 +151,9 @@ export default function ClientEventHandler(
                             Meta: true,
                         },
                     })
-                    .then((stock) => (frontItem = assertStockItemWithMeta(stock))),
+                    .then(
+                        (stock) => (frontItem = assertStockItemWithMeta(stock)),
+                    ),
             );
         }
         promises.push(

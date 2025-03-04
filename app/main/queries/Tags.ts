@@ -12,9 +12,10 @@ export function useGetTagsQuery(familyId: string) {
             });
             return await res.json();
         },
-        select: (data) => data.map((tag) => ({
-            ...tag,
-            createdAt: new Date(tag.createdAt)
-        }))
+        select: (data) =>
+            data.map((tag) => ({
+                ...tag,
+                createdAt: new Date(tag.createdAt),
+            })),
     });
 }

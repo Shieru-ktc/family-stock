@@ -3,9 +3,9 @@
 import { atom } from "jotai";
 
 const ENDPOINT =
-    process.env.NODE_ENV === "development"
-        ? "ws://localhost:3030"
-        : "wss://stocks-api.shieru-lab.com";
+    process.env.NODE_ENV === "development" ?
+        "ws://localhost:3030"
+    :   "wss://stocks-api.shieru-lab.com";
 
 class WebSocketClient {
     socket: WebSocket;

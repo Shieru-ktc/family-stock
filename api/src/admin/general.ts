@@ -28,7 +28,6 @@ export const generalAdmin = new Hono()
                 Meta: {
                     position: "asc",
                 },
-            }
+            },
         });
-        
     });

@@ -3,9 +3,9 @@ import { hc } from "hono/client";
 import { toast } from "sonner";
 
 export const apiClient = hc<ApiAppType>(
-    process.env.NODE_ENV === "production"
-        ? "https://stocks-api.shieru-lab.com"
-        : "http://localhost:3030",
+    process.env.NODE_ENV === "production" ?
+        "https://stocks-api.shieru-lab.com"
+    :   "http://localhost:3030",
     {
         fetch: async (
             req: string | Request | URL,

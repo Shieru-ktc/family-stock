@@ -83,11 +83,12 @@ export const stocksApi = new Hono()
                     400,
                 );
             }
-            const position = lastStockItem
-                ? LexoRank.parse(lastStockItem.Meta!.position)
-                      .between(LexoRank.max())
-                      .toString()
-                : LexoRank.min().genNext().toString();
+            const position =
+                lastStockItem ?
+                    LexoRank.parse(lastStockItem.Meta!.position)
+                        .between(LexoRank.max())
+                        .toString()
+                :   LexoRank.min().genNext().toString();
             const createdItem = await prisma.stockItem.create({
                 data: {
                     quantity: data.quantity,
