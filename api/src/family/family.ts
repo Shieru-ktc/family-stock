@@ -8,6 +8,7 @@ import { shoppingApi } from "./shopping";
 import { manager } from "../ws";
 import { tagsApi } from "./tags";
 import { SocketEvents } from "@/socket/events";
+import { recipeApi } from "./recipe";
 
 export const familyApi = new Hono()
     .get(
@@ -142,4 +143,5 @@ export const familyApi = new Hono()
     )
     .route("/:familyId", stocksApi)
     .route("/:familyId", shoppingApi)
-    .route("/:familyId", tagsApi);
+    .route("/:familyId", tagsApi)
+    .route("/:familyId", recipeApi);
