@@ -1,7 +1,5 @@
 "use client";
 
-import { Member, MemberRole } from "@prisma/client";
-
 import {
     Table,
     TableBody,
@@ -13,13 +11,12 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
+import { familyAtom } from "@/atoms/familyAtom";
+import { sessionAtom } from "@/atoms/sessionAtom";
+import { getRoleLabel } from "@/lib/utils";
+import { useAtomValue } from "jotai";
 import AddMember from "./AddMember";
 import MemberActionComponent from "./MemberAction";
-import { useAtomValue } from "jotai";
-import { sessionAtom } from "@/atoms/sessionAtom";
-import { familyAtom } from "@/atoms/familyAtom";
-import { MemberWithUser } from "@/types";
-import { getRoleLabel } from "@/lib/utils";
 
 export default function FamilyMembersPage() {
     const session = useAtomValue(sessionAtom);
@@ -34,6 +31,14 @@ export default function FamilyMembersPage() {
                     以下は、このファミリーに所属するメンバーの一覧です。
                     <br />
                     管理者は、メンバーを招待したり、削除したりできます。
+                </p>
+                <p className="my-2">
+                    お使いのプランでは、最大 {family.Config.maxMembersPerFamily}{" "}
+                    人のメンバーを追加できます。
+                    <span className="text-xs text-gray-700 dark:text-gray-300">
+                        （残り{" "}
+                        {family.Config.maxMembersPerFamily - members.length}人）
+                    </span>
                 </p>
                 <Table>
                     <TableCaption>ファミリー メンバーの一覧</TableCaption>
