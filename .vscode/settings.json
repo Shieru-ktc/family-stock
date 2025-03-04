@@ -1,4 +1,7 @@
 {
     "editor.tabSize": 4,
-    "prettier.tabWidth": 4
+    "prettier.tabWidth": 4,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    }
 }
