@@ -30,7 +30,8 @@ export default function AddMember({ family }: { family: Family }) {
         if (data.ok) {
             const invite = await data.json();
             setLink(
-                new URL("/family/join/" + invite.id, window.location.href).href,
+                new URL("/main/family/join/" + invite.id, window.location.href)
+                    .href,
             );
         }
     }
@@ -56,12 +57,12 @@ export default function AddMember({ family }: { family: Family }) {
                             <Input
                                 type="text"
                                 placeholder={
-                                    typeof window !== "undefined"
-                                        ? new URL(
-                                              "/family/join/...",
-                                              window.location.href,
-                                          ).href
-                                        : ""
+                                    typeof window !== "undefined" ?
+                                        new URL(
+                                            "/main/family/join/...",
+                                            window.location.href,
+                                        ).href
+                                    :   ""
                                 }
                                 readOnly
                                 value={link}
