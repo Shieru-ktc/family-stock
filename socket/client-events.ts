@@ -1,10 +1,8 @@
-import { Server, Socket } from "socket.io";
+import { StockItemWithPartialMeta } from "@/types";
+import { LexoRank } from "@dalet-oss/lexorank";
 import { assertStockItemWithMeta, prisma } from "../lib/prisma";
 import { SocketEvents } from "./events";
 import { Channelable, Emittable, Listener } from "./manager";
-import { StockItem } from "@prisma/client";
-import { LexoRank } from "@dalet-oss/lexorank";
-import { StockItemWithMeta, StockItemWithPartialMeta } from "@/types";
 
 export default function ClientEventHandler(
     io: Channelable & Emittable,
