@@ -2,12 +2,13 @@
 
 import { ReactNode, useEffect } from "react";
 
+import { FamilyConfig } from "@/api/src/family/config";
+import { familyAtom } from "@/atoms/familyAtom";
+import Loading from "@/components/Loading";
+import { apiClient } from "@/lib/apiClient";
 import { FamilyWithUserMember } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { apiClient } from "@/lib/apiClient";
-import { familyAtom } from "@/atoms/familyAtom";
-import Loading from "@/components/Loading";
 
 export default function FamilyPageAtomSetter({
     children,
@@ -41,12 +42,18 @@ export default function FamilyPageAtomSetter({
                         createdAt: new Date(member.User.createdAt),
                     },
                 })),
-            }) as FamilyWithUserMember,
+            }) as FamilyWithUserMember & { Config: FamilyConfig },
     });
 
     useEffect(() => {
         setFamily(family);
     }, [family]);
 
-    return <>{isPending ? <Loading /> : children}</>;
+    return (
+        <>
+            {isPending ?
+                <Loading />
+            :   children}
+        </>
+    );
 }
