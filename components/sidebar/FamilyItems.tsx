@@ -3,13 +3,14 @@
 import { Family } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
-import { Box, Cog, ShoppingCart } from "lucide-react";
+import { Box, Cog, CookingPot, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { socketAtom } from "@/atoms/socketAtom";
 import { SocketEvents } from "@/socket/events";
 
+import { apiClient } from "@/lib/apiClient";
 import {
     SidebarGroup,
     SidebarGroupContent,
@@ -18,7 +19,6 @@ import {
     SidebarMenuButton,
 } from "../ui/sidebar";
 import { Skeleton } from "../ui/skeleton";
-import { apiClient } from "@/lib/apiClient";
 
 export default function FamilyItems() {
     const [socket] = useAtom(socketAtom);
@@ -98,6 +98,14 @@ export default function FamilyItems() {
                                 >
                                     <ShoppingCart />
                                     買い物
+                                </Link>
+                            </SidebarMenuButton>
+                            <SidebarMenuButton asChild>
+                                <Link
+                                    href={`/main/family/${family.id}/recipes`}
+                                >
+                                    <CookingPot />
+                                    レシピ
                                 </Link>
                             </SidebarMenuButton>
                             <SidebarMenuButton asChild>
