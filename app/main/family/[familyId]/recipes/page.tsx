@@ -1,8 +1,17 @@
 "use client";
 
+import Tag from "@/components/Tag";
 import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { apiClient } from "@/lib/apiClient";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { use } from "react";
 import { toast } from "sonner";
 
@@ -19,7 +28,9 @@ export default function RecipesPage({
             <p>
                 レシピを使うと、複数の在庫アイテムの消費を一括で管理できます。
             </p>
-            <Button>新しいレシピを作成する</Button>
+            <Button asChild>
+                <Link href="recipes/new">新しいレシピを作成する</Link>
+            </Button>
             <hr className="my-2" />
             <RecipeList familyId={familyId} />
         </div>
@@ -74,23 +85,58 @@ export function RecipeList({ familyId }: { familyId: string }) {
     }
 
     return (
-        <div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {recipes?.map((recipe) => (
                 <div key={recipe.id}>
-                    <h2>{recipe.name}</h2>
-                    <p>{recipe.description}</p>
-                    <Button onClick={() => consume(recipe.id)}>
-                        このレシピを使う
-                    </Button>
-                    <ul>
-                        {recipe.RecipeItems.map((item) => (
-                            <li key={item.id}>
-                                <div>
-                                    {item.StockItem.id} x{item.quantity}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{recipe.name}</CardTitle>
+                            <p>{recipe.description}</p>
+                        </CardHeader>
+                        <CardContent>
+                            {recipe.RecipeItems.map((item) => (
+                                <div
+                                    className={
+                                        "m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800"
+                                    }
+                                    key={item.id}
+                                >
+                                    <div className="p-2">
+                                        <div className="flex items-center justify-center gap-3">
+                                            <div>
+                                                <h2 className="flex-shrink-0 overflow-hidden text-ellipsis text-xl font-bold">
+                                                    {item.StockItem.Meta!.name}
+                                                </h2>
+                                                <div className="flex gap-2">
+                                                    {item.StockItem.Meta!.Tags.map(
+                                                        (tag) => (
+                                                            <Tag
+                                                                key={tag.id}
+                                                                tag={tag}
+                                                            />
+                                                        ),
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex-grow p-2" />
+
+                                    <div className="flex flex-shrink-0 items-center">
+                                        <div className="text-2xl font-bold">
+                                            {item.quantity}
+                                            {item.StockItem.Meta!.unit}
+                                        </div>
+                                    </div>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
+                            ))}
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={() => consume(recipe.id)}>
+                                このレシピを使う
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 </div>
             ))}
         </div>

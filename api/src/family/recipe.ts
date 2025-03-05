@@ -11,7 +11,15 @@ export const recipeApi = new Hono()
         "/recipes",
         familyMiddleware({
             Recipe: {
-                include: { RecipeItems: { include: { StockItem: true } } },
+                include: {
+                    RecipeItems: {
+                        include: {
+                            StockItem: {
+                                include: { Meta: { include: { Tags: true } } },
+                            },
+                        },
+                    },
+                },
             },
         }),
         async (c) => {
