@@ -4,12 +4,14 @@ import { useGetStocksQuery } from "@/app/main/queries/Stocks";
 import Counter from "@/components/Counter";
 import Tag from "@/components/Tag";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { apiClient } from "@/lib/apiClient";
 import { TagColor } from "@prisma/client";
 import { use, useState } from "react";
 
 type Stock = NonNullable<ReturnType<typeof useGetStocksQuery>["data"]>[number];
-
 export default function CreateRecipePage({
     params,
 }: {
@@ -17,7 +19,6 @@ export default function CreateRecipePage({
 }) {
     const { familyId } = use(params);
     const { data: stocks } = useGetStocksQuery(familyId);
-
     function handleSubmit(records: { stockId: string; quantity: number }[]) {
         const selected = records.filter((r) => r.quantity > 0);
         console.log(selected);
@@ -37,6 +38,24 @@ export default function CreateRecipePage({
             <h1 className="text-2xl">新しいレシピ</h1>
             <p>使用するアイテムとその個数を選択してください。</p>
             <hr className="my-2" />
+            <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-2">
+                    <Label htmlFor="recipeName">レシピ名</Label>
+                    <Input
+                        id="recipeName"
+                        placeholder="例: 我が家のカレーライス"
+                    />
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                    <Label htmlFor="recipeDescription">レシピの説明</Label>
+                    <Textarea
+                        id="recipeDescription"
+                        placeholder={
+                            "例: 祖母から受け継いだ、おいしいカレーライスの作り方"
+                        }
+                    />
+                </div>
+            </div>
             {stocks ?
                 <ItemSelector
                     stocks={stocks.map((s) => ({ ...s, quantity: 0 }))}
