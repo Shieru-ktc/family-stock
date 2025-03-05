@@ -60,6 +60,22 @@ export const recipeApi = new Hono()
             return c.json(recipe);
         },
     )
+    .get("/recipes/:recipeId/consume", familyMiddleware(), async (c) => {
+        const family = c.var.family;
+        const recipeId = c.req.param("recipeId");
+        const recipe = await prisma.recipe.findUnique({
+            where: { id: recipeId },
+            include: { RecipeItems: { include: { StockItem: true } } },
+        });
+        if (!recipe) {
+            return c.json({ success: false, message: "Recipe not found" });
+        }
+        return c.json(
+            recipe.RecipeItems.every(
+                (item) => item.StockItem.quantity > item.quantity,
+            ),
+        );
+    })
     .post("/recipes/:recipeId/consume", familyMiddleware(), async (c) => {
         const family = c.var.family;
         const recipeId = c.req.param("recipeId");
@@ -74,9 +90,10 @@ export const recipeApi = new Hono()
             const newItem = await prisma.stockItem.update({
                 where: { id: item.StockItem.id },
                 data: {
-                    quantity: {
-                        decrement: item.quantity,
-                    },
+                    quantity: Math.max(
+                        0,
+                        item.StockItem.quantity - item.quantity,
+                    ),
                 },
             });
             SocketEvents.stockQuantityChanged.dispatch(
