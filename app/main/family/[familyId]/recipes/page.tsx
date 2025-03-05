@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/apiClient";
 import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
+import { toast } from "sonner";
 
 export default function RecipesPage({
     params,
@@ -38,13 +39,38 @@ export function RecipeList({ familyId }: { familyId: string }) {
         },
     });
 
-    function consume(recipeId: string) {
-        apiClient.api.family[":familyId"].recipes[":recipeId"].consume.$post({
+    async function isConsumeable(recipeId: string) {
+        const res = await apiClient.api.family[":familyId"].recipes[
+            ":recipeId"
+        ].consume.$get({
             param: {
                 familyId,
                 recipeId,
             },
         });
+        if (res.ok) {
+            return await res.json();
+        } else {
+            return false;
+        }
+    }
+
+    function consume(recipeId: string) {
+        const mutate = async () => {
+            if (!(await isConsumeable(recipeId))) {
+                toast.info("Not enough items to consume this recipe.");
+                return;
+            }
+            await apiClient.api.family[":familyId"].recipes[
+                ":recipeId"
+            ].consume.$post({
+                param: {
+                    familyId,
+                    recipeId,
+                },
+            });
+        };
+        mutate();
     }
 
     return (

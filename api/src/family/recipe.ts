@@ -61,7 +61,6 @@ export const recipeApi = new Hono()
         },
     )
     .get("/recipes/:recipeId/consume", familyMiddleware(), async (c) => {
-        const family = c.var.family;
         const recipeId = c.req.param("recipeId");
         const recipe = await prisma.recipe.findUnique({
             where: { id: recipeId },
@@ -72,7 +71,7 @@ export const recipeApi = new Hono()
         }
         return c.json(
             recipe.RecipeItems.every(
-                (item) => item.StockItem.quantity > item.quantity,
+                (item) => item.StockItem.quantity - item.quantity >= 0,
             ),
         );
     })
@@ -84,7 +83,7 @@ export const recipeApi = new Hono()
             include: { RecipeItems: { include: { StockItem: true } } },
         });
         if (!recipe) {
-            return c.json({ success: false, message: "Recipe not found" });
+            return c.json({ success: false, message: "Recipe not found" }, 404);
         }
         recipe.RecipeItems.forEach(async (item) => {
             const newItem = await prisma.stockItem.update({
