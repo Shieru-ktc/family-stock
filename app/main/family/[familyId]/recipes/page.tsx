@@ -94,7 +94,11 @@ export function RecipeList({ familyId }: { familyId: string }) {
                             <p>{recipe.description}</p>
                         </CardHeader>
                         <CardContent>
-                            {recipe.RecipeItems.map((item) => (
+                            {recipe.RecipeItems.sort((a, b) =>
+                                a.StockItem.Meta!.position.localeCompare(
+                                    b.StockItem.Meta!.position,
+                                ),
+                            ).map((item) => (
                                 <div
                                     className={
                                         "m-2 flex items-center rounded-md border border-slate-200 p-4 shadow-xl dark:border-slate-800"

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { apiClient } from "@/lib/apiClient";
 import { TagColor } from "@prisma/client";
-import { use, useState } from "react";
+import { use, useRef, useState } from "react";
 
 type Stock = NonNullable<ReturnType<typeof useGetStocksQuery>["data"]>[number];
 export default function CreateRecipePage({
@@ -19,15 +19,20 @@ export default function CreateRecipePage({
 }) {
     const { familyId } = use(params);
     const { data: stocks } = useGetStocksQuery(familyId);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const descriptionRef = useRef<HTMLTextAreaElement>(null);
     function handleSubmit(records: { stockId: string; quantity: number }[]) {
+        if (!nameRef.current || !descriptionRef.current) {
+            return;
+        }
         const selected = records.filter((r) => r.quantity > 0);
         console.log(selected);
 
         apiClient.api.family[":familyId"].recipe.$post({
             param: { familyId },
             json: {
-                name: "新しいレシピ",
-                description: "新しいレシピの説明",
+                name: nameRef.current.value,
+                description: descriptionRef.current.value,
                 items: selected,
             },
         });
@@ -44,6 +49,7 @@ export default function CreateRecipePage({
                     <Input
                         id="recipeName"
                         placeholder="例: 我が家のカレーライス"
+                        ref={nameRef}
                     />
                 </div>
                 <div className="grid grid-cols-1 gap-2">
@@ -53,6 +59,7 @@ export default function CreateRecipePage({
                         placeholder={
                             "例: 祖母から受け継いだ、おいしいカレーライスの作り方"
                         }
+                        ref={descriptionRef}
                     />
                 </div>
             </div>
