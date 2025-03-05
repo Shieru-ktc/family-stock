@@ -1,11 +1,10 @@
-import { Hono } from "hono";
-import { familyMiddleware } from "./familyMiddleware";
-import { SocketEvents } from "@/socket/events";
-import { manager } from "../ws";
-import { z } from "zod";
-import { zValidator } from "@hono/zod-validator";
 import { prisma } from "@/lib/prisma";
-import { LexoRank } from "@dalet-oss/lexorank";
+import { SocketEvents } from "@/socket/events";
+import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
+import { z } from "zod";
+import { manager } from "../ws";
+import { familyMiddleware } from "./familyMiddleware";
 
 export const recipeApi = new Hono()
     .get(
@@ -61,6 +60,34 @@ export const recipeApi = new Hono()
             return c.json(recipe);
         },
     )
+    .post("/recipes/:recipeId/consume", familyMiddleware(), async (c) => {
+        const family = c.var.family;
+        const recipeId = c.req.param("recipeId");
+        const recipe = await prisma.recipe.findUnique({
+            where: { id: recipeId },
+            include: { RecipeItems: { include: { StockItem: true } } },
+        });
+        if (!recipe) {
+            return c.json({ success: false, message: "Recipe not found" });
+        }
+        recipe.RecipeItems.forEach(async (item) => {
+            const newItem = await prisma.stockItem.update({
+                where: { id: item.StockItem.id },
+                data: {
+                    quantity: {
+                        decrement: item.quantity,
+                    },
+                },
+            });
+            SocketEvents.stockQuantityChanged.dispatch(
+                {
+                    stock: newItem,
+                },
+                manager.in(family.id),
+            );
+        });
+        return c.json({ success: true });
+    })
     .delete("/recipes/:recipeId", familyMiddleware(), async (c) => {
         const family = c.var.family;
         const recipeId = c.req.param("recipeId");
