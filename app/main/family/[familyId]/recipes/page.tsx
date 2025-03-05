@@ -37,16 +37,31 @@ export function RecipeList({ familyId }: { familyId: string }) {
             return await res.json();
         },
     });
+
+    function consume(recipeId: string) {
+        apiClient.api.family[":familyId"].recipes[":recipeId"].consume.$post({
+            param: {
+                familyId,
+                recipeId,
+            },
+        });
+    }
+
     return (
         <div>
             {recipes?.map((recipe) => (
                 <div key={recipe.id}>
                     <h2>{recipe.name}</h2>
                     <p>{recipe.description}</p>
+                    <Button onClick={() => consume(recipe.id)}>
+                        このレシピを使う
+                    </Button>
                     <ul>
                         {recipe.RecipeItems.map((item) => (
                             <li key={item.id}>
-                                {item.StockItem.id} x{item.quantity}
+                                <div>
+                                    {item.StockItem.id} x{item.quantity}
+                                </div>
                             </li>
                         ))}
                     </ul>
